@@ -1509,6 +1509,10 @@
 
   function pcUid() { return 'id' + Math.random().toString(36).slice(2, 9); }
 
+  function pcOverheadCost(oh, days) {
+    return oh.type === 'monthly' ? oh.cost * (days / 30) : oh.cost;
+  }
+
   function pcMakeHours() {
     var h = {};
     for (var i = 0; i < arguments.length; i += 2) h[arguments[i]] = arguments[i + 1];
@@ -1531,7 +1535,7 @@
           overheads: PC_EQUIPMENT.map(function (item) {
             return { id: pcUid(), name: item.name, cost: item.cost, type: 'per-project' };
           }).concat([
-            { id: pcUid(), name: 'Adobe Creative Cloud (All Apps, yearly)', cost: 3800, type: 'monthly' },
+            { id: pcUid(), name: 'Adobe Creative Cloud (All Apps, yearly)', cost: 1417, type: 'monthly' },
             { id: pcUid(), name: 'Hosting / Domain', cost: 15, type: 'monthly' }
           ])
         },
@@ -1551,12 +1555,15 @@
     state.pricing.settings.overheads.forEach(function (oh) {
       if (oh.name === 'Editing Software Subscription') {
         oh.name = 'Adobe Creative Cloud (All Apps, yearly)';
-        oh.cost = 3800;
+        oh.cost = 1417;
+        addedEquipment = true;
+      } else if (oh.name === 'Adobe Creative Cloud (All Apps, yearly)' && oh.cost === 3800) {
+        oh.cost = 1417;
         addedEquipment = true;
       }
     });
     if (!state.pricing.settings.overheads.some(function (oh) { return oh.name === 'Adobe Creative Cloud (All Apps, yearly)'; })) {
-      state.pricing.settings.overheads.push({ id: pcUid(), name: 'Adobe Creative Cloud (All Apps, yearly)', cost: 3800, type: 'monthly' });
+      state.pricing.settings.overheads.push({ id: pcUid(), name: 'Adobe Creative Cloud (All Apps, yearly)', cost: 1417, type: 'monthly' });
       addedEquipment = true;
     }
     PC_EQUIPMENT.forEach(function (item) {
@@ -1775,6 +1782,20 @@
     complexGroup.appendChild(compSel);
     calcBlock.appendChild(complexGroup);
 
+    // Project duration (for prorating monthly overheads)
+    if (!calc.days) calc.days = 30;
+    var daysGroup = el('div', { className: 'field-group' });
+    daysGroup.appendChild(el('label', { className: 'field-label', textContent: 'Project Duration (days)' }));
+    var daysInput = el('input', { className: 'field-input', type: 'number', min: '1', value: calc.days });
+    daysInput.oninput = function () {
+      calc.days = parseFloat(daysInput.value) || 1;
+      queueSave();
+      recompute();
+    };
+    daysGroup.appendChild(daysInput);
+    daysGroup.appendChild(el('div', { className: 'pc-result-sub', textContent: 'Monthly overhead costs (e.g. Adobe CC, hosting) are prorated for this many days. Per-project costs (equipment) are charged in full.' }));
+    calcBlock.appendChild(daysGroup);
+
     // Hours table
     var table = el('table', { className: 'an-table' });
     var thead = el('thead');
@@ -1826,7 +1847,8 @@
         recompute();
       };
       lbl.appendChild(cb);
-      lbl.appendChild(document.createTextNode(' ' + oh.name + ' (' + cur + oh.cost.toFixed(2) + (oh.type === 'monthly' ? '/mo' : '') + ')'));
+      var ohText = el('span', { id: 'pc-oh-label-' + cat.key + '-' + oh.id });
+      lbl.appendChild(ohText);
       ohGroup.appendChild(lbl);
     });
     calcBlock.appendChild(ohGroup);
@@ -1875,7 +1897,13 @@
       });
       var overhead = 0;
       settings.overheads.forEach(function (oh) {
-        if (calc.overheadIds.indexOf(oh.id) !== -1) overhead += oh.cost;
+        var ohCost = pcOverheadCost(oh, calc.days);
+        var lbl = document.getElementById('pc-oh-label-' + cat.key + '-' + oh.id);
+        if (lbl) {
+          lbl.textContent = ' ' + oh.name + ' (' + cur + ohCost.toFixed(2) +
+            (oh.type === 'monthly' ? ' for ' + calc.days + 'd, ' + cur + oh.cost.toFixed(2) + '/mo' : '') + ')';
+        }
+        if (calc.overheadIds.indexOf(oh.id) !== -1) overhead += ohCost;
       });
       var subtotal = labor + overhead;
       var price15 = subtotal * 1.5;
@@ -1916,12 +1944,15 @@
       lines.push('  - ' + role.name + (qty > 1 ? ' x' + qty + ' people' : '') + ': ' + hrs + 'h x ' + cur + role.hourlyRate.toFixed(2) + '/hr' + (qty > 1 ? ' x ' + qty : '') + ' = ' + cur + lineCost.toFixed(2));
     });
     lines.push('');
+    lines.push('Project Duration: ' + calc.days + ' day(s)');
+    lines.push('');
     lines.push('Equipment / Overhead:');
     var overhead = 0;
     settings.overheads.forEach(function (oh) {
       if (calc.overheadIds.indexOf(oh.id) === -1) return;
-      overhead += oh.cost;
-      lines.push('  - ' + oh.name + ': ' + cur + oh.cost.toFixed(2) + (oh.type === 'monthly' ? '/mo' : ''));
+      var ohCost = pcOverheadCost(oh, calc.days);
+      overhead += ohCost;
+      lines.push('  - ' + oh.name + ': ' + cur + ohCost.toFixed(2) + (oh.type === 'monthly' ? ' (' + cur + oh.cost.toFixed(2) + '/mo prorated for ' + calc.days + 'd)' : ''));
     });
     if (!overhead) lines.push('  (none selected)');
     lines.push('');
