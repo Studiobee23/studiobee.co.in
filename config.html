@@ -1494,6 +1494,19 @@
   ];
   var PC_COMPLEXITY = { simple: 1, medium: 1.25, complex: 1.5 };
 
+  // Studio gear — per-project cost = (approx. market price in INR) / 600
+  // (~3-year useful life @ ~200 working days/yr), rounded.
+  var PC_EQUIPMENT = [
+    { name: 'Sony A7 IV', cost: 360 },
+    { name: 'Aputure amaran 300x', cost: 65 },
+    { name: 'DJI RS 4 Gimbal', cost: 60 },
+    { name: 'Sony FE 24-70mm f/2.8 GM II', cost: 315 },
+    { name: 'MacBook Pro 16" M3 Max', cost: 715 },
+    { name: 'ASUS TUF A16', cost: 160 },
+    { name: 'MacBook Pro 14" M2 Pro', cost: 335 },
+    { name: 'MacBook Pro 14" M3 Pro', cost: 315 }
+  ];
+
   function pcUid() { return 'id' + Math.random().toString(36).slice(2, 9); }
 
   function pcMakeHours() {
@@ -1515,11 +1528,12 @@
             { id: rBrand, name: 'Brand Designer', hourlyRate: 22 },
             { id: rDev, name: 'Web Developer', hourlyRate: 30 }
           ],
-          overheads: [
-            { id: pcUid(), name: 'Camera / Equipment Depreciation', cost: 50, type: 'per-project' },
+          overheads: PC_EQUIPMENT.map(function (item) {
+            return { id: pcUid(), name: item.name, cost: item.cost, type: 'per-project' };
+          }).concat([
             { id: pcUid(), name: 'Editing Software Subscription', cost: 30, type: 'monthly' },
             { id: pcUid(), name: 'Hosting / Domain', cost: 15, type: 'monthly' }
-          ]
+          ])
         },
         sections: {
           cinematography: { presets: [{ id: pcUid(), name: '1-Day Shoot + Edit', complexity: 'medium', hours: pcMakeHours(rCine, 8, rEdit, 16) }], calc: {} },
@@ -1533,6 +1547,15 @@
     if (!state.pricing.settings.roles) state.pricing.settings.roles = [];
     if (!state.pricing.settings.overheads) state.pricing.settings.overheads = [];
     if (state.pricing.settings.currency === '$') state.pricing.settings.currency = '₹';
+    var addedEquipment = false;
+    PC_EQUIPMENT.forEach(function (item) {
+      var exists = state.pricing.settings.overheads.some(function (oh) { return oh.name === item.name; });
+      if (!exists) {
+        state.pricing.settings.overheads.push({ id: pcUid(), name: item.name, cost: item.cost, type: 'per-project' });
+        addedEquipment = true;
+      }
+    });
+    if (addedEquipment) queueSave();
     if (!state.pricing.sections) state.pricing.sections = {};
     PC_CATS.forEach(function (cat) {
       if (!state.pricing.sections[cat.key]) state.pricing.sections[cat.key] = { presets: [], calc: {} };
