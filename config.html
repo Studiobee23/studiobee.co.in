@@ -1723,6 +1723,7 @@
     var roles = settings.roles;
     var calc = sec.calc;
     if (!calc.hours) calc.hours = {};
+    if (!calc.qty) calc.qty = {};
     if (!calc.complexity) calc.complexity = 'medium';
     if (!calc.overheadIds) calc.overheadIds = [];
     var cur = settings.currency || '$';
@@ -1766,7 +1767,7 @@
     // Hours table
     var table = el('table', { className: 'an-table' });
     var thead = el('thead');
-    thead.innerHTML = '<tr><th>Role</th><th>Hours</th><th>Rate / hr</th><th>Line Cost</th></tr>';
+    thead.innerHTML = '<tr><th>Role</th><th>Hours</th><th>People</th><th>Rate / hr</th><th>Line Cost</th></tr>';
     table.appendChild(thead);
     var tbody = el('tbody');
     roles.forEach(function (role) {
@@ -1782,6 +1783,16 @@
       };
       tdHrs.appendChild(hrsInput);
       tr.appendChild(tdHrs);
+      var tdQty = el('td');
+      var qtyInput = el('input', { className: 'field-input', type: 'number', min: '1', step: '1', value: calc.qty[role.id] || 1 });
+      qtyInput.style.cssText = 'width:70px;padding:5px 8px;';
+      qtyInput.oninput = function () {
+        calc.qty[role.id] = parseInt(qtyInput.value, 10) || 1;
+        queueSave();
+        recompute();
+      };
+      tdQty.appendChild(qtyInput);
+      tr.appendChild(tdQty);
       tr.appendChild(el('td', { textContent: cur + role.hourlyRate.toFixed(2) }));
       var tdCost = el('td', { id: 'pc-cost-' + cat.key + '-' + role.id });
       tr.appendChild(tdCost);
@@ -1845,7 +1856,8 @@
       var labor = 0;
       roles.forEach(function (role) {
         var hrs = calc.hours[role.id] || 0;
-        var lineCost = hrs * role.hourlyRate * mult;
+        var qty = calc.qty[role.id] || 1;
+        var lineCost = hrs * role.hourlyRate * mult * qty;
         labor += lineCost;
         var td = document.getElementById('pc-cost-' + cat.key + '-' + role.id);
         if (td) td.textContent = cur + lineCost.toFixed(2);
@@ -1887,9 +1899,10 @@
     roles.forEach(function (role) {
       var hrs = calc.hours[role.id] || 0;
       if (!hrs) return;
-      var lineCost = hrs * role.hourlyRate * mult;
+      var qty = calc.qty[role.id] || 1;
+      var lineCost = hrs * role.hourlyRate * mult * qty;
       labor += lineCost;
-      lines.push('  - ' + role.name + ': ' + hrs + 'h x ' + cur + role.hourlyRate.toFixed(2) + '/hr = ' + cur + lineCost.toFixed(2));
+      lines.push('  - ' + role.name + (qty > 1 ? ' x' + qty + ' people' : '') + ': ' + hrs + 'h x ' + cur + role.hourlyRate.toFixed(2) + '/hr' + (qty > 1 ? ' x ' + qty : '') + ' = ' + cur + lineCost.toFixed(2));
     });
     lines.push('');
     lines.push('Equipment / Overhead:');
