@@ -1536,7 +1536,7 @@
             return { id: pcUid(), name: item.name, cost: item.cost, type: 'per-project' };
           }).concat([
             { id: pcUid(), name: 'Adobe Creative Cloud (All Apps, yearly)', cost: 1417, type: 'monthly' },
-            { id: pcUid(), name: 'Hosting / Domain', cost: 15, type: 'monthly' }
+            { id: pcUid(), name: 'Domain Renewal (.in, yearly)', cost: 150, type: 'monthly' }
           ])
         },
         sections: {
@@ -1559,6 +1559,10 @@
         addedEquipment = true;
       } else if (oh.name === 'Adobe Creative Cloud (All Apps, yearly)' && oh.cost === 3800) {
         oh.cost = 1417;
+        addedEquipment = true;
+      } else if (oh.name === 'Hosting / Domain') {
+        oh.name = 'Domain Renewal (.in, yearly)';
+        oh.cost = 150;
         addedEquipment = true;
       }
     });
