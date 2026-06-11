@@ -472,6 +472,18 @@
     .an-table th { text-align: left; padding: 6px 8px; border-bottom: 2px solid #e0e0e0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #888; }
     .an-table td { padding: 6px 8px; border-bottom: 1px solid #eee; }
     .an-table tr:last-child td { border-bottom: none; }
+
+    /* ── Pricing Calculator ── */
+    .pc-subpanel { display: none; }
+    .pc-subpanel.active { display: block; }
+    .pc-result-card {
+      background: #fff; border-radius: 10px; padding: 16px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07); border: 1px solid rgba(0,0,0,0.06);
+    }
+    .pc-result-card.highlight { border: 1.5px solid #2F48DF; background: rgba(47,72,223,0.04); }
+    .pc-result-label { font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .pc-result-value { font-size: 24px; font-weight: 700; }
+    .pc-result-sub { font-size: 12px; color: #888; margin-top: 4px; }
   </style>
 </head>
 <body>
@@ -486,6 +498,7 @@
     <button class="nav-btn" data-panel="process">Process</button>
     <button class="nav-btn" data-panel="testimonials">Testimonials</button>
     <button class="nav-btn" data-panel="team">Team</button>
+    <button class="nav-btn" data-panel="pricing">Pricing Calculator</button>
     <button class="nav-btn" data-panel="analytics">Analytics</button>
   </nav>
   <div class="sb-spacer"></div>
@@ -605,6 +618,40 @@
       <div id="testimonials-items"></div>
       <button class="add-btn" onclick="addTestimonial()">+ Add Testimonial</button>
     </div>
+  </section>
+
+  <!-- ── PRICING CALCULATOR ── -->
+  <section id="panel-pricing" class="panel">
+    <div class="panel-header">
+      <h1>Pricing Calculator</h1>
+      <p>Work out client quotes from staff hourly cost + equipment/overhead, with 1.5x and 2x markup options.</p>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+      <button class="an-range-btn pc-subtab active" data-pcsub="settings">Settings</button>
+      <button class="an-range-btn pc-subtab" data-pcsub="cinematography">Cinematography / Editing</button>
+      <button class="an-range-btn pc-subtab" data-pcsub="social">Social Media</button>
+      <button class="an-range-btn pc-subtab" data-pcsub="branding">Branding</button>
+      <button class="an-range-btn pc-subtab" data-pcsub="website">Website Dev</button>
+    </div>
+
+    <div id="pc-panel-settings" class="pc-subpanel active">
+      <div class="section-block">
+        <h2>Roles &amp; Hourly Rates</h2>
+        <div id="pc-roles"></div>
+        <button class="add-btn" onclick="addPricingRole()">+ Add Role</button>
+      </div>
+      <div class="section-block">
+        <h2>Equipment / Overhead Costs</h2>
+        <div id="pc-overheads"></div>
+        <button class="add-btn" onclick="addPricingOverhead()">+ Add Overhead Item</button>
+      </div>
+    </div>
+
+    <div id="pc-panel-cinematography" class="pc-subpanel"></div>
+    <div id="pc-panel-social" class="pc-subpanel"></div>
+    <div id="pc-panel-branding" class="pc-subpanel"></div>
+    <div id="pc-panel-website" class="pc-subpanel"></div>
   </section>
 
   <section id="panel-analytics" class="panel">
@@ -1437,6 +1484,417 @@
     document.getElementById('team-items').lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   };
 
+  // ── PRICING CALCULATOR ───────────────────────────────────────────────
+
+  var PC_CATS = [
+    { key: 'cinematography', label: 'Cinematography / Editing' },
+    { key: 'social', label: 'Social Media Management' },
+    { key: 'branding', label: 'Branding' },
+    { key: 'website', label: 'Website Design & Development' }
+  ];
+  var PC_COMPLEXITY = { simple: 1, medium: 1.25, complex: 1.5 };
+
+  function pcUid() { return 'id' + Math.random().toString(36).slice(2, 9); }
+
+  function pcMakeHours() {
+    var h = {};
+    for (var i = 0; i < arguments.length; i += 2) h[arguments[i]] = arguments[i + 1];
+    return h;
+  }
+
+  function ensurePricing() {
+    if (!state.pricing) {
+      var rCine = pcUid(), rEdit = pcUid(), rSocial = pcUid(), rBrand = pcUid(), rDev = pcUid();
+      state.pricing = {
+        settings: {
+          currency: '$',
+          roles: [
+            { id: rCine, name: 'Cinematographer', hourlyRate: 25 },
+            { id: rEdit, name: 'Video Editor', hourlyRate: 20 },
+            { id: rSocial, name: 'Social Media Manager', hourlyRate: 15 },
+            { id: rBrand, name: 'Brand Designer', hourlyRate: 22 },
+            { id: rDev, name: 'Web Developer', hourlyRate: 30 }
+          ],
+          overheads: [
+            { id: pcUid(), name: 'Camera / Equipment Depreciation', cost: 50, type: 'per-project' },
+            { id: pcUid(), name: 'Editing Software Subscription', cost: 30, type: 'monthly' },
+            { id: pcUid(), name: 'Hosting / Domain', cost: 15, type: 'monthly' }
+          ]
+        },
+        sections: {
+          cinematography: { presets: [{ id: pcUid(), name: '1-Day Shoot + Edit', complexity: 'medium', hours: pcMakeHours(rCine, 8, rEdit, 16) }], calc: {} },
+          social: { presets: [{ id: pcUid(), name: 'Monthly Content Package', complexity: 'simple', hours: pcMakeHours(rSocial, 20) }], calc: {} },
+          branding: { presets: [{ id: pcUid(), name: 'Logo + Brand Kit', complexity: 'medium', hours: pcMakeHours(rBrand, 30) }], calc: {} },
+          website: { presets: [{ id: pcUid(), name: '5-Page Website', complexity: 'medium', hours: pcMakeHours(rDev, 40, rBrand, 8) }], calc: {} }
+        }
+      };
+    }
+    if (!state.pricing.settings) state.pricing.settings = { currency: '$', roles: [], overheads: [] };
+    if (!state.pricing.settings.roles) state.pricing.settings.roles = [];
+    if (!state.pricing.settings.overheads) state.pricing.settings.overheads = [];
+    if (!state.pricing.sections) state.pricing.sections = {};
+    PC_CATS.forEach(function (cat) {
+      if (!state.pricing.sections[cat.key]) state.pricing.sections[cat.key] = { presets: [], calc: {} };
+      if (!state.pricing.sections[cat.key].presets) state.pricing.sections[cat.key].presets = [];
+      if (!state.pricing.sections[cat.key].calc) state.pricing.sections[cat.key].calc = {};
+    });
+  }
+
+  function renderPricing() {
+    ensurePricing();
+    renderPricingRoles();
+    renderPricingOverheads();
+    PC_CATS.forEach(renderPricingCategory);
+  }
+
+  function renderPricingRoles() {
+    var container = document.getElementById('pc-roles');
+    container.innerHTML = '';
+    state.pricing.settings.roles.forEach(function (role, idx) {
+      var card = el('div', { className: 'item-card' });
+      var row = el('div', { className: 'field-row' });
+      row.appendChild(fieldGroup('Role Name', 'text', role.name, function (v) {
+        role.name = v; queueSave(); PC_CATS.forEach(renderPricingCategory);
+      }));
+      row.appendChild(fieldGroup('Hourly Rate ($)', 'number', role.hourlyRate, function (v) {
+        role.hourlyRate = parseFloat(v) || 0; queueSave(); PC_CATS.forEach(renderPricingCategory);
+      }));
+      card.appendChild(row);
+      var rm = el('button', { className: 'btn-danger-sm', textContent: 'Remove Role' });
+      rm.onclick = function () {
+        state.pricing.settings.roles.splice(idx, 1);
+        renderPricingRoles();
+        PC_CATS.forEach(renderPricingCategory);
+        queueSave();
+      };
+      card.appendChild(rm);
+      container.appendChild(card);
+    });
+  }
+
+  window.addPricingRole = function () {
+    ensurePricing();
+    state.pricing.settings.roles.push({ id: pcUid(), name: 'New Role', hourlyRate: 20 });
+    renderPricingRoles();
+    queueSave();
+  };
+
+  function renderPricingOverheads() {
+    var container = document.getElementById('pc-overheads');
+    container.innerHTML = '';
+    state.pricing.settings.overheads.forEach(function (oh, idx) {
+      var card = el('div', { className: 'item-card' });
+      var row = el('div', { className: 'field-row' });
+      row.appendChild(fieldGroup('Item Name', 'text', oh.name, function (v) {
+        oh.name = v; queueSave(); PC_CATS.forEach(renderPricingCategory);
+      }));
+      row.appendChild(fieldGroup('Cost ($)', 'number', oh.cost, function (v) {
+        oh.cost = parseFloat(v) || 0; queueSave(); PC_CATS.forEach(renderPricingCategory);
+      }));
+      card.appendChild(row);
+
+      var typeGroup = el('div', { className: 'field-group' });
+      typeGroup.appendChild(el('label', { className: 'field-label', textContent: 'Type' }));
+      var sel = el('select', { className: 'field-input' });
+      ['per-project', 'monthly'].forEach(function (opt) {
+        var o = el('option', { value: opt, textContent: opt === 'per-project' ? 'Per Project (one-off)' : 'Monthly (amortized)' });
+        if (oh.type === opt) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.onchange = function () { oh.type = sel.value; queueSave(); PC_CATS.forEach(renderPricingCategory); };
+      typeGroup.appendChild(sel);
+      card.appendChild(typeGroup);
+
+      var rm = el('button', { className: 'btn-danger-sm', textContent: 'Remove Item' });
+      rm.onclick = function () {
+        state.pricing.settings.overheads.splice(idx, 1);
+        renderPricingOverheads();
+        PC_CATS.forEach(renderPricingCategory);
+        queueSave();
+      };
+      card.appendChild(rm);
+      container.appendChild(card);
+    });
+  }
+
+  window.addPricingOverhead = function () {
+    ensurePricing();
+    state.pricing.settings.overheads.push({ id: pcUid(), name: 'New Item', cost: 0, type: 'per-project' });
+    renderPricingOverheads();
+    queueSave();
+  };
+
+  function renderPricingCategory(cat) {
+    var container = document.getElementById('pc-panel-' + cat.key);
+    container.innerHTML = '';
+    var sec = state.pricing.sections[cat.key];
+    var roles = state.pricing.settings.roles;
+
+    // Presets editor
+    var presetsBlock = el('div', { className: 'section-block' });
+    presetsBlock.appendChild(el('h2', { textContent: 'Task Presets' }));
+    sec.presets.forEach(function (preset, idx) {
+      var card = el('div', { className: 'item-card' });
+
+      var hdr = el('div', { className: 'card-hdr' });
+      hdr.appendChild(el('span', { className: 'card-num', textContent: 'Preset ' + (idx + 1) }));
+      var rm = el('button', { className: 'btn-danger-sm', textContent: 'Remove' });
+      rm.onclick = function () { sec.presets.splice(idx, 1); renderPricingCategory(cat); queueSave(); };
+      hdr.appendChild(rm);
+      card.appendChild(hdr);
+
+      var row = el('div', { className: 'field-row' });
+      row.appendChild(fieldGroup('Preset Name', 'text', preset.name, function (v) {
+        preset.name = v; queueSave(); renderPricingCalc(cat);
+      }));
+      var complexGroup = el('div', { className: 'field-group' });
+      complexGroup.appendChild(el('label', { className: 'field-label', textContent: 'Default Complexity' }));
+      var sel = el('select', { className: 'field-input' });
+      Object.keys(PC_COMPLEXITY).forEach(function (c) {
+        var o = el('option', { value: c, textContent: c.charAt(0).toUpperCase() + c.slice(1) + ' (' + PC_COMPLEXITY[c] + 'x)' });
+        if (preset.complexity === c) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.onchange = function () { preset.complexity = sel.value; queueSave(); renderPricingCalc(cat); };
+      complexGroup.appendChild(sel);
+      row.appendChild(complexGroup);
+      card.appendChild(row);
+
+      var hoursWrap = el('div', { style: 'display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px' });
+      roles.forEach(function (role) {
+        hoursWrap.appendChild(fieldGroup(role.name + ' (hrs)', 'number', preset.hours[role.id] || 0, function (v) {
+          preset.hours[role.id] = parseFloat(v) || 0; queueSave(); renderPricingCalc(cat);
+        }));
+      });
+      card.appendChild(hoursWrap);
+
+      presetsBlock.appendChild(card);
+    });
+    var addBtn = el('button', { className: 'add-btn', textContent: '+ Add Preset' });
+    addBtn.onclick = function () {
+      var hours = {};
+      roles.forEach(function (r) { hours[r.id] = 0; });
+      sec.presets.push({ id: pcUid(), name: 'New Preset', complexity: 'medium', hours: hours });
+      renderPricingCategory(cat);
+      queueSave();
+    };
+    presetsBlock.appendChild(addBtn);
+    container.appendChild(presetsBlock);
+
+    // Calculator
+    var calcBlock = el('div', { className: 'section-block' });
+    calcBlock.id = 'pc-calc-' + cat.key;
+    container.appendChild(calcBlock);
+    renderPricingCalc(cat);
+  }
+
+  function renderPricingCalc(cat) {
+    var calcBlock = document.getElementById('pc-calc-' + cat.key);
+    if (!calcBlock) return;
+    calcBlock.innerHTML = '';
+    calcBlock.appendChild(el('h2', { textContent: 'Quote Calculator' }));
+
+    var sec = state.pricing.sections[cat.key];
+    var settings = state.pricing.settings;
+    var roles = settings.roles;
+    var calc = sec.calc;
+    if (!calc.hours) calc.hours = {};
+    if (!calc.complexity) calc.complexity = 'medium';
+    if (!calc.overheadIds) calc.overheadIds = [];
+    var cur = settings.currency || '$';
+
+    // Preset select
+    var presetGroup = el('div', { className: 'field-group' });
+    presetGroup.appendChild(el('label', { className: 'field-label', textContent: 'Load Preset' }));
+    var presetSel = el('select', { className: 'field-input' });
+    presetSel.appendChild(el('option', { value: '', textContent: '— Custom —' }));
+    sec.presets.forEach(function (p) {
+      var o = el('option', { value: p.id, textContent: p.name });
+      if (calc.presetId === p.id) o.selected = true;
+      presetSel.appendChild(o);
+    });
+    presetSel.onchange = function () {
+      calc.presetId = presetSel.value;
+      var preset = sec.presets.filter(function (p) { return p.id === presetSel.value; })[0];
+      if (preset) {
+        calc.hours = JSON.parse(JSON.stringify(preset.hours));
+        calc.complexity = preset.complexity;
+      }
+      queueSave();
+      renderPricingCalc(cat);
+    };
+    presetGroup.appendChild(presetSel);
+    calcBlock.appendChild(presetGroup);
+
+    // Complexity select
+    var complexGroup = el('div', { className: 'field-group' });
+    complexGroup.appendChild(el('label', { className: 'field-label', textContent: 'Complexity Multiplier' }));
+    var compSel = el('select', { className: 'field-input' });
+    Object.keys(PC_COMPLEXITY).forEach(function (c) {
+      var o = el('option', { value: c, textContent: c.charAt(0).toUpperCase() + c.slice(1) + ' (' + PC_COMPLEXITY[c] + 'x)' });
+      if (calc.complexity === c) o.selected = true;
+      compSel.appendChild(o);
+    });
+    compSel.onchange = function () { calc.complexity = compSel.value; queueSave(); recompute(); };
+    complexGroup.appendChild(compSel);
+    calcBlock.appendChild(complexGroup);
+
+    // Hours table
+    var table = el('table', { className: 'an-table' });
+    var thead = el('thead');
+    thead.innerHTML = '<tr><th>Role</th><th>Hours</th><th>Rate / hr</th><th>Line Cost</th></tr>';
+    table.appendChild(thead);
+    var tbody = el('tbody');
+    roles.forEach(function (role) {
+      var tr = el('tr');
+      tr.appendChild(el('td', { textContent: role.name }));
+      var tdHrs = el('td');
+      var hrsInput = el('input', { className: 'field-input', type: 'number', min: '0', value: calc.hours[role.id] || 0 });
+      hrsInput.style.cssText = 'width:80px;padding:5px 8px;';
+      hrsInput.oninput = function () {
+        calc.hours[role.id] = parseFloat(hrsInput.value) || 0;
+        queueSave();
+        recompute();
+      };
+      tdHrs.appendChild(hrsInput);
+      tr.appendChild(tdHrs);
+      tr.appendChild(el('td', { textContent: cur + role.hourlyRate.toFixed(2) }));
+      var tdCost = el('td', { id: 'pc-cost-' + cat.key + '-' + role.id });
+      tr.appendChild(tdCost);
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    calcBlock.appendChild(table);
+
+    // Overhead checkboxes
+    var ohGroup = el('div', { className: 'field-group', style: 'margin-top:16px' });
+    ohGroup.appendChild(el('label', { className: 'field-label', textContent: 'Equipment / Overhead Included' }));
+    settings.overheads.forEach(function (oh) {
+      var lbl = el('label', { style: 'display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;cursor:pointer;font-weight:400;' });
+      var cb = el('input', { type: 'checkbox' });
+      cb.checked = calc.overheadIds.indexOf(oh.id) !== -1;
+      cb.onchange = function () {
+        if (cb.checked) calc.overheadIds.push(oh.id);
+        else calc.overheadIds = calc.overheadIds.filter(function (id) { return id !== oh.id; });
+        queueSave();
+        recompute();
+      };
+      lbl.appendChild(cb);
+      lbl.appendChild(document.createTextNode(' ' + oh.name + ' (' + cur + oh.cost.toFixed(2) + (oh.type === 'monthly' ? '/mo' : '') + ')'));
+      ohGroup.appendChild(lbl);
+    });
+    calcBlock.appendChild(ohGroup);
+
+    // Totals
+    var totalsWrap = el('div', { style: 'display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:16px;' });
+    function totalCard(id, label) {
+      var c = el('div', { className: 'pc-result-card' });
+      c.appendChild(el('div', { className: 'pc-result-label', textContent: label }));
+      c.appendChild(el('div', { className: 'pc-result-value', id: id }));
+      c.appendChild(el('div', { className: 'pc-result-sub', id: id + '-sub' }));
+      totalsWrap.appendChild(c);
+      return c;
+    }
+    totalCard('pc-labor-' + cat.key, 'Labor Cost');
+    totalCard('pc-overhead-' + cat.key, 'Overhead Cost');
+    totalCard('pc-subtotal-' + cat.key, 'Subtotal (Cost)');
+    var c15 = totalCard('pc-price15-' + cat.key, 'Client Price (1.5x)');
+    c15.classList.add('highlight');
+    var c2 = totalCard('pc-price2-' + cat.key, 'Client Price (2x)');
+    c2.classList.add('highlight');
+    calcBlock.appendChild(totalsWrap);
+
+    // Generate Quote
+    var quoteBtn = el('button', { className: 'add-btn', textContent: 'Generate Quote Text' });
+    var quoteOut = el('textarea', { className: 'field-input', rows: 12, style: 'margin-top:10px;font-family:monospace;font-size:12px;display:none;' });
+    quoteBtn.onclick = function () {
+      quoteOut.value = buildQuoteText(cat, calc);
+      quoteOut.style.display = '';
+      quoteOut.focus();
+      quoteOut.select();
+    };
+    calcBlock.appendChild(quoteBtn);
+    calcBlock.appendChild(quoteOut);
+
+    function recompute() {
+      var mult = PC_COMPLEXITY[calc.complexity] || 1;
+      var labor = 0;
+      roles.forEach(function (role) {
+        var hrs = calc.hours[role.id] || 0;
+        var lineCost = hrs * role.hourlyRate * mult;
+        labor += lineCost;
+        var td = document.getElementById('pc-cost-' + cat.key + '-' + role.id);
+        if (td) td.textContent = cur + lineCost.toFixed(2);
+      });
+      var overhead = 0;
+      settings.overheads.forEach(function (oh) {
+        if (calc.overheadIds.indexOf(oh.id) !== -1) overhead += oh.cost;
+      });
+      var subtotal = labor + overhead;
+      var price15 = subtotal * 1.5;
+      var price2 = subtotal * 2;
+
+      document.getElementById('pc-labor-' + cat.key).textContent = cur + labor.toFixed(2);
+      document.getElementById('pc-overhead-' + cat.key).textContent = cur + overhead.toFixed(2);
+      document.getElementById('pc-subtotal-' + cat.key).textContent = cur + subtotal.toFixed(2);
+
+      document.getElementById('pc-price15-' + cat.key).textContent = cur + price15.toFixed(2);
+      document.getElementById('pc-price15-' + cat.key + '-sub').textContent =
+        'Profit ' + cur + (price15 - subtotal).toFixed(2) + ' (33% margin)';
+
+      document.getElementById('pc-price2-' + cat.key).textContent = cur + price2.toFixed(2);
+      document.getElementById('pc-price2-' + cat.key + '-sub').textContent =
+        'Profit ' + cur + (price2 - subtotal).toFixed(2) + ' (50% margin)';
+    }
+    recompute();
+  }
+
+  function buildQuoteText(cat, calc) {
+    var settings = state.pricing.settings;
+    var roles = settings.roles;
+    var cur = settings.currency || '$';
+    var mult = PC_COMPLEXITY[calc.complexity] || 1;
+    var lines = [];
+    lines.push('QUOTE — ' + cat.label);
+    lines.push('Complexity: ' + calc.complexity.charAt(0).toUpperCase() + calc.complexity.slice(1) + ' (' + mult + 'x hours)');
+    lines.push('');
+    lines.push('Labor:');
+    var labor = 0;
+    roles.forEach(function (role) {
+      var hrs = calc.hours[role.id] || 0;
+      if (!hrs) return;
+      var lineCost = hrs * role.hourlyRate * mult;
+      labor += lineCost;
+      lines.push('  - ' + role.name + ': ' + hrs + 'h x ' + cur + role.hourlyRate.toFixed(2) + '/hr = ' + cur + lineCost.toFixed(2));
+    });
+    lines.push('');
+    lines.push('Equipment / Overhead:');
+    var overhead = 0;
+    settings.overheads.forEach(function (oh) {
+      if (calc.overheadIds.indexOf(oh.id) === -1) return;
+      overhead += oh.cost;
+      lines.push('  - ' + oh.name + ': ' + cur + oh.cost.toFixed(2) + (oh.type === 'monthly' ? '/mo' : ''));
+    });
+    if (!overhead) lines.push('  (none selected)');
+    lines.push('');
+    var subtotal = labor + overhead;
+    lines.push('Internal cost subtotal: ' + cur + subtotal.toFixed(2));
+    lines.push('');
+    lines.push('Client Price (1.5x): ' + cur + (subtotal * 1.5).toFixed(2) + '  (profit ' + cur + (subtotal * 0.5).toFixed(2) + ', 33% margin)');
+    lines.push('Client Price (2x):   ' + cur + (subtotal * 2).toFixed(2) + '  (profit ' + cur + subtotal.toFixed(2) + ', 50% margin)');
+    return lines.join('\n');
+  }
+
+  // Pricing sub-tab nav
+  document.querySelectorAll('.pc-subtab').forEach(function (btn) {
+    btn.onclick = function () {
+      document.querySelectorAll('.pc-subtab').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.pc-subpanel').forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('pc-panel-' + btn.dataset.pcsub).classList.add('active');
+    };
+  });
+
   // ── Init ──────────────────────────────────────────────────────────────
 
   renderServices();
@@ -1445,6 +1903,7 @@
   renderProcess();
   renderTestimonials();
   renderTeam();
+  renderPricing();
   setStatus('', '');
 
 })();
