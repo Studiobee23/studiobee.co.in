@@ -1531,7 +1531,7 @@
           overheads: PC_EQUIPMENT.map(function (item) {
             return { id: pcUid(), name: item.name, cost: item.cost, type: 'per-project' };
           }).concat([
-            { id: pcUid(), name: 'Editing Software Subscription', cost: 30, type: 'monthly' },
+            { id: pcUid(), name: 'Adobe Creative Cloud (All Apps, yearly)', cost: 3800, type: 'monthly' },
             { id: pcUid(), name: 'Hosting / Domain', cost: 15, type: 'monthly' }
           ])
         },
@@ -1548,6 +1548,17 @@
     if (!state.pricing.settings.overheads) state.pricing.settings.overheads = [];
     if (state.pricing.settings.currency === '$') state.pricing.settings.currency = '₹';
     var addedEquipment = false;
+    state.pricing.settings.overheads.forEach(function (oh) {
+      if (oh.name === 'Editing Software Subscription') {
+        oh.name = 'Adobe Creative Cloud (All Apps, yearly)';
+        oh.cost = 3800;
+        addedEquipment = true;
+      }
+    });
+    if (!state.pricing.settings.overheads.some(function (oh) { return oh.name === 'Adobe Creative Cloud (All Apps, yearly)'; })) {
+      state.pricing.settings.overheads.push({ id: pcUid(), name: 'Adobe Creative Cloud (All Apps, yearly)', cost: 3800, type: 'monthly' });
+      addedEquipment = true;
+    }
     PC_EQUIPMENT.forEach(function (item) {
       var exists = state.pricing.settings.overheads.some(function (oh) { return oh.name === item.name; });
       if (!exists) {
