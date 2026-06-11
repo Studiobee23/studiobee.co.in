@@ -1507,7 +1507,7 @@
       var rCine = pcUid(), rEdit = pcUid(), rSocial = pcUid(), rBrand = pcUid(), rDev = pcUid();
       state.pricing = {
         settings: {
-          currency: '$',
+          currency: '₹',
           roles: [
             { id: rCine, name: 'Cinematographer', hourlyRate: 25 },
             { id: rEdit, name: 'Video Editor', hourlyRate: 20 },
@@ -1529,9 +1529,10 @@
         }
       };
     }
-    if (!state.pricing.settings) state.pricing.settings = { currency: '$', roles: [], overheads: [] };
+    if (!state.pricing.settings) state.pricing.settings = { currency: '₹', roles: [], overheads: [] };
     if (!state.pricing.settings.roles) state.pricing.settings.roles = [];
     if (!state.pricing.settings.overheads) state.pricing.settings.overheads = [];
+    if (state.pricing.settings.currency === '$') state.pricing.settings.currency = '₹';
     if (!state.pricing.sections) state.pricing.sections = {};
     PC_CATS.forEach(function (cat) {
       if (!state.pricing.sections[cat.key]) state.pricing.sections[cat.key] = { presets: [], calc: {} };
@@ -1556,7 +1557,7 @@
       row.appendChild(fieldGroup('Role Name', 'text', role.name, function (v) {
         role.name = v; queueSave(); PC_CATS.forEach(renderPricingCategory);
       }));
-      row.appendChild(fieldGroup('Hourly Rate ($)', 'number', role.hourlyRate, function (v) {
+      row.appendChild(fieldGroup('Hourly Rate (₹)', 'number', role.hourlyRate, function (v) {
         role.hourlyRate = parseFloat(v) || 0; queueSave(); PC_CATS.forEach(renderPricingCategory);
       }));
       card.appendChild(row);
@@ -1588,7 +1589,7 @@
       row.appendChild(fieldGroup('Item Name', 'text', oh.name, function (v) {
         oh.name = v; queueSave(); PC_CATS.forEach(renderPricingCategory);
       }));
-      row.appendChild(fieldGroup('Cost ($)', 'number', oh.cost, function (v) {
+      row.appendChild(fieldGroup('Cost (₹)', 'number', oh.cost, function (v) {
         oh.cost = parseFloat(v) || 0; queueSave(); PC_CATS.forEach(renderPricingCategory);
       }));
       card.appendChild(row);
