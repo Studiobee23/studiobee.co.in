@@ -59,13 +59,16 @@ module.exports = async function handler(req, res) {
     const filename = `${doc.number.replace(/[^A-Z0-9-]/gi, '_')}-${crypto.randomBytes(8).toString('hex')}.pdf`;
 
     if (process.env.VERCEL) {
-      // On Vercel: upload PDF to Supabase Storage and return public URL
-      const { data: uploaded, error: upErr } = await supabase.storage
+      // On Vercel: upload to private Supabase Storage bucket, return 1-hour signed URL
+      const { error: upErr } = await supabase.storage
         .from('documents')
         .upload(`pdfs/${filename}`, pdfBuffer, { contentType: 'application/pdf', upsert: false });
       if (upErr) return res.status(500).json({ error: upErr.message });
-      const { data: { publicUrl } } = supabase.storage.from('documents').getPublicUrl(`pdfs/${filename}`);
-      return res.status(200).json({ url: publicUrl, filename });
+      const { data: signed, error: signErr } = await supabase.storage
+        .from('documents')
+        .createSignedUrl(`pdfs/${filename}`, 3600); // expires in 1 hour
+      if (signErr) return res.status(500).json({ error: signErr.message });
+      return res.status(200).json({ url: signed.signedUrl, filename });
     } else {
       // Local: save to media/ folder
       const mediaDir = path.join(process.cwd(), 'media');
