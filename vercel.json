@@ -9,7 +9,7 @@
     { "source": "/media-proxy", "destination": "/api/media" }
   ],
   "functions": {
-    "api/**/*.js": { "maxDuration": 60, "memory": 1024 }
+    "api/**/*.js": { "maxDuration": 60 }
   },
   "headers": [
     {
