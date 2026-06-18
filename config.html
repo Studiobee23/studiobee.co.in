@@ -129,6 +129,8 @@
 
     .panel { display: none; }
     .panel.active { display: block; }
+    #panel-billing { display: none; }
+    #panel-billing.active { display: flex; flex-direction: column; padding: 0; }
 
     .panel-header { margin-bottom: 28px; }
     .panel-header h1 {
@@ -500,6 +502,7 @@
     <button class="nav-btn" data-panel="team">Team</button>
     <button class="nav-btn" data-panel="pricing">Pricing Calculator</button>
     <button class="nav-btn" data-panel="analytics">Analytics</button>
+    <button class="nav-btn" data-panel="billing">Billing</button>
   </nav>
   <div class="sb-spacer"></div>
   <div style="padding:12px 16px;margin-bottom:8px;">
@@ -685,6 +688,15 @@
       <table class="an-table" id="an-recent"><thead><tr><th>Time</th><th>Page</th><th>Country</th><th>Duration</th></tr></thead><tbody></tbody></table>
       <p id="an-error" style="color:#cc3333;margin-top:12px;display:none;"></p>
     </div>
+  </section>
+
+  <section id="panel-billing" class="panel" style="padding:0;overflow:hidden;position:absolute;inset:0;left:230px;">
+    <iframe
+      id="billing-iframe"
+      src="about:blank"
+      style="width:100%;height:100%;border:none;display:block;"
+      data-src="/billing.html"
+    ></iframe>
   </section>
 
 </main>
@@ -948,6 +960,11 @@
       document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
       btn.classList.add('active');
       document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+      // Lazy-load billing iframe on first visit
+      if (btn.dataset.panel === 'billing') {
+        var iframe = document.getElementById('billing-iframe');
+        if (iframe.src === 'about:blank') iframe.src = iframe.dataset.src;
+      }
     };
   });
 

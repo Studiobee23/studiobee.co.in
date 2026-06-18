@@ -156,7 +156,7 @@ const CSP = [
   "img-src 'self' data: https://images.unsplash.com https://placehold.co https://*.supabase.co",
   "media-src 'self' blob: https://*.supabase.co",
   "connect-src 'self'",
-  "frame-ancestors 'none'",
+  "frame-ancestors 'self'",
 ].join('; ');
 
 // ── Allowed CORS origins ──────────────────────────────────────────────────────
