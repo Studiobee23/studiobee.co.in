@@ -6,10 +6,18 @@ import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
+import { createClient } from '@supabase/supabase-js';
+import { renderDocument } from './pdf-template.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT      = parseInt(process.env.PORT) || 3000;
 const MEDIA_DIR = path.join(__dirname, 'media');
+
+// ── Supabase client ───────────────────────────────────────────────────────────
+const supabase = createClient(
+  process.env.SUPABASE_URL              || 'https://placeholder.supabase.co',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder'
+);
 
 process.on('uncaughtException',  e => console.error('Uncaught exception:', e));
 process.on('unhandledRejection', e => console.error('Unhandled rejection:', e));
@@ -159,7 +167,7 @@ const ALLOWED_ORIGINS = new Set([
   'http://localhost:5500',
 ]);
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   let urlPath = decodeURIComponent(req.url.split('?')[0]);
 
   // Client IP (respects reverse-proxy X-Forwarded-For)
@@ -177,7 +185,7 @@ const server = http.createServer((req, res) => {
   // ── CORS (restricted to known origins) ───────────────────────────────────
   const reqOrigin = req.headers.origin || '';
   res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGINS.has(reqOrigin) ? reqOrigin : 'https://studiobee.co.in');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'X-Filename, Content-Type, X-Admin-Key');
   res.setHeader('Vary', 'Origin');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
@@ -455,6 +463,319 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // ── Billing API helpers ───────────────────────────────────────────────────
+  function requireAdmin() {
+    if (req.headers['x-admin-key'] !== adminKey) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return false;
+    }
+    return true;
+  }
+
+  async function readBody(maxBytes = 512 * 1024) {
+    return new Promise((resolve, reject) => {
+      let total = 0;
+      const chunks = [];
+      req.on('data', c => {
+        total += c.length;
+        if (total > maxBytes) { req.destroy(); reject(new Error('Too large')); return; }
+        chunks.push(c);
+      });
+      req.on('end', () => {
+        try { resolve(JSON.parse(Buffer.concat(chunks).toString())); }
+        catch (e) { reject(e); }
+      });
+      req.on('error', reject);
+    });
+  }
+
+  function jsonOk(data) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
+  }
+
+  function jsonErr(code, msg) {
+    res.writeHead(code, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: msg }));
+  }
+
+  async function nextDocNumber(type) {
+    const { data } = await supabase.from('document_series').select('last_number').eq('type', type).single();
+    const n = (data?.last_number || 0) + 1;
+    await supabase.from('document_series').update({ last_number: n }).eq('type', type);
+    const prefix = type === 'quote' ? 'SB-Q' : type === 'invoice' ? 'SB-I' : 'SB-R';
+    return `${prefix}-${String(n).padStart(3, '0')}`;
+  }
+
+  // ── GET /api/clients ──────────────────────────────────────────────────────
+  if (req.method === 'GET' && urlPath === '/api/clients') {
+    if (!requireAdmin()) return;
+    const { data, error } = await supabase.from('clients').select('*').order('created_at', { ascending: false });
+    if (error) return jsonErr(500, error.message);
+    return jsonOk(data);
+  }
+
+  // ── POST /api/clients ─────────────────────────────────────────────────────
+  if (req.method === 'POST' && urlPath === '/api/clients') {
+    if (!requireAdmin()) return;
+    try {
+      const b = await readBody();
+      const client = {
+        name:           String(b.name           || '').trim().slice(0, 200),
+        contact_person: String(b.contact_person || '').trim().slice(0, 200),
+        email:          String(b.email          || '').trim().slice(0, 200),
+        phone:          String(b.phone          || '').trim().slice(0, 50),
+        gstin:          String(b.gstin          || '').trim().slice(0, 50),
+        address:        String(b.address        || '').trim().slice(0, 500),
+        city:           String(b.city           || '').trim().slice(0, 100),
+        state:          String(b.state          || '').trim().slice(0, 100),
+      };
+      if (!client.name) return jsonErr(400, 'Name is required');
+      const { data, error } = await supabase.from('clients').insert(client).select().single();
+      if (error) return jsonErr(500, error.message);
+      return jsonOk(data);
+    } catch (e) { return jsonErr(400, 'Invalid request'); }
+  }
+
+  // ── PUT /api/clients/:id ──────────────────────────────────────────────────
+  if (req.method === 'PUT' && urlPath.startsWith('/api/clients/')) {
+    if (!requireAdmin()) return;
+    const id = urlPath.split('/')[3];
+    if (!id) return jsonErr(400, 'Missing id');
+    try {
+      const b = await readBody();
+      const client = {
+        name:           String(b.name           || '').trim().slice(0, 200),
+        contact_person: String(b.contact_person || '').trim().slice(0, 200),
+        email:          String(b.email          || '').trim().slice(0, 200),
+        phone:          String(b.phone          || '').trim().slice(0, 50),
+        gstin:          String(b.gstin          || '').trim().slice(0, 50),
+        address:        String(b.address        || '').trim().slice(0, 500),
+        city:           String(b.city           || '').trim().slice(0, 100),
+        state:          String(b.state          || '').trim().slice(0, 100),
+      };
+      const { data, error } = await supabase.from('clients').update(client).eq('id', id).select().single();
+      if (error) return jsonErr(500, error.message);
+      return jsonOk(data);
+    } catch (e) { return jsonErr(400, 'Invalid request'); }
+  }
+
+  // ── GET /api/documents ────────────────────────────────────────────────────
+  if (req.method === 'GET' && urlPath === '/api/documents') {
+    if (!requireAdmin()) return;
+    const params = new URL('http://x' + req.url).searchParams;
+    let q = supabase.from('documents').select('*, clients(name, email, phone)').order('created_at', { ascending: false });
+    if (params.get('type'))      q = q.eq('type', params.get('type'));
+    if (params.get('client_id')) q = q.eq('client_id', params.get('client_id'));
+    const { data, error } = await q;
+    if (error) return jsonErr(500, error.message);
+    return jsonOk(data);
+  }
+
+  // ── POST /api/documents ───────────────────────────────────────────────────
+  if (req.method === 'POST' && urlPath === '/api/documents') {
+    if (!requireAdmin()) return;
+    try {
+      const b = await readBody();
+      const type = ['quote', 'invoice', 'receipt'].includes(b.type) ? b.type : 'quote';
+      const number = await nextDocNumber(type);
+      const doc = {
+        type,
+        number,
+        client_id:    b.client_id    || null,
+        status:       b.status       || 'draft',
+        project_name: String(b.project_name || '').trim().slice(0, 200),
+        category:     String(b.category     || '').trim().slice(0, 100),
+        line_items:   Array.isArray(b.line_items) ? b.line_items : [],
+        subtotal:     Number(b.subtotal)    || 0,
+        gst_enabled:  b.gst_enabled !== false,
+        gst_type:     b.gst_type === 'igst' ? 'igst' : 'cgst_sgst',
+        gst_rate:     Number(b.gst_rate)    || 18,
+        gst_amount:   Number(b.gst_amount)  || 0,
+        discount:     Number(b.discount)    || 0,
+        total:        Number(b.total)       || 0,
+        notes:        String(b.notes        || '').trim().slice(0, 2000),
+        validity_days: Number(b.validity_days) || 15,
+        converted_from: b.converted_from || null,
+      };
+      const { data, error } = await supabase.from('documents').insert(doc).select().single();
+      if (error) return jsonErr(500, error.message);
+      return jsonOk(data);
+    } catch (e) { return jsonErr(400, 'Invalid request'); }
+  }
+
+  // ── PUT /api/documents/:id ────────────────────────────────────────────────
+  if (req.method === 'PUT' && urlPath.startsWith('/api/documents/') && !urlPath.endsWith('/convert')) {
+    if (!requireAdmin()) return;
+    const id = urlPath.split('/')[3];
+    if (!id) return jsonErr(400, 'Missing id');
+    try {
+      const b = await readBody();
+      const allowed = ['client_id', 'status', 'project_name', 'category', 'line_items',
+        'subtotal', 'gst_enabled', 'gst_type', 'gst_rate', 'gst_amount', 'discount',
+        'total', 'notes', 'validity_days'];
+      const update = {};
+      for (const k of allowed) if (k in b) update[k] = b[k];
+      const { data, error } = await supabase.from('documents').update(update).eq('id', id).select().single();
+      if (error) return jsonErr(500, error.message);
+      return jsonOk(data);
+    } catch (e) { return jsonErr(400, 'Invalid request'); }
+  }
+
+  // ── POST /api/documents/:id/convert ──────────────────────────────────────
+  if (req.method === 'POST' && urlPath.match(/^\/api\/documents\/[^/]+\/convert$/)) {
+    if (!requireAdmin()) return;
+    const id = urlPath.split('/')[3];
+    try {
+      const { data: src, error: srcErr } = await supabase.from('documents').select('*').eq('id', id).single();
+      if (srcErr || !src) return jsonErr(404, 'Document not found');
+      const nextType = src.type === 'quote' ? 'invoice' : src.type === 'invoice' ? 'receipt' : null;
+      if (!nextType) return jsonErr(400, 'Cannot convert receipt');
+      const number = await nextDocNumber(nextType);
+      const newDoc = {
+        type:         nextType,
+        number,
+        client_id:    src.client_id,
+        status:       'draft',
+        project_name: src.project_name,
+        category:     src.category,
+        line_items:   src.line_items,
+        subtotal:     src.subtotal,
+        gst_enabled:  src.gst_enabled,
+        gst_type:     src.gst_type,
+        gst_rate:     src.gst_rate,
+        gst_amount:   src.gst_amount,
+        discount:     src.discount,
+        total:        src.total,
+        notes:        src.notes,
+        validity_days: src.validity_days,
+        converted_from: src.id,
+      };
+      const { data, error } = await supabase.from('documents').insert(newDoc).select().single();
+      if (error) return jsonErr(500, error.message);
+      return jsonOk(data);
+    } catch (e) { return jsonErr(500, e.message); }
+  }
+
+  // ── POST /generate-pdf ────────────────────────────────────────────────────
+  if (req.method === 'POST' && urlPath === '/generate-pdf') {
+    if (!requireAdmin()) return;
+    try {
+      const b = await readBody();
+      const { doc, client } = b;
+      if (!doc) return jsonErr(400, 'Missing doc');
+
+      // Build settings from smtp-config / env
+      const settings = {
+        studioGstin:   process.env.STUDIO_GSTIN   || '',
+        studioAddress: process.env.STUDIO_ADDRESS  || 'Bangalore, Karnataka',
+        studioPhone:   process.env.STUDIO_PHONE    || '',
+        studioEmail:   process.env.SMTP_FROM       || '',
+        bankName:      process.env.BANK_NAME       || '',
+        accountNumber: process.env.BANK_ACCOUNT    || '',
+        ifsc:          process.env.BANK_IFSC       || '',
+      };
+
+      const html = renderDocument(doc, client, settings);
+
+      // Lazy-load puppeteer so it doesn't crash if not installed
+      let puppeteer;
+      try { puppeteer = (await import('puppeteer')).default; }
+      catch (e) { return jsonErr(500, 'Puppeteer not available'); }
+
+      const browser = await puppeteer.launch({
+        executablePath: 'C:/Users/arora/.cache/puppeteer/chrome/win64-145.0.7632.77/chrome-win64/chrome.exe',
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        headless: true,
+      });
+      const page = await browser.newPage();
+      await page.setContent(html, { waitUntil: 'networkidle0' });
+      const pdf = await page.pdf({
+        width: '794px',
+        printBackground: true,
+        margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' },
+      });
+      await browser.close();
+
+      // If save=true, save to media/ and return URL (for WhatsApp)
+      if (b.save) {
+        const fname = `${doc.number.replace(/[^a-zA-Z0-9-]/g, '_')}-${crypto.randomBytes(16).toString('hex')}.pdf`;
+        fs.writeFileSync(path.join(MEDIA_DIR, fname), pdf);
+        return jsonOk({ url: `/media/${fname}` });
+      }
+
+      // Otherwise return PDF directly
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${doc.number}.pdf"`,
+        'Content-Length': pdf.length,
+      });
+      res.end(pdf);
+    } catch (e) {
+      console.error('PDF generation error:', e);
+      return jsonErr(500, e.message);
+    }
+    return;
+  }
+
+  // ── POST /api/send-email ──────────────────────────────────────────────────
+  if (req.method === 'POST' && urlPath === '/api/send-email') {
+    if (!requireAdmin()) return;
+    try {
+      const b = await readBody();
+      const { doc, client, to, subject, body: emailBody } = b;
+      if (!doc || !to) return jsonErr(400, 'Missing doc or to');
+      if (!smtpTransport) return jsonErr(503, 'SMTP not configured');
+
+      const settings = {
+        studioGstin:   process.env.STUDIO_GSTIN   || '',
+        studioAddress: process.env.STUDIO_ADDRESS  || 'Bangalore, Karnataka',
+        bankName:      process.env.BANK_NAME       || '',
+        accountNumber: process.env.BANK_ACCOUNT    || '',
+        ifsc:          process.env.BANK_IFSC       || '',
+      };
+
+      const html = renderDocument(doc, client, settings);
+
+      let puppeteer;
+      try { puppeteer = (await import('puppeteer')).default; }
+      catch (e) { return jsonErr(500, 'Puppeteer not available'); }
+
+      const browser = await puppeteer.launch({
+        executablePath: 'C:/Users/arora/.cache/puppeteer/chrome/win64-145.0.7632.77/chrome-win64/chrome.exe',
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        headless: true,
+      });
+      const page = await browser.newPage();
+      await page.setContent(html, { waitUntil: 'networkidle0' });
+      const pdf = await page.pdf({
+        width: '794px',
+        printBackground: true,
+        margin: { top: '0', right: '0', bottom: '0', left: '0' },
+      });
+      await browser.close();
+
+      const typeLabel = doc.type === 'quote' ? 'Quote' : doc.type === 'invoice' ? 'Invoice' : 'Receipt';
+      await smtpTransport.sendMail({
+        from:    smtpFrom,
+        to:      to.trim(),
+        subject: subject || `StudioBee ${typeLabel} ${doc.number}`,
+        html:    emailBody || `<p>Please find your ${typeLabel} from StudioBee attached.</p>`,
+        attachments: [{
+          filename: `${doc.number}.pdf`,
+          content:  pdf,
+          contentType: 'application/pdf',
+        }],
+      });
+
+      return jsonOk({ ok: true });
+    } catch (e) {
+      console.error('Send email error:', e);
+      return jsonErr(500, e.message);
+    }
+  }
+
   // ── Static file server ─────────────────────────────────────────────────────
   if (urlPath === '/') urlPath = '/index.html';
   const filePath = path.resolve(__dirname, '.' + urlPath);
@@ -504,8 +825,8 @@ const server = http.createServer((req, res) => {
         '<script src="content.js">',
         cfgInjection + '<script src="content.js">'
       );
-      // Inject admin key into config.html only (not public pages)
-      if (basename === 'config.html') {
+      // Inject admin key into admin pages
+      if (basename === 'config.html' || basename === 'billing.html') {
         html = html.replace(
           '</head>',
           `<script>window.__ADMIN_KEY__ = ${JSON.stringify(adminKey)};</script>\n</head>`

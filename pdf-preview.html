@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PDF Template Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0A0A0A; font-family: 'DM Sans', sans-serif; padding: 48px 24px; display: flex; flex-direction: column; align-items: center; }
+  .page-title { color: #fff; font-family: 'DM Serif Display', serif; font-size: 26px; margin-bottom: 6px; }
+  .page-sub { color: #666; font-size: 14px; margin-bottom: 40px; }
+
+  /* Document wrapper — simulates A4 */
+  .doc {
+    width: 720px;
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* Blue header bar */
+  .doc-header {
+    background: #2F48DF;
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 80px;
+  }
+  .doc-logo {
+    height: 28px;
+    width: auto;
+    display: block;
+    filter: brightness(0) invert(1);
+  }
+  .doc-title-block { text-align: right; }
+  .doc-title-block .doc-type {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: 0.01em;
+    line-height: 1;
+  }
+  .doc-title-block .doc-num {
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 5px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Body */
+  .doc-body { padding: 36px 40px; }
+
+  .parties {
+    display: flex;
+    gap: 48px;
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid #ebebeb;
+  }
+  .party-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #2F48DF;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .party-name { font-size: 15px; font-weight: 600; color: #0A0A0A; margin-bottom: 3px; }
+  .party-detail { font-size: 13px; color: #666; line-height: 1.6; }
+
+  /* Meta row: date, validity, project */
+  .doc-meta-row {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 28px;
+  }
+  .meta-item .meta-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #999;
+    margin-bottom: 4px;
+  }
+  .meta-item .meta-value { font-size: 13px; color: #0A0A0A; font-weight: 500; }
+
+  /* Line items table */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  thead tr { background: #0A0A0A; }
+  th {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #fff;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 500;
+  }
+  th:last-child { text-align: right; }
+  td { font-size: 13px; color: #333; padding: 11px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+  td:last-child { text-align: right; font-weight: 500; }
+  tr:nth-child(even) td { background: #f6f8ff; }
+  .td-desc { font-size: 11px; color: #999; margin-top: 2px; }
+
+  /* Totals */
+  .totals-wrap { display: flex; justify-content: flex-end; margin-bottom: 28px; }
+  .totals { width: 240px; }
+  .total-row { display: flex; justify-content: space-between; font-size: 13px; color: #555; padding: 5px 0; }
+  .total-row.grand {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2F48DF;
+    border-top: 2px solid #2F48DF;
+    margin-top: 8px;
+    padding-top: 10px;
+  }
+
+  /* Notes */
+  .notes {
+    background: #f6f8ff;
+    border-left: 3px solid #2F48DF;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 28px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* Footer bar */
+  .doc-footer {
+    background: #0A0A0A;
+    padding: 18px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-bank { font-size: 12px; color: #888; }
+  .footer-bank strong { color: #fff; display: block; margin-bottom: 2px; font-size: 13px; }
+  .footer-validity { font-size: 12px; color: #666; text-align: right; }
+  .footer-validity span { color: #fff; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<p class="page-title">Quote Template — Option B</p>
+<p class="page-sub">StudioBee branded · DM Serif Display + DM Sans · Real logo</p>
+
+<div class="doc">
+  <!-- Header -->
+  <div class="doc-header">
+    <img src="/studiobee white.png" alt="StudioBee" class="doc-logo">
+    <div class="doc-title-block">
+      <div class="doc-type">Quote</div>
+      <div class="doc-num">SB-Q-001 &nbsp;·&nbsp; 18 June 2026</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="doc-body">
+
+    <!-- Parties -->
+    <div class="parties">
+      <div>
+        <div class="party-label">From</div>
+        <div class="party-name">StudioBee</div>
+        <div class="party-detail">
+          studiobee.co.in<br>
+          Bangalore, Karnataka<br>
+          GSTIN: 29XXXXX1234Z5
+        </div>
+      </div>
+      <div>
+        <div class="party-label">Billed To</div>
+        <div class="party-name">Acme Corp Pvt Ltd</div>
+        <div class="party-detail">
+          Mr. Rahul Sharma<br>
+          Mumbai, Maharashtra<br>
+          GSTIN: 27YYYYY9876Z1
+        </div>
+      </div>
+    </div>
+
+    <!-- Meta -->
+    <div class="doc-meta-row">
+      <div class="meta-item">
+        <div class="meta-label">Quote Date</div>
+        <div class="meta-value">18 June 2026</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Valid Until</div>
+        <div class="meta-value">3 July 2026</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Project</div>
+        <div class="meta-value">Brand Film — Summer Campaign</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Category</div>
+        <div class="meta-value">Cinematography</div>
+      </div>
+    </div>
+
+    <!-- Line items -->
+    <table>
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Qty</th>
+          <th>Rate</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            Brand Film Production
+            <div class="td-desc">1-day shoot, full crew, 2 locations</div>
+          </td>
+          <td>1</td>
+          <td>₹80,000</td>
+          <td>₹80,000</td>
+        </tr>
+        <tr>
+          <td>
+            Motion Graphics Package
+            <div class="td-desc">Title cards, lower thirds, end slate</div>
+          </td>
+          <td>3</td>
+          <td>₹8,000</td>
+          <td>₹24,000</td>
+        </tr>
+        <tr>
+          <td>
+            Color Grading
+            <div class="td-desc">Full grade, 2 revision rounds</div>
+          </td>
+          <td>1</td>
+          <td>₹12,000</td>
+          <td>₹12,000</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Totals -->
+    <div class="totals-wrap">
+      <div class="totals">
+        <div class="total-row"><span>Subtotal</span><span>₹1,16,000</span></div>
+        <div class="total-row"><span>CGST (9%)</span><span>₹10,440</span></div>
+        <div class="total-row"><span>SGST (9%)</span><span>₹10,440</span></div>
+        <div class="total-row grand"><span>Total</span><span>₹1,36,880</span></div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="notes">
+      50% advance required to confirm booking. Balance due upon delivery of final files. All deliverables remain property of StudioBee until full payment is received.
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <div class="footer-bank">
+      <strong>Bank Transfer</strong>
+      HDFC Bank &nbsp;·&nbsp; A/C 1234567890 &nbsp;·&nbsp; IFSC HDFC0001234
+    </div>
+    <div class="footer-validity">
+      Valid for <span>15 days</span><br>
+      <span style="color:#666;font-weight:400">studiobee.co.in</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
