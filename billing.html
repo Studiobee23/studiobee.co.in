@@ -1105,6 +1105,25 @@ async function sendWhatsApp(doc) {
     toast('Opening WhatsApp');
   } catch (e) { toast(e.message, 'error'); }
 }
+
+// ─────────────────────────────────────────────────────
+// Receive prefill-quote from pricing calculator
+// ─────────────────────────────────────────────────────
+window.addEventListener('message', function(e) {
+  if (!e.data || e.data.type !== 'prefill-quote') return;
+  const d = e.data;
+  // Switch to quotes tab, then open the new quote modal
+  switchTab('quotes');
+  openDocModal('quote');
+  // Overwrite with calculator data
+  document.getElementById('d-project').value = d.category || '';
+  document.getElementById('line-items-list').innerHTML = '';
+  const items = Array.isArray(d.line_items) && d.line_items.length ? d.line_items : [];
+  items.forEach(item => addLineItem(item));
+  if (!items.length) addLineItem();
+  recalc();
+  toast('Quote pre-filled from pricing calculator');
+});
 </script>
 </body>
 </html>

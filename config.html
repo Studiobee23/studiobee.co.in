@@ -1893,7 +1893,7 @@
     c2.classList.add('highlight');
     calcBlock.appendChild(totalsWrap);
 
-    // Generate Quote
+    // Generate Quote Text (existing)
     var quoteBtn = el('button', { className: 'add-btn', textContent: 'Generate Quote Text' });
     var quoteOut = el('textarea', { className: 'field-input', rows: 12, style: 'margin-top:10px;font-family:monospace;font-size:12px;display:none;' });
     quoteBtn.onclick = function () {
@@ -1904,6 +1904,65 @@
     };
     calcBlock.appendChild(quoteBtn);
     calcBlock.appendChild(quoteOut);
+
+    // Send to Billing
+    var billingRow = el('div', { style: 'display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap;' });
+    var markupSel = el('select', { className: 'field-input', style: 'width:auto;' });
+    [['1.5', '1.5x markup (33% margin)'], ['2', '2x markup (50% margin)']].forEach(function (opt) {
+      markupSel.appendChild(el('option', { value: opt[0], textContent: opt[1] }));
+    });
+    var billingBtn = el('button', { className: 'add-btn', textContent: '→ Create Quote in Billing', style: 'margin-top:0;' });
+    billingBtn.onclick = function () {
+      var markup = parseFloat(markupSel.value) || 1.5;
+      var mult = PC_COMPLEXITY[calc.complexity] || 1;
+      var lineItems = [];
+      roles.forEach(function (role) {
+        var hrs = calc.hours[role.id] || 0;
+        if (!hrs) return;
+        var qty = calc.qty[role.id] || 1;
+        var clientRate = Math.round(hrs * role.hourlyRate * mult * markup);
+        lineItems.push({
+          description: role.name,
+          detail: hrs + 'h' + (mult !== 1 ? ' × ' + calc.complexity + ' complexity' : '') + (qty > 1 ? ' × ' + qty + ' people' : ''),
+          qty: qty,
+          rate: clientRate,
+          amount: clientRate * qty
+        });
+      });
+      settings.overheads.forEach(function (oh) {
+        if (calc.overheadIds.indexOf(oh.id) === -1) return;
+        var clientCost = Math.round(pcOverheadCost(oh, calc.days) * markup);
+        lineItems.push({
+          description: oh.name,
+          detail: oh.type === 'monthly' ? 'prorated for ' + calc.days + ' days' : 'per project',
+          qty: 1,
+          rate: clientCost,
+          amount: clientCost
+        });
+      });
+      var subtotal = lineItems.reduce(function (s, li) { return s + li.amount; }, 0);
+      // Switch to billing tab and post message to iframe
+      var billingTabBtn = document.querySelector('[data-panel="billing"]');
+      if (billingTabBtn) billingTabBtn.click();
+      var iframe = document.getElementById('billing-iframe');
+      function sendMsg() {
+        iframe.contentWindow.postMessage({
+          type: 'prefill-quote',
+          category: cat.label,
+          line_items: lineItems,
+          subtotal: subtotal
+        }, '*');
+      }
+      // Iframe may need a moment to load
+      if (iframe.src === 'about:blank' || !iframe.src) {
+        iframe.addEventListener('load', sendMsg, { once: true });
+      } else {
+        setTimeout(sendMsg, 300);
+      }
+    };
+    billingRow.appendChild(markupSel);
+    billingRow.appendChild(billingBtn);
+    calcBlock.appendChild(billingRow);
 
     function recompute() {
       var mult = PC_COMPLEXITY[calc.complexity] || 1;
