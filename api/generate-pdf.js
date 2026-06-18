@@ -66,7 +66,7 @@ module.exports = async function handler(req, res) {
       if (upErr) return res.status(500).json({ error: upErr.message });
       const { data: signed, error: signErr } = await supabase.storage
         .from('documents')
-        .createSignedUrl(`pdfs/${filename}`, 3600); // expires in 1 hour
+        .createSignedUrl(`pdfs/${filename}`, 604800); // expires in 7 days
       if (signErr) return res.status(500).json({ error: signErr.message });
       return res.status(200).json({ url: signed.signedUrl, filename });
     } else {
