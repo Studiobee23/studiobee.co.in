@@ -15,9 +15,9 @@ const NEXT_TYPE = { quote: 'invoice', invoice: 'receipt' };
 module.exports = async function handler(req, res) {
   if (!checkAdmin(req)) return res.status(401).json({ error: 'Unauthorized' });
 
-  // Parse path: /api/billing/clients, /api/billing/clients/123, etc.
+  // Parse path: /api/clients, /api/clients/123, /api/documents, etc.
   const url = new URL(req.url, 'http://localhost');
-  const parts = url.pathname.replace(/^\/api\/billing\/?/, '').split('/').filter(Boolean);
+  const parts = url.pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean);
   const resource = parts[0]; // 'clients' or 'documents'
   const id       = parts[1] || null;
   const action   = parts[2] || null; // 'convert'
