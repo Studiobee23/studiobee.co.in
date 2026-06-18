@@ -9,9 +9,7 @@
     { "source": "/media-proxy", "destination": "/api/media" }
   ],
   "functions": {
-    "api/**/*.js":              { "maxDuration": 10 },
-    "api/generate-pdf.js":      { "maxDuration": 60, "memory": 1024 },
-    "api/send-email.js":        { "maxDuration": 60, "memory": 1024 }
+    "api/**/*.js": { "maxDuration": 60, "memory": 1024 }
   },
   "headers": [
     {
