@@ -6,13 +6,13 @@ const { getRenderDocument } = require('./_lib/renderDocument');
 
 async function launchBrowser() {
   if (process.env.VERCEL) {
-    const chromium = require('@sparticuz/chromium');
-    const puppeteer = require('puppeteer-core');
-    return puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
+    const chromium = await import('@sparticuz/chromium');
+    const puppeteer = await import('puppeteer-core');
+    return puppeteer.default.launch({
+      args: chromium.default.args,
+      defaultViewport: chromium.default.defaultViewport,
+      executablePath: await chromium.default.executablePath(),
+      headless: chromium.default.headless,
     });
   } else {
     const puppeteer = require('puppeteer');
