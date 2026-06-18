@@ -659,12 +659,24 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ── POST /generate-pdf ────────────────────────────────────────────────────
-  if (req.method === 'POST' && urlPath === '/generate-pdf') {
+  if (req.method === 'POST' && (urlPath === '/generate-pdf' || urlPath === '/api/generate-pdf')) {
     if (!requireAdmin()) return;
     try {
       const b = await readBody();
-      const { doc, client } = b;
-      if (!doc) return jsonErr(400, 'Missing doc');
+      let doc = b.doc;
+      let client = b.client || null;
+
+      // Support doc_id-based fetch (same interface as Vercel API)
+      if (!doc && b.doc_id) {
+        const { data: d } = await supabase.from('documents').select('*').eq('id', b.doc_id).single();
+        if (!d) return jsonErr(404, 'Document not found');
+        doc = d;
+        if (doc.client_id) {
+          const { data: c } = await supabase.from('clients').select('*').eq('id', doc.client_id).single();
+          client = c || null;
+        }
+      }
+      if (!doc) return jsonErr(400, 'Missing doc or doc_id');
 
       // Build settings from smtp-config / env
       const settings = {
@@ -698,20 +710,10 @@ const server = http.createServer(async (req, res) => {
       });
       await browser.close();
 
-      // If save=true, save to media/ and return URL (for WhatsApp)
-      if (b.save) {
-        const fname = `${doc.number.replace(/[^a-zA-Z0-9-]/g, '_')}-${crypto.randomBytes(16).toString('hex')}.pdf`;
-        fs.writeFileSync(path.join(MEDIA_DIR, fname), pdf);
-        return jsonOk({ url: `/media/${fname}` });
-      }
-
-      // Otherwise return PDF directly
-      res.writeHead(200, {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${doc.number}.pdf"`,
-        'Content-Length': pdf.length,
-      });
-      res.end(pdf);
+      // Save to media/ and return JSON URL (consistent with Vercel API)
+      const fname = `${doc.number.replace(/[^a-zA-Z0-9-]/g, '_')}-${crypto.randomBytes(16).toString('hex')}.pdf`;
+      fs.writeFileSync(path.join(MEDIA_DIR, fname), pdf);
+      return jsonOk({ url: `/media/${fname}`, filename: fname });
     } catch (e) {
       console.error('PDF generation error:', e);
       return jsonErr(500, e.message);
@@ -724,9 +726,21 @@ const server = http.createServer(async (req, res) => {
     if (!requireAdmin()) return;
     try {
       const b = await readBody();
-      const { doc, client, to, subject, body: emailBody } = b;
-      if (!doc || !to) return jsonErr(400, 'Missing doc or to');
+      let { doc, client, to, subject, body: emailBody } = b;
+      if (!to) return jsonErr(400, 'Missing to');
       if (!smtpTransport) return jsonErr(503, 'SMTP not configured');
+
+      // Support doc_id-based fetch
+      if (!doc && b.doc_id) {
+        const { data: d } = await supabase.from('documents').select('*').eq('id', b.doc_id).single();
+        if (!d) return jsonErr(404, 'Document not found');
+        doc = d;
+        if (doc.client_id) {
+          const { data: c } = await supabase.from('clients').select('*').eq('id', doc.client_id).single();
+          client = c || null;
+        }
+      }
+      if (!doc) return jsonErr(400, 'Missing doc or doc_id');
 
       const settings = {
         studioGstin:   process.env.STUDIO_GSTIN   || '',

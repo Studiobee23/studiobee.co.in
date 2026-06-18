@@ -1011,20 +1011,11 @@ async function saveDoc() {
 // PDF download
 // ─────────────────────────────────────────────────────
 async function downloadPdf(doc) {
-  const client = clients.find(c => c.id === doc.client_id) || null;
   toast('Generating PDF…');
   try {
-    const resp = await fetch('/generate-pdf', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': ADMIN_KEY },
-      body: JSON.stringify({ doc, client }),
-    });
-    if (!resp.ok) { const e = await resp.json(); throw new Error(e.error); }
-    const blob = await resp.blob();
-    const url = URL.createObjectURL(blob);
+    const result = await api('POST', '/api/generate-pdf', { doc_id: doc.id });
     const a = document.createElement('a');
-    a.href = url; a.download = doc.number + '.pdf'; a.click();
-    URL.revokeObjectURL(url);
+    a.href = result.url; a.download = doc.number + '.pdf'; a.target = '_blank'; a.click();
     toast('PDF downloaded');
   } catch (e) { toast(e.message, 'error'); }
 }
@@ -1080,7 +1071,7 @@ async function sendEmail() {
     // Convert body text to basic HTML
     const htmlBody = body.split('\n').map(l => l ? `<p style="margin:0 0 8px;font-size:15px;color:#333;line-height:1.6">${esc(l)}</p>` : '<br>').join('');
     await api('POST', '/api/send-email', {
-      doc, client, to, subject,
+      doc_id: doc.id, to, subject,
       body: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px">${htmlBody}</div>`,
     });
     toast('Email sent with PDF attached');
@@ -1105,11 +1096,7 @@ async function sendWhatsApp(doc) {
 
   toast('Generating PDF link…');
   try {
-    const result = await api('POST', '/generate-pdf', {
-      doc,
-      client: client || null,
-      save: true,
-    });
+    const result = await api('POST', '/api/generate-pdf', { doc_id: doc.id });
     const pdfUrl = `https://studiobee.co.in${result.url}`;
     const typeLabel = doc.type === 'quote' ? 'quote' : doc.type === 'invoice' ? 'invoice' : 'receipt';
     const msg = `Hi${client?.contact_person ? ' ' + client.contact_person : ''}! 👋\n\nPlease find your StudioBee ${typeLabel} *${doc.number}*${doc.project_name ? ' for *' + doc.project_name + '*' : ''} here:\n${pdfUrl}\n\nFor any questions, feel free to reach out.\n\n— StudioBee Team`;
