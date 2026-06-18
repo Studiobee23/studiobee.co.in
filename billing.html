@@ -1110,6 +1110,7 @@ async function sendWhatsApp(doc) {
 // Receive prefill-quote from pricing calculator
 // ─────────────────────────────────────────────────────
 window.addEventListener('message', function(e) {
+  if (e.origin !== window.location.origin) return;
   if (!e.data || e.data.type !== 'prefill-quote') return;
   const d = e.data;
   // Switch to quotes tab, then open the new quote modal
