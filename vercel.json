@@ -5,6 +5,8 @@
     { "source": "/analytics",                         "destination": "/api/analytics" },
     { "source": "/upload",                            "destination": "/api/upload" },
     { "source": "/save-config",                       "destination": "/api/save-config" },
+    { "source": "/timelog",                           "destination": "/api/timelog" },
+    { "source": "/timelog/:path*",                    "destination": "/api/timelog" },
     { "source": "/config-data",                       "destination": "/api/config" },
     { "source": "/media-proxy",                       "destination": "/api/media" },
     { "source": "/api/clients",                       "destination": "/api/billing" },
