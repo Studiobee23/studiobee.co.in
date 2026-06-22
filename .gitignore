@@ -11,6 +11,7 @@ smtp-config.json
 # Runtime data — contains customer PII
 contacts.json
 analytics.json
+timelog.json
 
 # Config snapshot (regenerated at runtime from config panel)
 # config.json — tracking to serve real content on Vercel

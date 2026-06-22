@@ -475,6 +475,33 @@
     .an-table td { padding: 6px 8px; border-bottom: 1px solid #eee; }
     .an-table tr:last-child td { border-bottom: none; }
 
+    /* ── Time Log ── */
+    .tl-clock-card {
+      background: #fff; border-radius: 10px; padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: 24px;
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    }
+    .tl-timer { font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 140px; }
+    .tl-timer.idle { color: #999; }
+    .tl-timer.running { color: #2F48DF; }
+    .tl-note-input {
+      flex: 1; min-width: 200px; padding: 10px 14px; border-radius: 8px;
+      border: 1.5px solid #ddd; font-size: 14px; font-family: inherit;
+    }
+    .tl-btn {
+      padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;
+      font-size: 14px; font-weight: 600; font-family: inherit; transition: opacity 0.15s;
+    }
+    .tl-btn:hover { opacity: 0.85; }
+    .tl-btn.in { background: #2F48DF; color: #fff; }
+    .tl-btn.out { background: #cc3333; color: #fff; }
+    .tl-summary { display: grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap: 12px; margin-bottom: 24px; }
+    .tl-table-wrap { overflow-x: auto; }
+    .tl-del-btn {
+      border: none; background: none; cursor: pointer; color: #cc3333;
+      font-size: 12px; padding: 4px 8px;
+    }
+
     /* ── Pricing Calculator ── */
     .pc-subpanel { display: none; }
     .pc-subpanel.active { display: block; }
@@ -501,6 +528,7 @@
     <button class="nav-btn" data-panel="testimonials">Testimonials</button>
     <button class="nav-btn" data-panel="team">Team</button>
     <button class="nav-btn" data-panel="pricing">Pricing Calculator</button>
+    <button class="nav-btn" data-panel="timelog">Time Log</button>
     <button class="nav-btn" data-panel="analytics">Analytics</button>
     <button class="nav-btn" data-panel="billing">Billing</button>
   </nav>
@@ -655,6 +683,32 @@
     <div id="pc-panel-social" class="pc-subpanel"></div>
     <div id="pc-panel-branding" class="pc-subpanel"></div>
     <div id="pc-panel-website" class="pc-subpanel"></div>
+  </section>
+
+  <section id="panel-timelog" class="panel">
+    <div class="panel-header">
+      <h1>Time Log</h1>
+      <p>Clock in when you start working on the job, clock out when you stop.</p>
+    </div>
+    <div class="tl-clock-card">
+      <div class="tl-timer idle" id="tl-timer">00:00:00</div>
+      <input id="tl-note" class="tl-note-input" type="text" placeholder="What are you working on? (optional)" />
+      <button class="tl-btn in" id="tl-clockin-btn">Clock In</button>
+      <button class="tl-btn out" id="tl-clockout-btn" style="display:none;">Clock Out</button>
+    </div>
+    <div class="tl-summary">
+      <div class="an-card"><div class="an-label">Total Logged</div><div class="an-value" id="tl-total">—</div></div>
+      <div class="an-card"><div class="an-label">This Week</div><div class="an-value" id="tl-week">—</div></div>
+      <div class="an-card"><div class="an-label">Sessions</div><div class="an-value" id="tl-count">—</div></div>
+    </div>
+    <div class="section-block tl-table-wrap">
+      <h2 style="margin-bottom:8px;">Entries</h2>
+      <table class="an-table" id="tl-table">
+        <thead><tr><th>Date</th><th>Note</th><th>Clock In</th><th>Clock Out</th><th>Duration</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p id="tl-error" style="color:#cc3333;margin-top:12px;display:none;"></p>
+    </div>
   </section>
 
   <section id="panel-analytics" class="panel">
@@ -2154,6 +2208,157 @@
       if (btn.dataset.panel === 'analytics' && !analyticsLoaded) {
         analyticsLoaded = true;
         fetchAnalytics();
+      }
+    });
+  });
+})();
+</script>
+
+<!-- ── Time Log Tab JS ── -->
+<script>
+(function() {
+  var adminKey = localStorage.getItem('sb_admin_key') || (typeof window.__ADMIN_KEY__ !== 'undefined' ? window.__ADMIN_KEY__ : '') || '';
+  var API = (window.location.port === '5500') ? 'http://localhost:3000' : '';
+  var entries = [];
+  var openEntry = null;
+  var tickHandle = null;
+
+  function fmtDuration(ms) {
+    var totalSec = Math.max(0, Math.floor(ms / 1000));
+    var h = Math.floor(totalSec / 3600);
+    var m = Math.floor((totalSec % 3600) / 60);
+    var s = totalSec % 60;
+    return [h, m, s].map(function(n) { return String(n).padStart(2, '0'); }).join(':');
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function fetchTimelog() {
+    var errEl = document.getElementById('tl-error');
+    fetch(API + '/timelog', { headers: { 'X-Admin-Key': adminKey } })
+      .then(function(r) {
+        if (!r.ok) { errEl.textContent = 'Cannot load time log (status ' + r.status + '). Is the server running?'; errEl.style.display = ''; return null; }
+        return r.json();
+      })
+      .then(function(data) {
+        if (!data) return;
+        errEl.style.display = 'none';
+        entries = Array.isArray(data) ? data : [];
+        openEntry = entries.find(function(e) { return !e.clockOut; }) || null;
+        renderTimelog();
+      })
+      .catch(function() {
+        errEl.textContent = 'Cannot load time log — is the server running with the admin key injected?';
+        errEl.style.display = '';
+      });
+  }
+
+  function renderTimelog() {
+    var timerEl = document.getElementById('tl-timer');
+    var inBtn = document.getElementById('tl-clockin-btn');
+    var outBtn = document.getElementById('tl-clockout-btn');
+    var noteInput = document.getElementById('tl-note');
+
+    clearInterval(tickHandle);
+    if (openEntry) {
+      inBtn.style.display = 'none';
+      outBtn.style.display = '';
+      noteInput.disabled = true;
+      noteInput.value = openEntry.note || '';
+      timerEl.classList.remove('idle');
+      timerEl.classList.add('running');
+      var tick = function() {
+        timerEl.textContent = fmtDuration(Date.now() - new Date(openEntry.clockIn).getTime());
+      };
+      tick();
+      tickHandle = setInterval(tick, 1000);
+    } else {
+      inBtn.style.display = '';
+      outBtn.style.display = 'none';
+      noteInput.disabled = false;
+      timerEl.classList.remove('running');
+      timerEl.classList.add('idle');
+      timerEl.textContent = '00:00:00';
+    }
+
+    // Summary
+    var totalMs = 0, weekMs = 0;
+    var weekStart = Date.now() - 7 * 86400000;
+    entries.forEach(function(e) {
+      if (!e.clockOut) return;
+      var dur = new Date(e.clockOut).getTime() - new Date(e.clockIn).getTime();
+      totalMs += dur;
+      if (new Date(e.clockIn).getTime() >= weekStart) weekMs += dur;
+    });
+    document.getElementById('tl-total').textContent = fmtDuration(totalMs);
+    document.getElementById('tl-week').textContent = fmtDuration(weekMs);
+    document.getElementById('tl-count').textContent = entries.filter(function(e) { return e.clockOut; }).length;
+
+    // Table
+    var rows = entries.slice().reverse().map(function(e) {
+      var inT = new Date(e.clockIn);
+      var outT = e.clockOut ? new Date(e.clockOut) : null;
+      var dur = outT ? fmtDuration(outT.getTime() - inT.getTime()) : '—';
+      return '<tr>' +
+        '<td>' + inT.toLocaleDateString() + '</td>' +
+        '<td>' + (esc(e.note) || '—') + '</td>' +
+        '<td>' + inT.toLocaleTimeString() + '</td>' +
+        '<td>' + (outT ? outT.toLocaleTimeString() : 'In progress') + '</td>' +
+        '<td>' + dur + '</td>' +
+        '<td><button class="tl-del-btn" data-id="' + esc(e.id) + '">Delete</button></td>' +
+        '</tr>';
+    }).join('');
+    document.querySelector('#tl-table tbody').innerHTML = rows || '<tr><td colspan="6" style="color:#aaa">No entries yet</td></tr>';
+
+    document.querySelectorAll('.tl-del-btn').forEach(function(btn) {
+      btn.onclick = function() {
+        if (!confirm('Delete this time entry?')) return;
+        fetch(API + '/timelog/' + btn.dataset.id, { method: 'DELETE', headers: { 'X-Admin-Key': adminKey } })
+          .then(fetchTimelog);
+      };
+    });
+  }
+
+  document.getElementById('tl-clockin-btn').addEventListener('click', function() {
+    var note = document.getElementById('tl-note').value.trim();
+    fetch(API + '/timelog/clockin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey },
+      body: JSON.stringify({ note: note }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function() { fetchTimelog(); })
+      .catch(function() {
+        document.getElementById('tl-error').textContent = 'Clock-in failed — check admin key and server.';
+        document.getElementById('tl-error').style.display = '';
+      });
+  });
+
+  document.getElementById('tl-clockout-btn').addEventListener('click', function() {
+    if (!openEntry) return;
+    fetch(API + '/timelog/clockout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey },
+      body: JSON.stringify({ id: openEntry.id }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function() { fetchTimelog(); })
+      .catch(function() {
+        document.getElementById('tl-error').textContent = 'Clock-out failed — check admin key and server.';
+        document.getElementById('tl-error').style.display = '';
+      });
+  });
+
+  // Load time log when tab is activated
+  var timelogLoaded = false;
+  document.querySelectorAll('.nav-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      if (btn.dataset.panel === 'timelog' && !timelogLoaded) {
+        timelogLoaded = true;
+        fetchTimelog();
       }
     });
   });

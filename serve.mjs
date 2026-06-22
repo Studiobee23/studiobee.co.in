@@ -34,6 +34,7 @@ const BLOCKED_FILES = new Set([
   'smtp-config.json',
   'contacts.json',
   'analytics.json',   // served only via protected GET /analytics
+  'timelog.json',     // served only via protected GET /timelog
   'package.json',
   'package-lock.json',
   'serve.mjs',
@@ -262,6 +263,122 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(400); res.end('Bad request');
       }
     });
+    return;
+  }
+
+  // ── GET /timelog (admin protected) ────────────────────────────────────────
+  if (req.method === 'GET' && urlPath === '/timelog') {
+    if (req.headers['x-admin-key'] !== adminKey) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    const timelogFile = path.join(__dirname, 'timelog.json');
+    try {
+      const raw = fs.readFileSync(timelogFile, 'utf8');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(raw);
+    } catch (e) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end('[]');
+    }
+    return;
+  }
+
+  // ── POST /timelog/clockin (admin protected) ───────────────────────────────
+  if (req.method === 'POST' && urlPath === '/timelog/clockin') {
+    if (req.headers['x-admin-key'] !== adminKey) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    let totalSize = 0;
+    const chunks = [];
+    req.on('data', c => {
+      totalSize += c.length;
+      if (totalSize > MAX_CONTACT_BYTES) { req.destroy(); return; }
+      chunks.push(c);
+    });
+    req.on('end', () => {
+      try {
+        const body = JSON.parse(Buffer.concat(chunks).toString() || '{}');
+        const note = String(body.note || '').trim().slice(0, 500);
+        const timelogFile = path.join(__dirname, 'timelog.json');
+        let entries = [];
+        try { entries = JSON.parse(fs.readFileSync(timelogFile, 'utf8')); } catch (e) {}
+        if (!Array.isArray(entries)) entries = [];
+        if (entries.some(e => !e.clockOut)) {
+          res.writeHead(409, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Already clocked in' }));
+          return;
+        }
+        const entry = { id: crypto.randomBytes(8).toString('hex'), note, clockIn: new Date().toISOString(), clockOut: null };
+        entries.push(entry);
+        fs.writeFileSync(timelogFile, JSON.stringify(entries, null, 2));
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(entry));
+      } catch (e) {
+        res.writeHead(400); res.end('Bad request');
+      }
+    });
+    return;
+  }
+
+  // ── POST /timelog/clockout (admin protected) ──────────────────────────────
+  if (req.method === 'POST' && urlPath === '/timelog/clockout') {
+    if (req.headers['x-admin-key'] !== adminKey) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    let totalSize = 0;
+    const chunks = [];
+    req.on('data', c => {
+      totalSize += c.length;
+      if (totalSize > MAX_CONTACT_BYTES) { req.destroy(); return; }
+      chunks.push(c);
+    });
+    req.on('end', () => {
+      try {
+        const body = JSON.parse(Buffer.concat(chunks).toString() || '{}');
+        const id = String(body.id || '');
+        const timelogFile = path.join(__dirname, 'timelog.json');
+        let entries = [];
+        try { entries = JSON.parse(fs.readFileSync(timelogFile, 'utf8')); } catch (e) {}
+        if (!Array.isArray(entries)) entries = [];
+        const entry = entries.find(e => e.id === id && !e.clockOut);
+        if (!entry) {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'No matching open entry' }));
+          return;
+        }
+        entry.clockOut = new Date().toISOString();
+        fs.writeFileSync(timelogFile, JSON.stringify(entries, null, 2));
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(entry));
+      } catch (e) {
+        res.writeHead(400); res.end('Bad request');
+      }
+    });
+    return;
+  }
+
+  // ── DELETE /timelog/:id (admin protected) ─────────────────────────────────
+  if (req.method === 'DELETE' && urlPath.startsWith('/timelog/')) {
+    if (req.headers['x-admin-key'] !== adminKey) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    const id = urlPath.split('/')[2];
+    const timelogFile = path.join(__dirname, 'timelog.json');
+    let entries = [];
+    try { entries = JSON.parse(fs.readFileSync(timelogFile, 'utf8')); } catch (e) {}
+    if (!Array.isArray(entries)) entries = [];
+    entries = entries.filter(e => e.id !== id);
+    fs.writeFileSync(timelogFile, JSON.stringify(entries, null, 2));
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true }));
     return;
   }
 
