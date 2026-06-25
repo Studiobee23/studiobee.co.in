@@ -99,6 +99,17 @@
       z-index: 10000; /* above grain overlay (9999) and everything else */
       pointer-events: none;
     }
+    #scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
+      background: linear-gradient(90deg, #2F48DF 0%, #7b8fff 100%);
+      z-index: 10001; /* above status fill */
+      pointer-events: none;
+      box-shadow: 0 0 8px rgba(47,72,223,0.7), 0 0 2px rgba(123,143,255,0.5);
+      will-change: width;
+    }
     .nav-links { display: flex; gap: 36px; align-items: center; }
     .nav-link {
       font-family: 'DM Sans', sans-serif;
@@ -411,6 +422,8 @@
       gap: 18px;
     }
     .services-grid .service-card { grid-column: span 2; }
+    .services-grid .service-card:nth-child(1),
+    .services-grid .service-card:nth-child(2) { grid-column: span 3; }
 
     .service-card {
       background: rgba(255,255,255,0.05);
@@ -1600,6 +1613,7 @@
 
   <!-- iOS status bar safe-area fill — real DOM element, more reliable than ::before -->
   <div id="sb-status-fill" aria-hidden="true"></div>
+  <div id="scroll-progress" aria-hidden="true"></div>
 
   <!-- ───────── NAV ───────── -->
   <nav id="main-nav">
@@ -1860,11 +1874,17 @@
     (function () {
       var nav = document.getElementById('main-nav');
       var _navRaf = false;
+      var _scrollBar = document.getElementById('scroll-progress');
       window.addEventListener('scroll', function () {
         if (_navRaf) return;
         _navRaf = true;
         requestAnimationFrame(function () {
           nav.classList.toggle('scrolled', window.scrollY > 60);
+          if (_scrollBar) {
+            var docH = document.documentElement.scrollHeight - window.innerHeight;
+            var pct  = docH > 0 ? Math.min(100, (window.scrollY / docH) * 100) : 0;
+            _scrollBar.style.width = pct + '%';
+          }
           _navRaf = false;
         });
       }, { passive: true });
@@ -2232,14 +2252,21 @@
         // Cancel RAF when work section is off-screen — stops all DOM writes + GPU compositing
         if ('IntersectionObserver' in window) {
           new IntersectionObserver(function(entries) {
-            if (entries[0].isIntersecting) {
+            var vis = entries[0].isIntersecting;
+            if (vis) {
               if (!rafId) rafId = requestAnimationFrame(tick);
             } else {
               cancelAnimationFrame(rafId);
               rafId = null;
             }
+            window._SB_KB = window._SB_KB || {};
+            window._SB_KB.carouselVisible = vis;
           }, { threshold: 0 }).observe(track.closest('.work-section') || track);
         }
+
+        // Expose for keyboard handler
+        window._SB_KB = window._SB_KB || {};
+        window._SB_KB.carousel = chevClick;
 
         track.addEventListener('mouseenter', function() { paused = true; });
         track.addEventListener('mouseleave', function() { paused = false; });
@@ -2361,10 +2388,22 @@
         var testiSection = stack.closest('.testimonials-section');
         if (testiSection) {
           new IntersectionObserver(function(entries) {
-            entries[0].isIntersecting ? startAuto() : stopAuto();
+            var vis = entries[0].isIntersecting;
+            vis ? startAuto() : stopAuto();
+            window._SB_KB = window._SB_KB || {};
+            window._SB_KB.testiVisible = vis;
           }, { threshold: 0 }).observe(testiSection);
         }
       }
+
+      // Expose for keyboard handler
+      function retreat() {
+        frontIdx = (frontIdx - 1 + total) % total;
+        updatePositions();
+      }
+      window._SB_KB = window._SB_KB || {};
+      window._SB_KB.testiAdvance  = function() { stopAuto(); advance();  startAuto(); };
+      window._SB_KB.testiRetreat  = function() { stopAuto(); retreat();  startAuto(); };
 
       stack.addEventListener('mouseenter', stopAuto);
       stack.addEventListener('mouseleave', startAuto);
@@ -2456,6 +2495,25 @@
       init();
     }
   })();
+  </script>
+
+  <!-- ── Keyboard navigation: carousel (←/→) + testimonials (←/→) ── -->
+  <script>
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    var tag = document.activeElement && document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    var kb = window._SB_KB;
+    if (!kb) return;
+    var dir = e.key === 'ArrowLeft' ? -1 : 1;
+    if (kb.testiVisible && kb.testiAdvance) {
+      e.preventDefault();
+      dir === 1 ? kb.testiAdvance() : kb.testiRetreat();
+    } else if (kb.carouselVisible && kb.carousel) {
+      e.preventDefault();
+      kb.carousel(dir);
+    }
+  });
   </script>
 
   <!-- ── Config: apply localStorage content before scramble initialises ── -->
