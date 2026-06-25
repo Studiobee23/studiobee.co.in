@@ -2376,6 +2376,7 @@
 
     // Table
     var rows = entries.slice().reverse().map(function(e) {
+      if (e.id === editingId) return renderEditRow(e);
       var inT = new Date(e.clockIn);
       var outT = e.clockOut ? new Date(e.clockOut) : null;
       var dur = fmtDuration(activeMs(e));
@@ -2387,7 +2388,10 @@
         '<td>' + inT.toLocaleTimeString() + '</td>' +
         '<td>' + (outT ? outT.toLocaleTimeString() : 'In progress') + '</td>' +
         '<td>' + statusLabel + '</td>' +
-        '<td><button class="tl-del-btn" data-id="' + esc(e.id) + '">Delete</button></td>' +
+        '<td>' +
+          '<button class="tl-edit-btn" data-id="' + esc(e.id) + '">Edit</button> ' +
+          '<button class="tl-del-btn" data-id="' + esc(e.id) + '">Delete</button>' +
+        '</td>' +
         '</tr>';
     }).join('');
     document.querySelector('#tl-table tbody').innerHTML = rows || '<tr><td colspan="7" style="color:#aaa">No entries yet</td></tr>';
@@ -2399,6 +2403,77 @@
           .then(fetchTimelog);
       };
     });
+
+    document.querySelectorAll('.tl-edit-btn').forEach(function(btn) {
+      btn.onclick = function() {
+        editingId = btn.dataset.id;
+        renderTimelog();
+      };
+    });
+
+    wireEditRow();
+  }
+
+  // ── Inline row editing ───────────────────────────────────────────────────
+  var editingId = null;
+
+  function toLocalInputValue(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    var pad = function(n) { return String(n).padStart(2, '0'); };
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+      'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  function renderEditRow(e) {
+    var isOpen = !e.clockOut;
+    return '<tr class="tl-edit-row">' +
+      '<td><input class="field-input tl-e-name" type="text" value="' + esc(e.name) + '" style="width:100px;" /></td>' +
+      '<td colspan="2"><input class="field-input tl-e-note" type="text" value="' + esc(e.note) + '" style="width:100%;" /></td>' +
+      '<td><input class="field-input tl-e-in" type="datetime-local" value="' + toLocalInputValue(e.clockIn) + '" /></td>' +
+      '<td>' + (isOpen
+        ? '<span style="color:#999;font-size:12px;">In progress</span>'
+        : '<input class="field-input tl-e-out" type="datetime-local" value="' + toLocalInputValue(e.clockOut) + '" />') +
+      '</td>' +
+      '<td></td>' +
+      '<td>' +
+        '<button class="tl-btn in tl-save-btn" data-id="' + esc(e.id) + '" style="padding:6px 12px;font-size:12px;">Save</button> ' +
+        '<button class="tl-cancel-btn" style="border:none;background:none;cursor:pointer;color:#cc3333;font-size:12px;padding:4px 8px;">Cancel</button>' +
+      '</td>' +
+      '</tr>';
+  }
+
+  function wireEditRow() {
+    var saveBtn = document.querySelector('.tl-save-btn');
+    var cancelBtn = document.querySelector('.tl-cancel-btn');
+    if (cancelBtn) {
+      cancelBtn.onclick = function() { editingId = null; renderTimelog(); };
+    }
+    if (saveBtn) {
+      saveBtn.onclick = function() {
+        var row = saveBtn.closest('tr');
+        var name = row.querySelector('.tl-e-name').value.trim();
+        var note = row.querySelector('.tl-e-note').value.trim();
+        var inVal = row.querySelector('.tl-e-in').value;
+        var outEl = row.querySelector('.tl-e-out');
+        if (!name || !inVal) { tlError('Name and clock in time are required.'); return; }
+        var body = { name: name, note: note, clockIn: new Date(inVal).toISOString() };
+        if (outEl) body.clockOut = outEl.value ? new Date(outEl.value).toISOString() : null;
+        fetch(API + '/timelog/' + saveBtn.dataset.id, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey },
+          body: JSON.stringify(body),
+        })
+          .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+          .then(function(res) {
+            if (!res.ok) { tlError(res.data.error || 'Failed to save entry.'); return; }
+            document.getElementById('tl-error').style.display = 'none';
+            editingId = null;
+            fetchTimelog();
+          })
+          .catch(function() { tlError('Failed to save entry — check admin key and server.'); });
+      };
+    }
   }
 
   document.getElementById('tl-clockin-btn').addEventListener('click', function() {

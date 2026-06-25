@@ -128,6 +128,35 @@ module.exports = async function handler(req, res) {
     return res.status(200).json(toEntry(data));
   }
 
+  if (req.method === 'PUT' && action) {
+    const id = action;
+    const name = String((req.body || {}).name || '').trim().slice(0, 100);
+    const note = String((req.body || {}).note || '').trim().slice(0, 500);
+    const clockIn = new Date((req.body || {}).clockIn);
+    if (!name) return res.status(400).json({ error: 'Name is required' });
+    if (isNaN(clockIn)) return res.status(400).json({ error: 'Invalid clock in time' });
+
+    const { data: existing, error: fetchErr } = await supabase.from('timelog').select('*').eq('id', id).single();
+    if (fetchErr || !existing) return res.status(404).json({ error: 'Entry not found' });
+
+    let clockOut = existing.clock_out;
+    const rawClockOut = (req.body || {}).clockOut;
+    if (rawClockOut != null && rawClockOut !== '') {
+      const co = new Date(rawClockOut);
+      if (isNaN(co) || co <= clockIn) return res.status(400).json({ error: 'Clock out must be after clock in' });
+      clockOut = co.toISOString();
+    }
+
+    const { data, error } = await supabase
+      .from('timelog')
+      .update({ name, note, clock_in: clockIn.toISOString(), clock_out: clockOut })
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) return res.status(500).json({ error: 'Failed to update entry' });
+    return res.status(200).json(toEntry(data));
+  }
+
   if (req.method === 'DELETE' && action) {
     const { error } = await supabase.from('timelog').delete().eq('id', action);
     if (error) return res.status(500).json({ error: 'Failed to delete entry' });

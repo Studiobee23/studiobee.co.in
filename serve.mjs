@@ -428,6 +428,42 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // ── PUT /timelog/:id (admin protected) — edit an existing entry ────────────
+  if (req.method === 'PUT' && urlPath.startsWith('/timelog/')) {
+    if (!requireTimelogAdmin()) return;
+    const id = urlPath.split('/')[2];
+    try {
+      const body = await readJsonBody(MAX_CONTACT_BYTES);
+      const entries = readTimelog();
+      const entry = entries.find(e => e.id === id);
+      if (!entry) { res.writeHead(404, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Entry not found' })); return; }
+
+      const name = String(body.name || '').trim().slice(0, 100);
+      if (!name) { res.writeHead(400, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Name is required' })); return; }
+      const note = String(body.note || '').trim().slice(0, 500);
+      const clockIn = new Date(body.clockIn);
+      if (isNaN(clockIn)) { res.writeHead(400, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Invalid clock in time' })); return; }
+
+      let clockOut = entry.clockOut;
+      if (body.clockOut != null && body.clockOut !== '') {
+        const co = new Date(body.clockOut);
+        if (isNaN(co) || co <= clockIn) { res.writeHead(400, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Clock out must be after clock in' })); return; }
+        clockOut = co.toISOString();
+      }
+
+      entry.name = name;
+      entry.note = note;
+      entry.clockIn = clockIn.toISOString();
+      entry.clockOut = clockOut;
+      writeTimelog(entries);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(entry));
+    } catch (e) {
+      res.writeHead(400); res.end('Bad request');
+    }
+    return;
+  }
+
   // ── DELETE /timelog/:id (admin protected) ─────────────────────────────────
   if (req.method === 'DELETE' && urlPath.startsWith('/timelog/')) {
     if (!requireTimelogAdmin()) return;
