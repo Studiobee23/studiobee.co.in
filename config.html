@@ -495,6 +495,7 @@
     .tl-btn:hover { opacity: 0.85; }
     .tl-btn.in { background: #2F48DF; color: #fff; }
     .tl-btn.out { background: #cc3333; color: #fff; }
+    .tl-btn.pause { background: #e8a02f; color: #fff; }
     .tl-summary { display: grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap: 12px; margin-bottom: 24px; }
     .tl-table-wrap { overflow-x: auto; }
     .tl-del-btn {
@@ -688,12 +689,15 @@
   <section id="panel-timelog" class="panel">
     <div class="panel-header">
       <h1>Time Log</h1>
-      <p>Clock in when you start working on the job, clock out when you stop.</p>
+      <p>Clock in when you start working on the job, pause for breaks, clock out when you stop.</p>
     </div>
     <div class="tl-clock-card">
       <div class="tl-timer idle" id="tl-timer">00:00:00</div>
+      <input id="tl-name" class="tl-note-input" type="text" placeholder="Your name" style="max-width:160px;" />
       <input id="tl-note" class="tl-note-input" type="text" placeholder="What are you working on? (optional)" />
       <button class="tl-btn in" id="tl-clockin-btn">Clock In</button>
+      <button class="tl-btn pause" id="tl-pause-btn" style="display:none;">Pause</button>
+      <button class="tl-btn pause" id="tl-resume-btn" style="display:none;">Resume</button>
       <button class="tl-btn out" id="tl-clockout-btn" style="display:none;">Clock Out</button>
     </div>
     <div class="tl-summary">
@@ -701,10 +705,36 @@
       <div class="an-card"><div class="an-label">This Week</div><div class="an-value" id="tl-week">—</div></div>
       <div class="an-card"><div class="an-label">Sessions</div><div class="an-value" id="tl-count">—</div></div>
     </div>
+    <div class="section-block" style="margin-bottom:16px;">
+      <h2 style="margin-bottom:8px;">Totals by Person</h2>
+      <table class="an-table" id="tl-by-name"><thead><tr><th>Name</th><th>Total Time</th><th>Sessions</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="section-block" style="margin-bottom:16px;">
+      <h2 style="margin-bottom:8px;">Add Entry Manually</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+        <div class="field-group" style="margin-bottom:0;">
+          <label class="field-label">Name</label>
+          <input id="tl-m-name" class="field-input" type="text" style="width:140px;" />
+        </div>
+        <div class="field-group" style="margin-bottom:0;">
+          <label class="field-label">Note</label>
+          <input id="tl-m-note" class="field-input" type="text" style="width:200px;" />
+        </div>
+        <div class="field-group" style="margin-bottom:0;">
+          <label class="field-label">Clock In</label>
+          <input id="tl-m-in" class="field-input" type="datetime-local" />
+        </div>
+        <div class="field-group" style="margin-bottom:0;">
+          <label class="field-label">Clock Out</label>
+          <input id="tl-m-out" class="field-input" type="datetime-local" />
+        </div>
+        <button class="tl-btn in" id="tl-manual-btn" style="margin-bottom:1px;">+ Add</button>
+      </div>
+    </div>
     <div class="section-block tl-table-wrap">
       <h2 style="margin-bottom:8px;">Entries</h2>
       <table class="an-table" id="tl-table">
-        <thead><tr><th>Date</th><th>Note</th><th>Clock In</th><th>Clock Out</th><th>Duration</th><th></th></tr></thead>
+        <thead><tr><th>Name</th><th>Date</th><th>Note</th><th>Clock In</th><th>Clock Out</th><th>Duration</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
       <p id="tl-error" style="color:#cc3333;margin-top:12px;display:none;"></p>
@@ -2236,6 +2266,33 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  // Active (non-paused) duration of an entry, up to "now" if still open.
+  function activeMs(e) {
+    var end = e.clockOut ? new Date(e.clockOut).getTime() : Date.now();
+    var pausedMs = e.pausedMs || 0;
+    if (!e.clockOut && e.pauseStart) pausedMs += Date.now() - new Date(e.pauseStart).getTime();
+    return Math.max(0, end - new Date(e.clockIn).getTime() - pausedMs);
+  }
+
+  function tlError(msg) {
+    var errEl = document.getElementById('tl-error');
+    errEl.textContent = msg;
+    errEl.style.display = '';
+  }
+
+  var nameInput = document.getElementById('tl-name');
+  nameInput.value = localStorage.getItem('tl_my_name') || '';
+  nameInput.addEventListener('input', function() {
+    localStorage.setItem('tl_my_name', nameInput.value.trim());
+    findMyOpenEntry();
+    renderTimelog();
+  });
+
+  function findMyOpenEntry() {
+    var myName = nameInput.value.trim().toLowerCase();
+    openEntry = entries.find(function(e) { return !e.clockOut && (e.name || '').trim().toLowerCase() === myName; }) || null;
+  }
+
   function fetchTimelog() {
     var errEl = document.getElementById('tl-error');
     fetch(API + '/timelog', { headers: { 'X-Admin-Key': adminKey } })
@@ -2247,7 +2304,7 @@
         if (!data) return;
         errEl.style.display = 'none';
         entries = Array.isArray(data) ? data : [];
-        openEntry = entries.find(function(e) { return !e.clockOut; }) || null;
+        findMyOpenEntry();
         renderTimelog();
       })
       .catch(function() {
@@ -2260,24 +2317,33 @@
     var timerEl = document.getElementById('tl-timer');
     var inBtn = document.getElementById('tl-clockin-btn');
     var outBtn = document.getElementById('tl-clockout-btn');
+    var pauseBtn = document.getElementById('tl-pause-btn');
+    var resumeBtn = document.getElementById('tl-resume-btn');
     var noteInput = document.getElementById('tl-note');
 
     clearInterval(tickHandle);
     if (openEntry) {
+      var isPaused = !!openEntry.pauseStart;
       inBtn.style.display = 'none';
       outBtn.style.display = '';
+      pauseBtn.style.display = isPaused ? 'none' : '';
+      resumeBtn.style.display = isPaused ? '' : 'none';
+      nameInput.disabled = true;
       noteInput.disabled = true;
       noteInput.value = openEntry.note || '';
       timerEl.classList.remove('idle');
       timerEl.classList.add('running');
       var tick = function() {
-        timerEl.textContent = fmtDuration(Date.now() - new Date(openEntry.clockIn).getTime());
+        timerEl.textContent = fmtDuration(activeMs(openEntry));
       };
       tick();
-      tickHandle = setInterval(tick, 1000);
+      if (!isPaused) tickHandle = setInterval(tick, 1000);
     } else {
       inBtn.style.display = '';
       outBtn.style.display = 'none';
+      pauseBtn.style.display = 'none';
+      resumeBtn.style.display = 'none';
+      nameInput.disabled = false;
       noteInput.disabled = false;
       timerEl.classList.remove('running');
       timerEl.classList.add('idle');
@@ -2287,31 +2353,44 @@
     // Summary
     var totalMs = 0, weekMs = 0;
     var weekStart = Date.now() - 7 * 86400000;
+    var byName = {};
     entries.forEach(function(e) {
+      var label = (e.name || '').trim() || 'Unknown';
+      if (!byName[label]) byName[label] = { ms: 0, count: 0 };
       if (!e.clockOut) return;
-      var dur = new Date(e.clockOut).getTime() - new Date(e.clockIn).getTime();
+      var dur = activeMs(e);
       totalMs += dur;
+      byName[label].ms += dur;
+      byName[label].count += 1;
       if (new Date(e.clockIn).getTime() >= weekStart) weekMs += dur;
     });
     document.getElementById('tl-total').textContent = fmtDuration(totalMs);
     document.getElementById('tl-week').textContent = fmtDuration(weekMs);
     document.getElementById('tl-count').textContent = entries.filter(function(e) { return e.clockOut; }).length;
 
+    // Totals by person
+    var nameRows = Object.keys(byName).sort(function(a, b) { return byName[b].ms - byName[a].ms; }).map(function(label) {
+      return '<tr><td>' + esc(label) + '</td><td>' + fmtDuration(byName[label].ms) + '</td><td>' + byName[label].count + '</td></tr>';
+    }).join('');
+    document.querySelector('#tl-by-name tbody').innerHTML = nameRows || '<tr><td colspan="3" style="color:#aaa">No entries yet</td></tr>';
+
     // Table
     var rows = entries.slice().reverse().map(function(e) {
       var inT = new Date(e.clockIn);
       var outT = e.clockOut ? new Date(e.clockOut) : null;
-      var dur = outT ? fmtDuration(outT.getTime() - inT.getTime()) : '—';
+      var dur = fmtDuration(activeMs(e));
+      var statusLabel = outT ? dur : (e.pauseStart ? dur + ' (paused)' : dur + ' (running)');
       return '<tr>' +
+        '<td>' + (esc(e.name) || '—') + '</td>' +
         '<td>' + inT.toLocaleDateString() + '</td>' +
         '<td>' + (esc(e.note) || '—') + '</td>' +
         '<td>' + inT.toLocaleTimeString() + '</td>' +
         '<td>' + (outT ? outT.toLocaleTimeString() : 'In progress') + '</td>' +
-        '<td>' + dur + '</td>' +
+        '<td>' + statusLabel + '</td>' +
         '<td><button class="tl-del-btn" data-id="' + esc(e.id) + '">Delete</button></td>' +
         '</tr>';
     }).join('');
-    document.querySelector('#tl-table tbody').innerHTML = rows || '<tr><td colspan="6" style="color:#aaa">No entries yet</td></tr>';
+    document.querySelector('#tl-table tbody').innerHTML = rows || '<tr><td colspan="7" style="color:#aaa">No entries yet</td></tr>';
 
     document.querySelectorAll('.tl-del-btn').forEach(function(btn) {
       btn.onclick = function() {
@@ -2323,18 +2402,43 @@
   }
 
   document.getElementById('tl-clockin-btn').addEventListener('click', function() {
+    var name = nameInput.value.trim();
+    if (!name) { tlError('Enter your name before clocking in.'); return; }
     var note = document.getElementById('tl-note').value.trim();
     fetch(API + '/timelog/clockin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey },
-      body: JSON.stringify({ note: note }),
+      body: JSON.stringify({ name: name, note: note }),
     })
-      .then(function(r) { return r.json(); })
+      .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+      .then(function(res) {
+        if (!res.ok) { tlError(res.data.error || 'Clock-in failed.'); return; }
+        document.getElementById('tl-error').style.display = 'none';
+        fetchTimelog();
+      })
+      .catch(function() { tlError('Clock-in failed — check admin key and server.'); });
+  });
+
+  document.getElementById('tl-pause-btn').addEventListener('click', function() {
+    if (!openEntry) return;
+    fetch(API + '/timelog/pause', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey },
+      body: JSON.stringify({ id: openEntry.id }),
+    })
       .then(function() { fetchTimelog(); })
-      .catch(function() {
-        document.getElementById('tl-error').textContent = 'Clock-in failed — check admin key and server.';
-        document.getElementById('tl-error').style.display = '';
-      });
+      .catch(function() { tlError('Pause failed — check admin key and server.'); });
+  });
+
+  document.getElementById('tl-resume-btn').addEventListener('click', function() {
+    if (!openEntry) return;
+    fetch(API + '/timelog/resume', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey },
+      body: JSON.stringify({ id: openEntry.id }),
+    })
+      .then(function() { fetchTimelog(); })
+      .catch(function() { tlError('Resume failed — check admin key and server.'); });
   });
 
   document.getElementById('tl-clockout-btn').addEventListener('click', function() {
@@ -2344,12 +2448,36 @@
       headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey },
       body: JSON.stringify({ id: openEntry.id }),
     })
-      .then(function(r) { return r.json(); })
       .then(function() { fetchTimelog(); })
-      .catch(function() {
-        document.getElementById('tl-error').textContent = 'Clock-out failed — check admin key and server.';
-        document.getElementById('tl-error').style.display = '';
-      });
+      .catch(function() { tlError('Clock-out failed — check admin key and server.'); });
+  });
+
+  document.getElementById('tl-manual-btn').addEventListener('click', function() {
+    var name = document.getElementById('tl-m-name').value.trim();
+    var note = document.getElementById('tl-m-note').value.trim();
+    var inVal = document.getElementById('tl-m-in').value;
+    var outVal = document.getElementById('tl-m-out').value;
+    if (!name || !inVal || !outVal) { tlError('Name, clock in, and clock out are all required for a manual entry.'); return; }
+    fetch(API + '/timelog/manual', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey },
+      body: JSON.stringify({
+        name: name, note: note,
+        clockIn: new Date(inVal).toISOString(),
+        clockOut: new Date(outVal).toISOString(),
+      }),
+    })
+      .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+      .then(function(res) {
+        if (!res.ok) { tlError(res.data.error || 'Failed to add entry.'); return; }
+        document.getElementById('tl-error').style.display = 'none';
+        document.getElementById('tl-m-name').value = '';
+        document.getElementById('tl-m-note').value = '';
+        document.getElementById('tl-m-in').value = '';
+        document.getElementById('tl-m-out').value = '';
+        fetchTimelog();
+      })
+      .catch(function() { tlError('Failed to add entry — check admin key and server.'); });
   });
 
   // Load time log when tab is activated

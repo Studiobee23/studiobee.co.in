@@ -12,3 +12,9 @@ create table if not exists timelog (
 alter table timelog enable row level security;
 
 create policy "service role full access" on timelog for all using (true);
+
+-- Added for: named entries, pause/resume support.
+-- Safe to re-run; existing rows keep their data and just default name='', paused_ms=0.
+alter table timelog add column if not exists name text default '';
+alter table timelog add column if not exists paused_ms bigint default 0;
+alter table timelog add column if not exists pause_start timestamptz;
