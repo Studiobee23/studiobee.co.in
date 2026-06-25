@@ -18,3 +18,6 @@ create policy "service role full access" on timelog for all using (true);
 alter table timelog add column if not exists name text default '';
 alter table timelog add column if not exists paused_ms bigint default 0;
 alter table timelog add column if not exists pause_start timestamptz;
+
+-- Added for: project tagging / sorting by project.
+alter table timelog add column if not exists project text default '';

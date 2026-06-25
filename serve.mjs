@@ -317,6 +317,7 @@ const server = http.createServer(async (req, res) => {
       const body = await readJsonBody(MAX_CONTACT_BYTES);
       const name = String(body.name || '').trim().slice(0, 100);
       const note = String(body.note || '').trim().slice(0, 500);
+      const project = String(body.project || '').trim().slice(0, 100);
       if (!name) { res.writeHead(400, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Name is required' })); return; }
       const entries = readTimelog();
       if (entries.some(e => !e.clockOut && (e.name || '').trim().toLowerCase() === name.toLowerCase())) {
@@ -324,7 +325,7 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: 'Already clocked in as ' + name }));
         return;
       }
-      const entry = { id: crypto.randomBytes(8).toString('hex'), name, note, clockIn: new Date().toISOString(), clockOut: null, pausedMs: 0, pauseStart: null };
+      const entry = { id: crypto.randomBytes(8).toString('hex'), name, note, project, clockIn: new Date().toISOString(), clockOut: null, pausedMs: 0, pauseStart: null };
       entries.push(entry);
       writeTimelog(entries);
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -408,6 +409,7 @@ const server = http.createServer(async (req, res) => {
       const body = await readJsonBody(MAX_CONTACT_BYTES);
       const name = String(body.name || '').trim().slice(0, 100);
       const note = String(body.note || '').trim().slice(0, 500);
+      const project = String(body.project || '').trim().slice(0, 100);
       const clockIn = new Date(body.clockIn);
       const clockOut = new Date(body.clockOut);
       if (!name) { res.writeHead(400, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Name is required' })); return; }
@@ -417,7 +419,7 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       const entries = readTimelog();
-      const entry = { id: crypto.randomBytes(8).toString('hex'), name, note, clockIn: clockIn.toISOString(), clockOut: clockOut.toISOString(), pausedMs: 0, pauseStart: null };
+      const entry = { id: crypto.randomBytes(8).toString('hex'), name, note, project, clockIn: clockIn.toISOString(), clockOut: clockOut.toISOString(), pausedMs: 0, pauseStart: null };
       entries.push(entry);
       writeTimelog(entries);
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -441,6 +443,7 @@ const server = http.createServer(async (req, res) => {
       const name = String(body.name || '').trim().slice(0, 100);
       if (!name) { res.writeHead(400, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Name is required' })); return; }
       const note = String(body.note || '').trim().slice(0, 500);
+      const project = String(body.project || '').trim().slice(0, 100);
       const clockIn = new Date(body.clockIn);
       if (isNaN(clockIn)) { res.writeHead(400, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Invalid clock in time' })); return; }
 
@@ -453,6 +456,7 @@ const server = http.createServer(async (req, res) => {
 
       entry.name = name;
       entry.note = note;
+      entry.project = project;
       entry.clockIn = clockIn.toISOString();
       entry.clockOut = clockOut;
       writeTimelog(entries);

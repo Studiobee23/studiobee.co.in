@@ -5,6 +5,7 @@ function toEntry(row) {
     id: row.id,
     name: row.name,
     note: row.note,
+    project: row.project,
     clockIn: row.clock_in,
     clockOut: row.clock_out,
     pausedMs: row.paused_ms || 0,
@@ -31,6 +32,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'POST' && action === 'clockin') {
     const name = String((req.body || {}).name || '').trim().slice(0, 100);
     const note = String((req.body || {}).note || '').trim().slice(0, 500);
+    const project = String((req.body || {}).project || '').trim().slice(0, 100);
     if (!name) return res.status(400).json({ error: 'Name is required' });
 
     const { data: open, error: openErr } = await supabase
@@ -44,7 +46,7 @@ module.exports = async function handler(req, res) {
 
     const { data, error } = await supabase
       .from('timelog')
-      .insert({ name, note, clock_in: new Date().toISOString(), clock_out: null, paused_ms: 0, pause_start: null })
+      .insert({ name, note, project, clock_in: new Date().toISOString(), clock_out: null, paused_ms: 0, pause_start: null })
       .select()
       .single();
     if (error) return res.status(500).json({ error: 'Failed to clock in' });
@@ -113,6 +115,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'POST' && action === 'manual') {
     const name = String((req.body || {}).name || '').trim().slice(0, 100);
     const note = String((req.body || {}).note || '').trim().slice(0, 500);
+    const project = String((req.body || {}).project || '').trim().slice(0, 100);
     const clockIn = new Date((req.body || {}).clockIn);
     const clockOut = new Date((req.body || {}).clockOut);
     if (!name) return res.status(400).json({ error: 'Name is required' });
@@ -121,7 +124,7 @@ module.exports = async function handler(req, res) {
     }
     const { data, error } = await supabase
       .from('timelog')
-      .insert({ name, note, clock_in: clockIn.toISOString(), clock_out: clockOut.toISOString(), paused_ms: 0, pause_start: null })
+      .insert({ name, note, project, clock_in: clockIn.toISOString(), clock_out: clockOut.toISOString(), paused_ms: 0, pause_start: null })
       .select()
       .single();
     if (error) return res.status(500).json({ error: 'Failed to add entry' });
@@ -132,6 +135,7 @@ module.exports = async function handler(req, res) {
     const id = action;
     const name = String((req.body || {}).name || '').trim().slice(0, 100);
     const note = String((req.body || {}).note || '').trim().slice(0, 500);
+    const project = String((req.body || {}).project || '').trim().slice(0, 100);
     const clockIn = new Date((req.body || {}).clockIn);
     if (!name) return res.status(400).json({ error: 'Name is required' });
     if (isNaN(clockIn)) return res.status(400).json({ error: 'Invalid clock in time' });
@@ -149,7 +153,7 @@ module.exports = async function handler(req, res) {
 
     const { data, error } = await supabase
       .from('timelog')
-      .update({ name, note, clock_in: clockIn.toISOString(), clock_out: clockOut })
+      .update({ name, note, project, clock_in: clockIn.toISOString(), clock_out: clockOut })
       .eq('id', id)
       .select()
       .single();
