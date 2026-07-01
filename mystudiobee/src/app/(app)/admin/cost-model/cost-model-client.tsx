@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -22,8 +22,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   upsertCostRole,
   setCostRoleActive,
+  deleteCostRole,
   upsertOverheadItem,
   setOverheadItemActive,
+  deleteOverheadItem,
   upsertServicePreset,
   deleteServicePreset,
 } from "@/lib/actions/cost-model";
@@ -157,9 +159,12 @@ function RolesTab({ roles }: { roles: CostRole[] }) {
                   }}
                 />
               </TableCell>
-              <TableCell>
+              <TableCell className="flex gap-1">
                 <Button variant="ghost" size="icon-sm" onClick={() => openEdit(r)}>
                   <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                <Button variant="ghost" size="icon-sm" onClick={async () => { await deleteCostRole(r.id); router.refresh(); }}>
+                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
                 </Button>
               </TableCell>
             </TableRow>
@@ -275,9 +280,12 @@ function OverheadsTab({ overheads }: { overheads: OverheadItem[] }) {
                   }}
                 />
               </TableCell>
-              <TableCell>
+              <TableCell className="flex gap-1">
                 <Button variant="ghost" size="icon-sm" onClick={() => openEdit(o)}>
                   <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                <Button variant="ghost" size="icon-sm" onClick={async () => { await deleteOverheadItem(o.id); router.refresh(); }}>
+                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
                 </Button>
               </TableCell>
             </TableRow>

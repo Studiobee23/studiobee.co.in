@@ -90,3 +90,19 @@ export async function deleteServicePreset(id: string) {
   if (error) throw new Error(error.message);
   revalidatePath("/admin/cost-model");
 }
+
+export async function deleteCostRole(id: string) {
+  await requireOwnerOrAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase.from("cost_roles").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/cost-model");
+}
+
+export async function deleteOverheadItem(id: string) {
+  await requireOwnerOrAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase.from("overhead_items").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/cost-model");
+}
