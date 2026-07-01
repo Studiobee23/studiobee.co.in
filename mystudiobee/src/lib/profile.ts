@@ -1,0 +1,36 @@
+import { createClient } from "@/lib/supabase/server";
+
+export type Role = "owner" | "admin" | "manager" | "employee";
+
+export type Profile = {
+  id: string;
+  email: string;
+  display_name: string;
+  role: Role;
+  active: boolean;
+};
+
+/** Current signed-in user's profile. proxy.ts already guarantees a session + active
+ * profile exists for any route this is called from, so this should never return null
+ * in practice — but callers should still handle it defensively. */
+export async function getCurrentProfile(): Promise<Profile | null> {
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) return null;
+
+  const { data } = await supabase
+    .from("profiles")
+    .select("id, email, display_name, role, active")
+    .eq("id", userData.user.id)
+    .maybeSingle();
+
+  return (data as Profile) ?? null;
+}
+
+export function canSeeCost(role: Role) {
+  return role === "owner" || role === "admin";
+}
+
+export function isBillingRole(role: Role) {
+  return role === "owner" || role === "admin" || role === "manager";
+}
