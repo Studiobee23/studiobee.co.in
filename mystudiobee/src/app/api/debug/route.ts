@@ -47,6 +47,22 @@ export async function GET() {
     await userClient.from("clients").delete().eq("id", insertData.id);
   }
 
+  // Test documents table columns
+  const { data: docCols, error: docColsError } = await admin
+    .from("documents")
+    .select("id, type, number, status, client_id, project_name, category, line_items, subtotal, gst_enabled, gst_type, gst_rate, gst_amount, discount, total, notes, validity_days, project_id, executor_id, manager_id, client_handler_id, profit_split, created_by")
+    .limit(1);
+
+  // Test tasks table columns
+  const { data: taskCols, error: taskColsError } = await admin
+    .from("tasks")
+    .select("id, project_id, title, status, due_date, assigned_to, created_by")
+    .limit(1);
+
+  // Test increment_doc_series RPC
+  const { error: rpcError } = await userClient.rpc("increment_doc_series", { series_type: "quote" });
+  // If it worked, decrement it back (not critical for diagnostics)
+
   return NextResponse.json({
     uid: userData.user.id,
     profile,
@@ -54,5 +70,8 @@ export async function GET() {
     clientsUser,
     clientsError: clientsError?.message,
     insertTest: { id: insertData?.id ?? null, error: insertError?.message ?? null, code: insertError?.code ?? null },
+    documentsColTest: { ok: !docColsError, error: docColsError?.message ?? null },
+    tasksColTest: { ok: !taskColsError, error: taskColsError?.message ?? null },
+    rpcTest: { ok: !rpcError, error: rpcError?.message ?? null },
   });
 }
