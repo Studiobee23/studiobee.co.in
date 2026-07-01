@@ -33,7 +33,7 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${dmSans.variable} ${dmSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="min-h-full flex flex-col font-heading">
         <TooltipProvider>{children}</TooltipProvider>
         <Toaster />
       </body>

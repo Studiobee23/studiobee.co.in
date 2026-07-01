@@ -122,7 +122,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
   html {
-    @apply font-sans;
+    @apply font-heading;
   }
   :focus-visible {
     outline: none !important;
