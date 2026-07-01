@@ -28,7 +28,7 @@ export type ClientInput = {
 };
 
 export async function upsertClient(input: ClientInput) {
-  const profile = await requireBillingRole();
+  const profile = await requireBillingRole().catch((e) => { throw new Error("requireBillingRole: " + String(e)); });
   const supabase = await createClient();
 
   const payload = {
@@ -53,8 +53,8 @@ export async function upsertClient(input: ClientInput) {
         .select("id")
         .single();
 
-  if (error) throw new Error(error.message);
-  if (!data) throw new Error("Insert succeeded but returned no data");
+  if (error) throw new Error("DB error: " + error.message + " code:" + error.code);
+  if (!data) throw new Error("Insert/update returned no data — possible RLS SELECT block after write");
   try { revalidatePath("/clients"); } catch { /* ignore */ }
   return data.id as string;
 }
