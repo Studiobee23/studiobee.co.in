@@ -27,6 +27,9 @@ export async function upsertProfitSplitSettings(input: {
 }
 
 export async function getProfitSplitSettings() {
+  const profile = await getCurrentProfile();
+  if (!profile) throw new Error("Not authenticated");
+  requireOwnerOrAdmin(profile.role);
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("profit_split_settings")
