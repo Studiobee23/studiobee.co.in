@@ -59,6 +59,18 @@ export async function GET() {
     .select("id, project_id, title, status, due_date, assigned_to, created_by")
     .limit(1);
 
+  // Test tasks+profiles join exactly as page.tsx does
+  const { data: tasksJoin, error: tasksJoinError } = await admin
+    .from("tasks")
+    .select("*, profiles(display_name, email)")
+    .limit(1);
+
+  // Test profiles columns
+  const { data: profileCols, error: profileColsError } = await admin
+    .from("profiles")
+    .select("id, display_name, email, role")
+    .limit(1);
+
   // Test increment_doc_series RPC
   const { error: rpcError } = await userClient.rpc("increment_doc_series", { series_type: "quote" });
   // If it worked, decrement it back (not critical for diagnostics)
@@ -72,6 +84,8 @@ export async function GET() {
     insertTest: { id: insertData?.id ?? null, error: insertError?.message ?? null, code: insertError?.code ?? null },
     documentsColTest: { ok: !docColsError, error: docColsError?.message ?? null },
     tasksColTest: { ok: !taskColsError, error: taskColsError?.message ?? null },
+    tasksJoinTest: { ok: !tasksJoinError, error: tasksJoinError?.message ?? null, rowCount: tasksJoin?.length ?? 0 },
+    profileColsTest: { ok: !profileColsError, error: profileColsError?.message ?? null },
     rpcTest: { ok: !rpcError, error: rpcError?.message ?? null },
   });
 }
