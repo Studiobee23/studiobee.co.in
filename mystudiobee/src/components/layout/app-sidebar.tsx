@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -118,10 +119,8 @@ export function AppSidebar({
   return (
     <Sidebar className="bg-gradient-blue">
       <SidebarHeader className="border-b border-white/8 px-5 py-2.5">
-        <Link href="/" className="inline-flex items-center gap-2">
-          <span className="font-heading text-lg font-semibold tracking-tight text-white">
-            mystudiobee
-          </span>
+        <Link href="/" className="inline-flex items-center">
+          <Image src="/studiobee-white.png" alt="StudioBee" width={120} height={30} />
         </Link>
       </SidebarHeader>
 
