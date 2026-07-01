@@ -89,7 +89,7 @@ export function ClientsClient({
       <ClientFormSheet
         open={open}
         onOpenChange={setOpen}
-        onSaved={(id) => router.push(`/clients/${id}`)}
+        onSaved={(id) => { setOpen(false); router.push(`/clients/${id}`); }}
       />
     </div>
   );

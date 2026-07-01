@@ -54,6 +54,7 @@ export async function upsertClient(input: ClientInput) {
         .single();
 
   if (error) throw new Error(error.message);
-  revalidatePath("/clients");
+  if (!data) throw new Error("Insert succeeded but returned no data");
+  try { revalidatePath("/clients"); } catch { /* ignore */ }
   return data.id as string;
 }
