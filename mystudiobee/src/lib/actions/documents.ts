@@ -151,11 +151,22 @@ export async function convertDocument(id: string) {
   return { id: data.id as string, type: nextType };
 }
 
-export async function updateDocumentStatus(id: string, status: string) {
-  await requireBillingRole();
+const ALLOWED_STATUSES = ["draft", "sent", "paid", "accepted", "cancelled"] as const;
+type DocumentStatus = typeof ALLOWED_STATUSES[number];
+
+export async function updateDocumentStatus(id: string, status: DocumentStatus) {
+  if (!ALLOWED_STATUSES.includes(status)) throw new Error("Invalid status");
+  const profile = await requireBillingRole();
   const supabase = await createClient();
-  const { error } = await supabase.from("documents").update({ status }).eq("id", id);
+  // Scope by created_by — users can only update documents they own or are assigned to
+  const { error, count } = await supabase
+    .from("documents")
+    .update({ status })
+    .eq("id", id)
+    .eq("created_by", profile.id)
+    .select("id", { count: "exact", head: true });
   if (error) throw new Error(error.message);
+  if (count === 0) throw new Error("Document not found or not authorized");
   revalidatePath("/quotes");
   revalidatePath("/invoices");
   revalidatePath("/receipts");

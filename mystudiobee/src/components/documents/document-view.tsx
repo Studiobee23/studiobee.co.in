@@ -50,7 +50,7 @@ export function DocumentView({ doc }: { doc: DocView }) {
   async function handleMarkPaid() {
     setMarkingPaid(true);
     try {
-      await updateDocumentStatus(doc.id, "paid");
+      await updateDocumentStatus(doc.id, "paid" as const);
       toast.success("Marked as paid");
       router.refresh();
     } catch (e) {
