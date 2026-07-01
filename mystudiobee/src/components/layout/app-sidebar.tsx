@@ -12,6 +12,11 @@ import {
   UserCog,
   Calculator,
   LogOut,
+  FolderOpen,
+  CheckSquare,
+  BarChart2,
+  PieChart,
+  Package,
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,6 +38,8 @@ type NavEntry = { title: string; href: string; icon: React.ComponentType<{ class
 
 const workspaceNav: NavEntry[] = [{ title: "Dashboard", href: "/", icon: LayoutDashboard }];
 const crmNav: NavEntry[] = [{ title: "Clients", href: "/clients", icon: Users }];
+const projectNav: NavEntry[] = [{ title: "Projects", href: "/projects", icon: FolderOpen }];
+const taskNav: NavEntry[] = [{ title: "Tasks", href: "/tasks", icon: CheckSquare }];
 const billingNav: NavEntry[] = [
   { title: "Quotes", href: "/quotes", icon: FileText },
   { title: "Invoices", href: "/invoices", icon: Receipt },
@@ -41,7 +48,10 @@ const billingNav: NavEntry[] = [
 const adminNav: NavEntry[] = [
   { title: "Team", href: "/admin/team", icon: UserCog },
   { title: "Cost Model", href: "/admin/cost-model", icon: Calculator },
+  { title: "Profit Split", href: "/admin/profit-split", icon: PieChart },
+  { title: "Equipment", href: "/admin/equipment", icon: Package },
 ];
+const reportNav: NavEntry[] = [{ title: "Reports", href: "/reports", icon: BarChart2 }];
 
 const GROUP_LABEL_CLASS =
   "mb-0 mt-1 px-3 h-4 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/30 leading-none";
@@ -127,8 +137,11 @@ export function AppSidebar({
       <SidebarContent className="px-3 py-1.5">
         <Group items={workspaceNav} pathname={pathname} />
         <Group label="CRM" items={crmNav} pathname={pathname} />
+        <Group label="Projects" items={projectNav} pathname={pathname} />
+        <Group label="Tasks" items={taskNav} pathname={pathname} />
         <Group label="Billing" items={billingNav} pathname={pathname} />
         {isOwnerOrAdmin && <Group label="Admin" items={adminNav} pathname={pathname} />}
+        {isOwnerOrAdmin && <Group label="Insights" items={reportNav} pathname={pathname} />}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-white/8 px-3 py-1.5">
