@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { convertDocument } from "@/lib/actions/documents";
+import { convertDocument, updateDocumentStatus } from "@/lib/actions/documents";
 import type { LineItem } from "@/lib/costing/types";
 
 type Client = {
@@ -43,7 +43,22 @@ const NEXT_PATH: Record<string, string> = { quote: "invoices", invoice: "receipt
 export function DocumentView({ doc }: { doc: DocView }) {
   const router = useRouter();
   const canConvert = doc.type === "quote" || doc.type === "invoice";
+  const canMarkPaid = (doc.type === "invoice" || doc.type === "receipt") && doc.status !== "paid";
   const [generating, setGenerating] = useState(false);
+  const [markingPaid, setMarkingPaid] = useState(false);
+
+  async function handleMarkPaid() {
+    setMarkingPaid(true);
+    try {
+      await updateDocumentStatus(doc.id, "paid");
+      toast.success("Marked as paid");
+      router.refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update status");
+    } finally {
+      setMarkingPaid(false);
+    }
+  }
 
   async function handleConvert() {
     try {
@@ -145,6 +160,11 @@ export function DocumentView({ doc }: { doc: DocView }) {
         {canConvert && (
           <Button variant="outline" onClick={handleConvert}>
             Convert to {NEXT_LABEL[doc.type]}
+          </Button>
+        )}
+        {canMarkPaid && (
+          <Button onClick={handleMarkPaid} disabled={markingPaid}>
+            {markingPaid ? "Saving…" : "Mark as Paid"}
           </Button>
         )}
       </div>

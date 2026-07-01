@@ -151,6 +151,16 @@ export async function convertDocument(id: string) {
   return { id: data.id as string, type: nextType };
 }
 
+export async function updateDocumentStatus(id: string, status: string) {
+  await requireBillingRole();
+  const supabase = await createClient();
+  const { error } = await supabase.from("documents").update({ status }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/quotes");
+  revalidatePath("/invoices");
+  revalidatePath("/receipts");
+}
+
 /** Fetch a document, redacting cost_breakdown from line items for manager-role sessions. */
 export async function getDocumentForViewer(id: string) {
   const profile = await requireBillingRole();

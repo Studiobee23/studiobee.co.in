@@ -13,7 +13,7 @@ import {
   uncompleteProjectStage,
   createMom,
 } from "@/lib/actions/projects";
-import { createTask } from "@/lib/actions/tasks";
+import { createTask, updateTaskStatus } from "@/lib/actions/tasks";
 import { toast } from "sonner";
 
 const LIFECYCLE_STAGES = [
@@ -199,11 +199,22 @@ export function ProjectDetailClient({
                   <p className="text-xs text-muted-foreground">Due {t.due_date}</p>
                 )}
               </div>
-              <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${STATUS_COLORS[t.status]}`}
+              <button
+                className={`rounded-full px-2 py-0.5 text-[10px] font-medium capitalize cursor-pointer ${STATUS_COLORS[t.status]}`}
+                title="Click to cycle status"
+                onClick={async () => {
+                  const cycle: Array<"pending" | "in_progress" | "delayed" | "completed"> = ["pending", "in_progress", "completed"];
+                  const next = cycle[(cycle.indexOf(t.status as never) + 1) % cycle.length];
+                  try {
+                    await updateTaskStatus(t.id, next);
+                    router.refresh();
+                  } catch {
+                    toast.error("Failed to update task status");
+                  }
+                }}
               >
                 {t.status.replace("_", " ")}
-              </span>
+              </button>
             </div>
           ))}
           <div className="flex gap-2 pt-1">
