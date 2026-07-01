@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, Eye, EyeOff, LayoutList, AlignLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { computeDocumentTotals } from "@/lib/costing/engine";
+import {
+  computeProfitSplit,
+  sumLaborCost,
+  sumDirectCost,
+} from "@/lib/profit-split/engine";
+import type { ProfitSplitSettings } from "@/lib/profit-split/engine";
 import type { LineItem } from "@/lib/costing/types";
 import { createQuote, updateDocument, convertDocument, priceLineItem } from "@/lib/actions/documents";
 
@@ -33,6 +39,7 @@ type Preset = {
 };
 type CostRole = { id: string; name: string; hourly_rate: number };
 type OverheadItem = { id: string; name: string; cost: number };
+type TeamMember = { id: string; display_name: string; email: string; role: string };
 
 export type QuoteDoc = {
   id: string;
@@ -48,6 +55,9 @@ export type QuoteDoc = {
   discount: number;
   notes: string;
   validity_days: number;
+  executor_id?: string | null;
+  manager_id?: string | null;
+  client_handler_id?: string | null;
 };
 
 export function QuoteEditor({
@@ -57,6 +67,8 @@ export function QuoteEditor({
   overheads,
   canSeeCost,
   doc,
+  teamMembers = [],
+  splitSettings = [],
 }: {
   clients: Client[];
   presets: Preset[];
@@ -64,6 +76,8 @@ export function QuoteEditor({
   overheads: OverheadItem[];
   canSeeCost: boolean;
   doc?: QuoteDoc;
+  teamMembers?: TeamMember[];
+  splitSettings?: ProfitSplitSettings[];
 }) {
   const router = useRouter();
   const [clientId, setClientId] = useState(doc?.client_id ?? "");
@@ -76,14 +90,35 @@ export function QuoteEditor({
   const [discount, setDiscount] = useState(doc?.discount ?? 0);
   const [notes, setNotes] = useState(doc?.notes ?? "");
   const [validityDays, setValidityDays] = useState(doc?.validity_days ?? 15);
+  const [executorId, setExecutorId] = useState(doc?.executor_id ?? "");
+  const [managerId, setManagerId] = useState(doc?.manager_id ?? "");
+  const [clientHandlerId, setClientHandlerId] = useState(doc?.client_handler_id ?? "");
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [showCost, setShowCost] = useState<Record<number, boolean>>({});
+  const [lumpsumView, setLumpsumView] = useState(false);
 
   const totals = useMemo(
     () => computeDocumentTotals({ lineItems, discount, gstEnabled, gstRate }),
     [lineItems, discount, gstEnabled, gstRate],
   );
+
+  const profitSplit = useMemo(() => {
+    if (!canSeeCost || totals.subtotal <= 0) return null;
+    const setting = splitSettings.find(
+      (s) => s.category.toLowerCase() === category.toLowerCase()
+    );
+    if (!setting) return null;
+    return computeProfitSplit(
+      {
+        price: totals.subtotal,
+        laborCost: sumLaborCost(lineItems as Array<{ cost_breakdown: unknown }>),
+        directCost: sumDirectCost(lineItems as Array<{ cost_breakdown: unknown }>),
+        category: setting.category,
+      },
+      setting
+    );
+  }, [canSeeCost, totals.subtotal, lineItems, category, splitSettings]);
 
   function removeLineItem(idx: number) {
     setLineItems((items) => items.filter((_, i) => i !== idx));
@@ -109,6 +144,10 @@ export function QuoteEditor({
       total: totals.total,
       notes,
       validity_days: validityDays,
+      executor_id: executorId || null,
+      manager_id: managerId || null,
+      client_handler_id: clientHandlerId || null,
+      profit_split: profitSplit ?? null,
     };
     try {
       if (doc) {
@@ -157,6 +196,8 @@ export function QuoteEditor({
     }
   }
 
+  const isWeb = category.toLowerCase() === "web";
+
   return (
     <div className="space-y-5">
       <div className="rounded-xl border border-border bg-card p-5 shadow-card">
@@ -182,7 +223,7 @@ export function QuoteEditor({
           </div>
           <div className="space-y-1.5">
             <Label>Category</Label>
-            <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g. branding" />
+            <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g. branding, video, web" />
           </div>
           <div className="space-y-1.5">
             <Label>Validity (days)</Label>
@@ -191,11 +232,27 @@ export function QuoteEditor({
         </div>
       </div>
 
+      {/* Line items */}
       <div className="rounded-xl border border-border bg-card p-5 shadow-card">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-heading text-[11px] font-semibold uppercase tracking-[0.08em]">
-            Line items
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-heading text-[11px] font-semibold uppercase tracking-[0.08em]">
+              Line items
+            </h3>
+            {lineItems.length > 0 && (
+              <button
+                onClick={() => setLumpsumView((v) => !v)}
+                className="flex items-center gap-1 rounded-md border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                title={lumpsumView ? "Show itemised view" : "Show summary view"}
+              >
+                {lumpsumView ? (
+                  <><LayoutList className="h-3 w-3" /> Itemised</>
+                ) : (
+                  <><AlignLeft className="h-3 w-3" /> Summary</>
+                )}
+              </button>
+            )}
+          </div>
           <AddLineItemDialog
             presets={presets}
             roles={roles}
@@ -208,6 +265,20 @@ export function QuoteEditor({
           <p className="rounded-lg border border-dashed border-border py-6 text-center text-xs text-muted-foreground">
             No line items yet.
           </p>
+        ) : lumpsumView ? (
+          <div className="rounded-lg border border-border bg-muted/30 p-4 text-center">
+            <p className="font-heading text-2xl font-semibold">
+              ₹{totals.total.toLocaleString("en-IN")}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {projectName || "Project"} · {lineItems.length} service{lineItems.length !== 1 ? "s" : ""} included
+            </p>
+            {gstEnabled && (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Incl. {gstType === "igst" ? "IGST" : "CGST+SGST"} @ {gstRate}%
+              </p>
+            )}
+          </div>
         ) : (
           <div className="space-y-2">
             {lineItems.map((li, idx) => (
@@ -312,6 +383,113 @@ export function QuoteEditor({
           </div>
         </div>
       </div>
+
+      {/* Team assignment + profit split (owner/admin only) */}
+      {canSeeCost && teamMembers.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-5 shadow-card space-y-4">
+          <h3 className="font-heading text-[11px] font-semibold uppercase tracking-[0.08em]">
+            Team Assignment
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label>Executor</Label>
+              <Select value={executorId} onValueChange={setExecutorId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">None</SelectItem>
+                  {teamMembers.map((m) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.display_name || m.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {isWeb ? (
+              <div className="space-y-1.5">
+                <Label>Client Handling</Label>
+                <Select value={clientHandlerId} onValueChange={setClientHandlerId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">None</SelectItem>
+                    {teamMembers.map((m) => (
+                      <SelectItem key={m.id} value={m.id}>
+                        {m.display_name || m.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                <Label>Manager</Label>
+                <Select value={managerId} onValueChange={setManagerId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">None</SelectItem>
+                    {teamMembers.map((m) => (
+                      <SelectItem key={m.id} value={m.id}>
+                        {m.display_name || m.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+
+          {profitSplit && (
+            <div className="space-y-2 border-t border-border pt-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                Profit Split · {profitSplit.tier.mode === "cost-plus" ? "Cost-Plus" : "Simple"} · Pool ₹{profitSplit.pool.toLocaleString("en-IN")}
+              </p>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <div className="rounded-lg bg-muted px-3 py-2">
+                  <p className="text-[10px] text-muted-foreground">Company</p>
+                  <p className="text-xs font-medium">
+                    ₹{profitSplit.company.toLocaleString("en-IN")} ({profitSplit.tier.company_pct}%)
+                  </p>
+                </div>
+                <div className="rounded-lg bg-muted px-3 py-2">
+                  <p className="text-[10px] text-muted-foreground">Executor</p>
+                  <p className="text-xs font-medium">
+                    ₹{profitSplit.executor.toLocaleString("en-IN")} ({profitSplit.tier.executor_pct}%)
+                  </p>
+                </div>
+                {profitSplit.is_web ? (
+                  <>
+                    <div className="rounded-lg bg-muted px-3 py-2">
+                      <p className="text-[10px] text-muted-foreground">Origination</p>
+                      <p className="text-xs font-medium">
+                        ₹{(profitSplit.origination ?? 0).toLocaleString("en-IN")} ({profitSplit.tier.origination_pct ?? 0}%)
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-muted px-3 py-2">
+                      <p className="text-[10px] text-muted-foreground">Client Handling</p>
+                      <p className="text-xs font-medium">
+                        ₹{(profitSplit.client_handling ?? 0).toLocaleString("en-IN")} ({profitSplit.tier.client_handling_pct ?? 0}%)
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="rounded-lg bg-muted px-3 py-2">
+                    <p className="text-[10px] text-muted-foreground">Manager</p>
+                    <p className="text-xs font-medium">
+                      ₹{(profitSplit.manager ?? 0).toLocaleString("en-IN")} ({profitSplit.tier.manager_pct ?? 0}%)
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="rounded-xl border border-border bg-card p-5 shadow-card">
         <Label>Notes / terms</Label>

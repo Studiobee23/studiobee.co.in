@@ -111,14 +111,11 @@ export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
 
   return (
     <>
-      <DashboardHeader
-        title="Equipment Inventory"
-        actions={
-          <Button size="sm" onClick={openNew}>
-            + Add Equipment
-          </Button>
-        }
-      />
+      <DashboardHeader title="Equipment Inventory">
+        <Button size="sm" onClick={openNew}>
+          + Add Equipment
+        </Button>
+      </DashboardHeader>
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="rounded-xl border border-border overflow-hidden">
           <Table>

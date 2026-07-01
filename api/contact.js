@@ -34,10 +34,14 @@ module.exports = async function handler(req, res) {
   const city    = String(body.city    || '').trim().slice(0, 100);
   const message = String(body.message || '').trim().slice(0, 5000);
 
-  const { error } = await supabase.from('contacts').insert({ name, email, phone, city, message });
-  if (error) {
-    console.error('Contact insert failed:', error.message);
-    return res.status(500).json({ error: 'Failed to save contact' });
+  try {
+    const insertPromise = supabase.from('contacts').insert({ name, email, phone, city, message });
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
+    const { error } = await Promise.race([insertPromise, timeoutPromise]);
+    if (error) console.error('Contact insert failed (non-fatal):', error.message);
+    else console.log(`Contact saved to Supabase: ${name} <${email}>`);
+  } catch (e) {
+    console.error('Contact insert error (non-fatal):', e.message);
   }
   console.log(`New contact: ${name} <${email}> — ${city}`);
 

@@ -72,7 +72,7 @@ export default async function HoursReportPage() {
                   <tr key={p.id} className="bg-card hover:bg-muted/30">
                     <td className="px-4 py-3 font-medium">{p.name}</td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {(p.clients as { name: string } | null)?.name ?? "—"}
+                      {(p.clients as unknown as { name: string } | null)?.name ?? "—"}
                     </td>
                     <td className="px-4 py-3">{est > 0 ? `${est}h` : "—"}</td>
                     <td className="px-4 py-3">{consumed > 0 ? `${consumed}h` : "—"}</td>

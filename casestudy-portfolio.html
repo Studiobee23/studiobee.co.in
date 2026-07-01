@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>studiobee — Portfolio Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Kulim+Park:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+@page{size:A4 landscape;margin:0;}
+body{font-family:'DM Sans',sans-serif;background:#BEBEBE;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:297mm;height:210mm;overflow:hidden;position:relative;page-break-after:always;background:#FBFBFB;}
+@media screen{.page{margin:12px auto;box-shadow:0 4px 48px rgba(0,0,0,0.3);}}
+
+/* ── Shared utilities ─────────────────────────────── */
+.ph{height:8mm;display:flex;align-items:center;justify-content:space-between;padding:0 12mm;border-bottom:0.3mm solid rgba(0,0,0,0.07);}
+.ph-label{font-size:6pt;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.28);}
+.ph-num{font-size:6pt;color:rgba(0,0,0,0.18);}
+.ph-dark{background:#0A0A0A;border-bottom:none;}
+.ph-dark .ph-label,.ph-dark .ph-num{color:rgba(255,255,255,0.3);}
+.ph-blue{background:#2F48DF;border-bottom:none;}
+.ph-blue .ph-label,.ph-blue .ph-num{color:rgba(255,255,255,0.4);}
+
+.body-inner{padding:9mm 12mm 8mm;height:calc(210mm - 8mm);display:flex;flex-direction:column;gap:5mm;}
+
+.tag{font-size:6pt;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#2F48DF;}
+.h2{font-size:20pt;font-weight:600;letter-spacing:-0.04em;color:#0A0A0A;line-height:1.05;margin-top:1.5mm;}
+.body-copy{font-family:'Kulim Park',sans-serif;font-size:8pt;line-height:1.72;color:#444;}
+.small{font-size:7pt;line-height:1.6;color:#666;}
+.divider{height:0.3mm;background:rgba(0,0,0,0.07);flex-shrink:0;}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:4mm;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3.5mm;}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:3mm;}
+
+.card{background:#F6F6F6;border-radius:2.5mm;padding:5mm;border:0.3mm solid #EAEAEA;}
+.card-blue-top{border-top:1.5mm solid #2F48DF;}
+.card-tag{font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.2mm;}
+.card-h{font-size:10pt;font-weight:600;color:#0A0A0A;margin-bottom:1.5mm;line-height:1.2;}
+.card-b{font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.65;color:#555;}
+.card-dark{background:#0A0A0A;border-color:#222;}
+.card-dark .card-tag{color:rgba(255,255,255,0.4);}
+.card-dark .card-h{color:#FBFBFB;}
+.card-dark .card-b{color:rgba(255,255,255,0.55);}
+.card-blue-bg{background:#2F48DF;border-color:#1e33b8;}
+.card-blue-bg .card-tag{color:rgba(255,255,255,0.5);}
+.card-blue-bg .card-h{color:#FBFBFB;}
+.card-blue-bg .card-b{color:rgba(255,255,255,0.75);}
+
+.pull{border-left:1mm solid #2F48DF;padding:4mm 5mm;background:#EEF2FF;border-radius:0 2.5mm 2.5mm 0;}
+.pull-text{font-family:'Kulim Park',sans-serif;font-size:10.5pt;line-height:1.6;color:#1a2a8a;}
+.pull-attr{font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(47,72,223,0.5);margin-top:2mm;}
+
+.decision-row{display:grid;grid-template-columns:1fr 7mm 1fr;align-items:stretch;background:#F8F8F8;border-radius:2mm;overflow:hidden;border:0.3mm solid #EBEBEB;margin-bottom:2mm;}
+.decision-left{padding:2.5mm 3.5mm;border-right:0.3mm solid #E8E8E8;}
+.decision-arrow{display:flex;align-items:center;justify-content:center;background:#EEF2FF;font-size:7.5pt;color:#2F48DF;font-weight:700;}
+.decision-right{padding:2.5mm 3.5mm;}
+.dl{font-size:5.5pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;margin-bottom:0.8mm;}
+.dt{font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.52;color:#333;}
+
+.swatch{border-radius:2mm;display:flex;flex-direction:column;justify-content:flex-end;padding:2mm 2.5mm;}
+.sw-label{font-size:7pt;font-weight:700;}
+.sw-hex{font-size:5.5pt;opacity:0.7;}
+.sw-use{font-size:5pt;opacity:0.5;margin-top:0.4mm;}
+
+.outcome-num{font-size:26pt;font-weight:700;letter-spacing:-0.05em;color:#2F48DF;line-height:1;}
+.outcome-label{font-size:7pt;font-weight:500;color:#0A0A0A;margin-top:1mm;line-height:1.4;}
+
+.band-dark{background:#0A0A0A;padding:4mm 5mm;border-radius:2mm;}
+.band-dark-text{font-family:'Kulim Park',sans-serif;font-size:9.5pt;line-height:1.7;color:rgba(255,255,255,0.82);}
+.band-dark-attr{font-size:5.5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-top:1.5mm;}
+
+.layer-row{display:flex;align-items:center;gap:2mm;padding:2mm 3mm;border-radius:1.5mm;margin-bottom:1.5mm;}
+.layer-num{font-size:9pt;font-weight:700;color:#2F48DF;width:8mm;flex-shrink:0;text-align:right;}
+.layer-bar-wrap{flex:1;height:4mm;background:#EAEAEA;border-radius:1mm;overflow:hidden;}
+.layer-bar{height:100%;background:#2F48DF;border-radius:1mm;}
+.layer-label{font-family:'Kulim Park',sans-serif;font-size:7pt;color:#444;width:62mm;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 1 — COVER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div style="background:#0A0A0A;background-image:url('/7944.png');background-size:cover;background-position:center;height:210mm;display:flex;flex-direction:column;justify-content:space-between;padding:12mm;position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,10,10,0.85) 0%,rgba(47,72,223,0.18) 60%,rgba(10,10,10,0.9) 100%);z-index:1;"></div>
+
+    <!-- Top row -->
+    <div style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:7pt;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.4);">studiobee.co.in</div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);">Portfolio — 2025</div>
+    </div>
+
+    <!-- Center hero text -->
+    <div style="position:relative;z-index:2;">
+      <div style="font-size:7pt;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#2F48DF;margin-bottom:5mm;">UX · UI · Front-end</div>
+      <div style="display:flex;align-items:flex-end;gap:8mm;">
+        <div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:58pt;font-weight:700;letter-spacing:-0.05em;line-height:0.88;color:#FBFBFB;">Studio</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:58pt;font-weight:700;letter-spacing:-0.05em;line-height:0.88;color:#FBFBFB;">Bee<span style="color:#2F48DF;">.</span></div>
+        </div>
+        <div style="padding-bottom:3mm;max-width:85mm;">
+          <div style="height:0.4mm;width:24mm;background:#2F48DF;margin-bottom:4mm;"></div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:9.5pt;line-height:1.65;color:rgba(255,255,255,0.6);">Designing a brand-forward agency website that performs at 60fps on an iPhone — and looks like the best agency in the room.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom metadata -->
+    <div style="position:relative;z-index:2;">
+      <div style="height:0.3mm;background:rgba(255,255,255,0.12);margin-bottom:4.5mm;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5mm;">
+        <div>
+          <div style="font-size:5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:1.2mm;">Role</div>
+          <div style="font-size:8pt;font-weight:500;color:#FBFBFB;">Lead UX/UI + Front-end</div>
+        </div>
+        <div>
+          <div style="font-size:5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:1.2mm;">Year</div>
+          <div style="font-size:8pt;font-weight:500;color:#FBFBFB;">2025</div>
+        </div>
+        <div>
+          <div style="font-size:5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:1.2mm;">Platform</div>
+          <div style="font-size:8pt;font-weight:500;color:#FBFBFB;">Web — mobile-first</div>
+        </div>
+        <div>
+          <div style="font-size:5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:1.2mm;">Deliverables</div>
+          <div style="font-size:8pt;font-weight:500;color:#FBFBFB;">Brand · UI · Prototype · Build</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 2 — BRIEF + ROLE
+     ═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Brief &amp; Role</span><span class="ph-num">02 / 10</span></div>
+  <div class="body-inner" style="flex-direction:row;gap:8mm;">
+
+    <!-- Left column -->
+    <div style="flex:1.15;display:flex;flex-direction:column;gap:4.5mm;">
+      <div>
+        <div class="tag">The Brief</div>
+        <div class="h2">Make it feel like the best<br/>agency in the room.</div>
+      </div>
+      <div class="pull">
+        <div class="pull-text">"Brand-forward, performance-first. Looks premium on a 6-year-old iPhone. Converts visitors into enquiries in 3 scroll stops."</div>
+        <div class="pull-attr">Project Brief — studiobee, 2025</div>
+      </div>
+      <div>
+        <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.3);margin-bottom:2mm;">Design Constraints</div>
+        <div class="g2" style="gap:2.5mm;">
+          <div style="display:flex;gap:2.5mm;align-items:flex-start;">
+            <div style="width:1.5mm;height:1.5mm;background:#2F48DF;border-radius:50%;flex-shrink:0;margin-top:1.5mm;"></div>
+            <div class="small">Mobile-first — 78% of visits on phone</div>
+          </div>
+          <div style="display:flex;gap:2.5mm;align-items:flex-start;">
+            <div style="width:1.5mm;height:1.5mm;background:#2F48DF;border-radius:50%;flex-shrink:0;margin-top:1.5mm;"></div>
+            <div class="small">No UI framework — full performance control</div>
+          </div>
+          <div style="display:flex;gap:2.5mm;align-items:flex-start;">
+            <div style="width:1.5mm;height:1.5mm;background:#2F48DF;border-radius:50%;flex-shrink:0;margin-top:1.5mm;"></div>
+            <div class="small">iOS GPU layer budget: 50 max before crash</div>
+          </div>
+          <div style="display:flex;gap:2.5mm;align-items:flex-start;">
+            <div style="width:1.5mm;height:1.5mm;background:#2F48DF;border-radius:50%;flex-shrink:0;margin-top:1.5mm;"></div>
+            <div class="small">Premium feel — no template aesthetic</div>
+          </div>
+        </div>
+      </div>
+      <!-- Audience -->
+      <div class="band-dark" style="flex-shrink:0;">
+        <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1.5mm;">Primary User</div>
+        <div class="band-dark-text" style="font-size:8.5pt;">Rahul, Co-founder &amp; Marketing Lead — comparing 3 agencies on an iPhone 13 during his evening commute. Decides in under 10 seconds.</div>
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:4mm;">
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.3);margin-bottom:0;">My Contribution</div>
+      <div style="display:flex;flex-direction:column;gap:2.5mm;">
+        <div class="card card-blue-top">
+          <div class="card-tag">UX Research</div>
+          <div class="card-b">Competitor benchmarking across 6 agencies (Ragged Edge, Koto, Superside). Persona development. Decision-path mapping for 8-second mobile visitor.</div>
+        </div>
+        <div class="card card-blue-top">
+          <div class="card-tag">Visual Design</div>
+          <div class="card-b">Full brand system — colour tokens, typography scale, section colour cadence, component library.</div>
+        </div>
+        <div class="card card-blue-top">
+          <div class="card-tag">Interaction Design</div>
+          <div class="card-b">Hero wave animation, text scramble, auto-scroll marquee, glass morphism testimonials, iOS-safe inversion strips.</div>
+        </div>
+        <div class="card card-blue-top">
+          <div class="card-tag">Front-end Build</div>
+          <div class="card-b">Single HTML file, inline CSS, vanilla JS. No framework. Every animation constrained to GPU-composited properties only.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 3 — BRAND SYSTEM
+     ═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Brand System</span><span class="ph-num">03 / 10</span></div>
+  <div class="body-inner">
+
+    <div>
+      <div class="tag">Outcome — Brand System</div>
+      <div class="h2">Every token is a decision, not a default.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:3.5mm;">
+
+      <!-- Colour palette -->
+      <div>
+        <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.3);margin-bottom:2.5mm;">Colour System</div>
+        <div style="display:flex;gap:3mm;">
+          <div class="swatch" style="background:#2F48DF;width:36mm;height:18mm;">
+            <div class="sw-label" style="color:#FBFBFB;">Blue</div>
+            <div class="sw-hex" style="color:#FBFBFB;">#2F48DF</div>
+            <div class="sw-use" style="color:rgba(255,255,255,0.5);">Brand · CTAs · Hero · Work · CTA</div>
+          </div>
+          <div class="swatch" style="background:#0A0A0A;width:36mm;height:18mm;">
+            <div class="sw-label" style="color:#FBFBFB;">Dark</div>
+            <div class="sw-hex" style="color:#FBFBFB;">#0A0A0A</div>
+            <div class="sw-use" style="color:rgba(255,255,255,0.4);">Services · Stats · Process · Footer</div>
+          </div>
+          <div class="swatch" style="background:#FBFBFB;border:0.4mm solid #EAEAEA;width:36mm;height:18mm;">
+            <div class="sw-label" style="color:#0A0A0A;">Light</div>
+            <div class="sw-hex" style="color:#0A0A0A;">#FBFBFB</div>
+            <div class="sw-use" style="color:rgba(0,0,0,0.4);">Base bg · Text on dark</div>
+          </div>
+          <div class="swatch" style="background:#F3E9D9;border:0.4mm solid #E8DCC8;width:36mm;height:18mm;">
+            <div class="sw-label" style="color:#0A0A0A;">Cream</div>
+            <div class="sw-hex" style="color:#0A0A0A;">#F3E9D9</div>
+            <div class="sw-use" style="color:rgba(0,0,0,0.4);">Team section — warmth signal</div>
+          </div>
+          <div class="swatch" style="background:#1e33b8;width:28mm;height:18mm;">
+            <div class="sw-label" style="color:#FBFBFB;font-size:6.5pt;">Blue Dark</div>
+            <div class="sw-hex" style="color:#FBFBFB;">#1E33B8</div>
+            <div class="sw-use" style="color:rgba(255,255,255,0.45);">Hover states</div>
+          </div>
+          <div class="swatch" style="background:#EEF2FF;border:0.4mm solid #D8DFFF;width:28mm;height:18mm;">
+            <div class="sw-label" style="color:#2F48DF;font-size:6.5pt;">Blue Tint</div>
+            <div class="sw-hex" style="color:#2F48DF;">#EEF2FF</div>
+            <div class="sw-use" style="color:rgba(47,72,223,0.5);">Callouts · Pull-quotes</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Typography -->
+      <div>
+        <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.3);margin-bottom:2.5mm;">Typography</div>
+        <div class="g2" style="gap:8mm;">
+          <div>
+            <div style="font-family:'DM Sans',sans-serif;font-size:26pt;font-weight:600;letter-spacing:-0.04em;color:#0A0A0A;line-height:0.95;margin-bottom:2mm;">Headlines.</div>
+            <div style="font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.2mm;">DM Sans — 600 weight, −0.04em tracking</div>
+            <div class="small">Section titles, card headings, nav. Tight tracking signals precision and confidence. The -0.04em is non-negotiable — default tracking reads "template".</div>
+          </div>
+          <div>
+            <div style="font-family:'Kulim Park',sans-serif;font-size:9.5pt;font-weight:400;line-height:1.72;color:#444;margin-bottom:2mm;">Body copy flows with warmth — readable across dark and light sections alike.</div>
+            <div style="font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.2mm;">Kulim Park — 400 weight, 1.72 line-height</div>
+            <div class="small">Paragraph copy, card descriptions, testimonials. The warm serif of Kulim Park offsets DM Sans's precision — the pairing signals craft, not sterility.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Section cadence -->
+      <div>
+        <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.3);margin-bottom:2mm;">Section Colour Cadence</div>
+        <svg viewBox="0 0 660 54" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+          <rect x="0" y="0" width="74" height="30" rx="3" fill="#2F48DF"/>
+          <text x="37" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" font-weight="700" fill="rgba(255,255,255,0.9)">HERO</text>
+          <text x="37" y="44" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="#777">Blue</text>
+          <rect x="76" y="0" width="74" height="30" rx="3" fill="#0A0A0A"/>
+          <text x="113" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" font-weight="700" fill="rgba(255,255,255,0.9)">SERVICES</text>
+          <text x="113" y="44" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="#777">Dark</text>
+          <rect x="152" y="0" width="74" height="30" rx="3" fill="#2F48DF"/>
+          <text x="189" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" font-weight="700" fill="rgba(255,255,255,0.9)">WORK</text>
+          <text x="189" y="44" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="#777">Blue</text>
+          <rect x="228" y="0" width="74" height="30" rx="3" fill="#FBFBFB" stroke="#E0E0E0" stroke-width="0.5"/>
+          <text x="265" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" font-weight="700" fill="#0A0A0A">STATS</text>
+          <text x="265" y="44" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="#777">Light</text>
+          <rect x="304" y="0" width="74" height="30" rx="3" fill="#FBFBFB" stroke="#E0E0E0" stroke-width="0.5"/>
+          <text x="341" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" font-weight="700" fill="#0A0A0A">PROCESS</text>
+          <text x="341" y="44" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="#777">Light</text>
+          <rect x="380" y="0" width="74" height="30" rx="3" fill="#0A0A0A"/>
+          <text x="417" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="rgba(255,255,255,0.9)">TESTIM.</text>
+          <text x="417" y="44" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="#777">Dark</text>
+          <rect x="456" y="0" width="74" height="30" rx="3" fill="#F3E9D9"/>
+          <text x="493" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" font-weight="700" fill="#0A0A0A">TEAM</text>
+          <text x="493" y="44" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="#777">Cream</text>
+          <rect x="532" y="0" width="74" height="30" rx="3" fill="#2F48DF"/>
+          <text x="569" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" font-weight="700" fill="rgba(255,255,255,0.9)">CTA</text>
+          <text x="569" y="44" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="#777">Blue</text>
+          <rect x="608" y="0" width="52" height="30" rx="3" fill="#0A0A0A"/>
+          <text x="634" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="rgba(255,255,255,0.9)">FOOTER</text>
+          <text x="634" y="44" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="#777">Dark</text>
+          <!-- Annotation -->
+          <text x="330" y="53" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="5.5" fill="#aaa" font-style="italic">Rhythm: blue / dark / light alternation prevents visual fatigue and creates a sense of journey through the page</text>
+        </svg>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 4 — KEY DESIGN DECISIONS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Design Decisions</span><span class="ph-num">04 / 10</span></div>
+  <div class="body-inner">
+
+    <div>
+      <div class="tag">Research → Decision</div>
+      <div class="h2">Every constraint became a design decision.</div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;gap:2mm;">
+      <div class="decision-row">
+        <div class="decision-left">
+          <div class="dl">Insight</div>
+          <div class="dt">78% of first-contact visits on mobile — users compare agencies on a commute, scrolling quickly with one thumb.</div>
+        </div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-right">
+          <div class="dl">Decision</div>
+          <div class="dt"><strong>9:16 portrait work cards</strong> — the same ratio as Instagram Stories. They feel native on a phone, not like a desktop layout squeezed down.</div>
+        </div>
+      </div>
+      <div class="decision-row">
+        <div class="decision-left">
+          <div class="dl">Insight</div>
+          <div class="dt">Portfolio is the #1 decision factor. Users form a quality impression in 8 seconds — visual weight signals credibility before a word is read.</div>
+        </div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-right">
+          <div class="dl">Decision</div>
+          <div class="dt"><strong>Dark sections + tight −0.04em tracking</strong> signal premium positioning the instant the page loads. Work section placed second — not behind a click.</div>
+        </div>
+      </div>
+      <div class="decision-row">
+        <div class="decision-left">
+          <div class="dl">Insight</div>
+          <div class="dt">Indian founders prioritise warmth and approachability alongside prestige — cold, editorial-only aesthetics feel inaccessible to the target market.</div>
+        </div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-right">
+          <div class="dl">Decision</div>
+          <div class="dt"><strong>Cream section for Team + Kulim Park body font</strong> — breaks the dark/blue cadence deliberately. Warm contrast is a brand signal, not a deviation.</div>
+        </div>
+      </div>
+      <div class="decision-row">
+        <div class="decision-left">
+          <div class="dl">Constraint</div>
+          <div class="dt">iPhone 12/13 crashes Chrome with more than ~50 GPU compositor layers — each animated clip-path element consumes one.</div>
+        </div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-right">
+          <div class="dl">Decision</div>
+          <div class="dt"><strong>Hard layer budget of 50:</strong> 20 hero strips + 10 text inversion + 10 nav inversion + 10 hamburger inversion = exactly at limit. No decorative animations beyond this.</div>
+        </div>
+      </div>
+      <div class="decision-row">
+        <div class="decision-left">
+          <div class="dl">Constraint</div>
+          <div class="dt">The contact form is the only conversion point — it must feel like a destination, not a form at the bottom of a page.</div>
+        </div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-right">
+          <div class="dl">Decision</div>
+          <div class="dt"><strong>Full-section blue background for CTA</strong> — matches the brand's primary blue. The section acts as a visual full-stop. Decorated success state with SVG checkmark + countdown bar makes submission a reward.</div>
+        </div>
+      </div>
+      <div class="decision-row" style="margin-bottom:0;">
+        <div class="decision-left">
+          <div class="dl">Constraint</div>
+          <div class="dt">Nav must work at 390px without collapsing to microscopic tap targets — WCAG 2.5.5 requires 44px minimum.</div>
+        </div>
+        <div class="decision-arrow">→</div>
+        <div class="decision-right">
+          <div class="dl">Decision</div>
+          <div class="dt"><strong>Full-screen dark overlay menu on mobile</strong> — large display-size link text. What could feel like a limitation became a brand-scale interaction.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 5 — HERO & WAVE ANIMATION SYSTEM
+     ═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ph ph-blue"><span class="ph-label" style="color:rgba(255,255,255,0.5);">Hero — Wave Animation System</span><span class="ph-num" style="color:rgba(255,255,255,0.3);">05 / 10</span></div>
+  <div style="background:#0A0A0A;height:calc(210mm - 8mm);padding:9mm 12mm 8mm;display:flex;flex-direction:column;gap:5mm;">
+
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.5mm;">Hero Design</div>
+      <div style="font-size:18pt;font-weight:600;letter-spacing:-0.04em;color:#FBFBFB;line-height:1.05;">A motion system born from brand energy — not decoration.</div>
+    </div>
+
+    <div style="display:flex;gap:6mm;flex:1;min-height:0;">
+
+      <!-- Left: wave diagram -->
+      <div style="flex:1.2;display:flex;flex-direction:column;gap:3.5mm;">
+        <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0;">Wave Strip System</div>
+        <!-- Hero mockup with animated strips -->
+        <div style="flex:1;background:#1a1a3e;border-radius:2mm;overflow:hidden;position:relative;border:0.3mm solid rgba(255,255,255,0.08);">
+          <svg viewBox="0 0 340 148" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+            <!-- Strip columns (20 strips) -->
+            <defs>
+              <clipPath id="s0"><polygon points="0,0 17,0 17,148 0,148"/></clipPath>
+              <clipPath id="s1"><polygon points="17,0 34,0 34,148 17,148"/></clipPath>
+              <clipPath id="s2"><polygon points="34,0 51,0 51,148 34,148"/></clipPath>
+              <clipPath id="s3"><polygon points="51,0 68,0 68,148 51,148"/></clipPath>
+              <clipPath id="s4"><polygon points="68,0 85,0 85,148 68,148"/></clipPath>
+              <clipPath id="s5"><polygon points="85,0 102,0 102,148 85,148"/></clipPath>
+              <clipPath id="s6"><polygon points="102,0 119,0 119,148 102,148"/></clipPath>
+              <clipPath id="s7"><polygon points="119,0 136,0 136,148 119,148"/></clipPath>
+              <clipPath id="s8"><polygon points="136,0 153,0 153,148 136,148"/></clipPath>
+              <clipPath id="s9"><polygon points="153,0 170,0 170,148 153,148"/></clipPath>
+              <clipPath id="s10"><polygon points="170,0 187,0 187,148 170,148"/></clipPath>
+              <clipPath id="s11"><polygon points="187,0 204,0 204,148 187,148"/></clipPath>
+              <clipPath id="s12"><polygon points="204,0 221,0 221,148 204,148"/></clipPath>
+              <clipPath id="s13"><polygon points="221,0 238,0 238,148 221,148"/></clipPath>
+              <clipPath id="s14"><polygon points="238,0 255,0 255,148 238,148"/></clipPath>
+              <clipPath id="s15"><polygon points="255,0 272,0 272,148 255,148"/></clipPath>
+              <clipPath id="s16"><polygon points="272,0 289,0 289,148 272,148"/></clipPath>
+              <clipPath id="s17"><polygon points="289,0 306,0 306,148 289,148"/></clipPath>
+              <clipPath id="s18"><polygon points="306,0 323,0 323,148 306,148"/></clipPath>
+              <clipPath id="s19"><polygon points="323,0 340,0 340,148 323,148"/></clipPath>
+            </defs>
+            <!-- Background: dark blue -->
+            <rect width="340" height="148" fill="#0d1a4a"/>
+            <!-- Strip highlights — alternating opacity to show wave -->
+            <rect width="340" height="148" fill="rgba(47,72,223,0.12)" clip-path="url(#s1)"/>
+            <rect width="340" height="148" fill="rgba(47,72,223,0.22)" clip-path="url(#s3)"/>
+            <rect width="340" height="148" fill="rgba(47,72,223,0.35)" clip-path="url(#s5)"/>
+            <rect width="340" height="148" fill="rgba(47,72,223,0.28)" clip-path="url(#s7)"/>
+            <rect width="340" height="148" fill="rgba(47,72,223,0.15)" clip-path="url(#s9)"/>
+            <rect width="340" height="148" fill="rgba(47,72,223,0.08)" clip-path="url(#s11)"/>
+            <rect width="340" height="148" fill="rgba(47,72,223,0.20)" clip-path="url(#s13)"/>
+            <rect width="340" height="148" fill="rgba(47,72,223,0.32)" clip-path="url(#s15)"/>
+            <rect width="340" height="148" fill="rgba(47,72,223,0.18)" clip-path="url(#s17)"/>
+            <rect width="340" height="148" fill="rgba(47,72,223,0.10)" clip-path="url(#s19)"/>
+            <!-- Strip dividers -->
+            <line x1="17" y1="0" x2="17" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="34" y1="0" x2="34" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="51" y1="0" x2="51" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="68" y1="0" x2="68" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="85" y1="0" x2="85" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="102" y1="0" x2="102" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="119" y1="0" x2="119" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="136" y1="0" x2="136" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="153" y1="0" x2="153" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="170" y1="0" x2="170" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="187" y1="0" x2="187" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="204" y1="0" x2="204" y2="148" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <!-- Hero text overlay -->
+            <rect x="18" y="28" width="90" height="6" rx="1.5" fill="rgba(255,255,255,0.15)"/>
+            <rect x="18" y="40" width="150" height="14" rx="2" fill="rgba(255,255,255,0.2)"/>
+            <rect x="18" y="58" width="130" height="10" rx="2" fill="rgba(255,255,255,0.12)"/>
+            <rect x="18" y="78" width="78" height="16" rx="8" fill="rgba(255,255,255,0)" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+            <text x="57" y="89" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(255,255,255,0.7)">Start a project →</text>
+            <!-- Annotation lines -->
+            <line x1="221" y1="74" x2="280" y2="50" stroke="#2F48DF" stroke-width="0.8" stroke-dasharray="2,2"/>
+            <text x="282" y="46" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.5)">20 vertical strips</text>
+            <line x1="170" y1="120" x2="280" y2="106" stroke="#2F48DF" stroke-width="0.8" stroke-dasharray="2,2"/>
+            <text x="282" y="103" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.5)">opacity: 9s wave</text>
+            <line x1="85" y1="60" x2="26" y2="130" stroke="#2F48DF" stroke-width="0.8" stroke-dasharray="2,2"/>
+            <text x="8" y="138" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.5)">staggered delays</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Right: explanation + performance notes -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:3.5mm;">
+
+        <div style="background:rgba(47,72,223,0.15);border-radius:2mm;padding:4mm 5mm;border:0.3mm solid rgba(47,72,223,0.25);">
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.5mm;">How It Works</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:8pt;line-height:1.7;color:rgba(255,255,255,0.75);">20 HTML divs with identical <code style="font-size:7pt;background:rgba(255,255,255,0.1);padding:0 1mm;border-radius:0.8mm;">clip-path</code> shapes. Each animates its <code style="font-size:7pt;background:rgba(255,255,255,0.1);padding:0 1mm;border-radius:0.8mm;">opacity</code> on a 9-second sinusoidal wave — staggered by 0.45s per strip — creating a left-to-right travelling shimmer. Static clip-path (no clip-path animation) keeps each strip to exactly 1 GPU compositor layer.</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.05);border-radius:2mm;padding:3.5mm 5mm;border:0.3mm solid rgba(255,255,255,0.08);">
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:1.5mm;">iOS Performance Design</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.65;color:rgba(255,255,255,0.65);">Animating <code style="font-size:7pt;background:rgba(255,255,255,0.1);padding:0 1mm;border-radius:0.8mm;">clip-path</code> itself would double the layer count. By keeping clip-path static and only animating <code style="font-size:7pt;background:rgba(255,255,255,0.1);padding:0 1mm;border-radius:0.8mm;">opacity</code>, each strip stays GPU-composited without triggering layout or paint.</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.05);border-radius:2mm;padding:3.5mm 5mm;border:0.3mm solid rgba(255,255,255,0.08);">
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:1.5mm;">Text Inversion System</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.65;color:rgba(255,255,255,0.65);">Headings appear to change colour as strips pass through them — achieved via 3 separate inversion layers (text, nav logo, hamburger), each with 10 matching strip clones. Same animation, exact same coordinates = perfect synchronisation at zero extra CPU cost.</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.05);border-radius:2mm;padding:3.5mm 5mm;border:0.3mm solid rgba(255,255,255,0.08);">
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:1.5mm;">Off-Screen Pause</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.65;color:rgba(255,255,255,0.65);">All 50 strip animations pause via <code style="font-size:7pt;background:rgba(255,255,255,0.1);padding:0 1mm;border-radius:0.8mm;">IntersectionObserver</code> when the hero scrolls out of view — eliminating battery drain mid-scroll through the rest of the page.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 6 — IA + CONVERSION ARCHITECTURE
+     ═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Information Architecture</span><span class="ph-num">06 / 10</span></div>
+  <div class="body-inner" style="flex-direction:row;gap:8mm;">
+
+    <!-- Left: IA diagram -->
+    <div style="flex:1.1;display:flex;flex-direction:column;gap:3.5mm;">
+      <div>
+        <div class="tag">IA &amp; Conversion Architecture</div>
+        <div class="h2">Section order is as intentional as section design.</div>
+      </div>
+      <div class="body-copy" style="max-width:100%;">Every section position is a deliberate conversion decision. The visitor arrives at the Hero, sees proof of work immediately (Work is second — not behind a click), understands process, and reaches the CTA in 3 scroll stops.</div>
+      <!-- Section order SVG -->
+      <div style="flex:1;">
+        <svg viewBox="0 0 240 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <defs>
+            <marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="#2F48DF"/>
+            </marker>
+            <marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="#999"/>
+            </marker>
+          </defs>
+          <!-- Fixed nav bar -->
+          <rect x="8" y="6" width="224" height="18" rx="3" fill="#2F48DF"/>
+          <text x="120" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="rgba(255,255,255,0.9)">Fixed Navigation — always accessible</text>
+          <!-- Primary path (left column) -->
+          <rect x="28" y="32" width="90" height="18" rx="3" fill="#2F48DF"/>
+          <text x="73" y="45" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="#FBFBFB">01 Hero</text>
+          <line x1="73" y1="50" x2="73" y2="58" stroke="#2F48DF" stroke-width="2" marker-end="url(#a1)"/>
+          <rect x="28" y="60" width="90" height="18" rx="3" fill="#2F48DF"/>
+          <text x="73" y="73" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="#FBFBFB">02 Work ★</text>
+          <line x1="73" y1="78" x2="73" y2="86" stroke="#2F48DF" stroke-width="2" marker-end="url(#a1)"/>
+          <rect x="28" y="88" width="90" height="18" rx="3" fill="#EBEBEB" stroke="#D0D0D0" stroke-width="0.5"/>
+          <text x="73" y="101" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="600" fill="#444">03 Services</text>
+          <line x1="73" y1="106" x2="73" y2="114" stroke="#AAA" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#a2)"/>
+          <rect x="28" y="116" width="90" height="18" rx="3" fill="#EBEBEB" stroke="#D0D0D0" stroke-width="0.5"/>
+          <text x="73" y="129" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="600" fill="#444">04 Stats</text>
+          <line x1="73" y1="134" x2="73" y2="142" stroke="#AAA" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#a2)"/>
+          <rect x="28" y="144" width="90" height="18" rx="3" fill="#EBEBEB" stroke="#D0D0D0" stroke-width="0.5"/>
+          <text x="73" y="157" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="600" fill="#444">05 Process</text>
+          <!-- Right column -->
+          <rect x="130" y="32" width="102" height="18" rx="3" fill="#EBEBEB" stroke="#D0D0D0" stroke-width="0.5"/>
+          <text x="181" y="45" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" font-weight="600" fill="#444">06 Testimonials</text>
+          <rect x="130" y="60" width="102" height="18" rx="3" fill="#F3E9D9" stroke="#E8DCC8" stroke-width="0.5"/>
+          <text x="181" y="73" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="600" fill="#555">07 Team</text>
+          <rect x="130" y="88" width="102" height="18" rx="3" fill="#2F48DF"/>
+          <text x="181" y="101" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="#FBFBFB">08 CTA / Contact ★</text>
+          <!-- Connect lines -->
+          <path d="M 118 41 Q 124 41 124 69 Q 124 97 130 97" stroke="#DDD" stroke-width="0.8" stroke-dasharray="3,2" fill="none"/>
+          <!-- Primary conversion path arc -->
+          <path d="M 118 69 Q 128 69 128 120 Q 128 160 181 106" stroke="#2F48DF" stroke-width="1.8" fill="none" stroke-dasharray="5,3" marker-end="url(#a1)" opacity="0.6"/>
+          <!-- Legend -->
+          <rect x="8" y="172" width="14" height="3" rx="1" fill="#2F48DF" opacity="0.6"/>
+          <text x="26" y="176" font-family="DM Sans,sans-serif" font-size="6" fill="#555">Primary path: Hero → Work → CTA (3 stops)</text>
+          <line x1="8" y1="185" x2="22" y2="185" stroke="#AAA" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="26" y="188" font-family="DM Sans,sans-serif" font-size="6" fill="#777">Secondary: Services → Process → CTA</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Right: rationale cards -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:3mm;">
+
+      <div class="card card-blue-top">
+        <div class="card-tag">Why Work is Section #2</div>
+        <div class="card-h">Proof before pitch</div>
+        <div class="card-b">Showing work before explaining services bypasses the credibility question. The visitor validates quality in their first 8 seconds — then they're primed to read how you do it.</div>
+      </div>
+
+      <div class="card card-blue-top">
+        <div class="card-tag">Fixed Navigation + Pill CTA</div>
+        <div class="card-h">Text links navigate, buttons act</div>
+        <div class="card-b">'Start a project' is the only pill button in the nav — creating a grammar: all other items are navigation; this one is a conversion action. Always visible. Nav gains blur background on scroll to signal context shift.</div>
+      </div>
+
+      <div class="card card-blue-top">
+        <div class="card-tag">Work Section — Auto-scroll Marquee</div>
+        <div class="card-h">Show more without asking for a click</div>
+        <div class="card-b">A horizontal auto-scroll marquee surfaces the entire portfolio passively. Cards are 9:16 portrait — Instagram-native ratio. The user sees quality breadth without taking any action. RAF-cancelled when section scrolls off-screen.</div>
+      </div>
+
+      <div style="background:#EEF2FF;border-radius:2mm;padding:3.5mm 4.5mm;border:0.3mm solid #D0D8FF;flex-shrink:0;">
+        <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.5mm;">Primary Conversion Path</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:9pt;font-weight:600;color:#1a2a8a;">Hero → Work → Contact</div>
+        <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;color:rgba(47,72,223,0.7);margin-top:1mm;">Average 3 scroll stops from landing to conversion action</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 7 — PERFORMANCE ARCHITECTURE
+     ═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ph ph-dark"><span class="ph-label">Performance Architecture</span><span class="ph-num">07 / 10</span></div>
+  <div style="background:#0A0A0A;height:calc(210mm - 8mm);padding:9mm 12mm 8mm;display:flex;flex-direction:column;gap:5mm;">
+
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.5mm;">Technical Architecture</div>
+      <div style="font-size:18pt;font-weight:600;letter-spacing:-0.04em;color:#FBFBFB;line-height:1.05;">Performance was a design constraint,<br/>not an afterthought.</div>
+    </div>
+
+    <div style="display:flex;gap:6mm;flex:1;min-height:0;">
+
+      <!-- Left: layer budget -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:3.5mm;">
+        <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0;">GPU Layer Budget (iOS Mobile)</div>
+
+        <!-- Layer rows -->
+        <div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7pt;color:rgba(255,255,255,0.35);margin-bottom:2.5mm;">iPhone 12/13 crashes at ~50+ compositor layers</div>
+
+          <div style="display:flex;align-items:center;gap:3mm;margin-bottom:2mm;">
+            <div style="font-size:8.5pt;font-weight:700;color:#2F48DF;width:8mm;text-align:right;flex-shrink:0;">20</div>
+            <div style="flex:1;height:5mm;background:rgba(255,255,255,0.06);border-radius:1mm;overflow:hidden;">
+              <div style="width:40%;height:100%;background:#2F48DF;border-radius:1mm;"></div>
+            </div>
+            <div style="font-family:'Kulim Park',sans-serif;font-size:7pt;color:rgba(255,255,255,0.55);width:68mm;flex-shrink:0;">.intro-strip divs — hero wave animation</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:3mm;margin-bottom:2mm;">
+            <div style="font-size:8.5pt;font-weight:700;color:#2F48DF;width:8mm;text-align:right;flex-shrink:0;">10</div>
+            <div style="flex:1;height:5mm;background:rgba(255,255,255,0.06);border-radius:1mm;overflow:hidden;">
+              <div style="width:20%;height:100%;background:#4f64f0;border-radius:1mm;"></div>
+            </div>
+            <div style="font-family:'Kulim Park',sans-serif;font-size:7pt;color:rgba(255,255,255,0.55);width:68mm;flex-shrink:0;">.invert-strip — heading text inversion</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:3mm;margin-bottom:2mm;">
+            <div style="font-size:8.5pt;font-weight:700;color:#2F48DF;width:8mm;text-align:right;flex-shrink:0;">10</div>
+            <div style="flex:1;height:5mm;background:rgba(255,255,255,0.06);border-radius:1mm;overflow:hidden;">
+              <div style="width:20%;height:100%;background:#4f64f0;border-radius:1mm;"></div>
+            </div>
+            <div style="font-family:'Kulim Park',sans-serif;font-size:7pt;color:rgba(255,255,255,0.55);width:68mm;flex-shrink:0;">.nav-logo-invert-strip — logo inversion</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:3mm;margin-bottom:3mm;">
+            <div style="font-size:8.5pt;font-weight:700;color:#2F48DF;width:8mm;text-align:right;flex-shrink:0;">10</div>
+            <div style="flex:1;height:5mm;background:rgba(255,255,255,0.06);border-radius:1mm;overflow:hidden;">
+              <div style="width:20%;height:100%;background:#4f64f0;border-radius:1mm;"></div>
+            </div>
+            <div style="font-family:'Kulim Park',sans-serif;font-size:7pt;color:rgba(255,255,255,0.55);width:68mm;flex-shrink:0;">.ham-invert-strip — hamburger inversion</div>
+          </div>
+          <!-- Total bar -->
+          <div style="display:flex;align-items:center;gap:3mm;border-top:0.3mm solid rgba(255,255,255,0.1);padding-top:3mm;">
+            <div style="font-size:11pt;font-weight:700;color:#FBFBFB;width:8mm;text-align:right;flex-shrink:0;">50</div>
+            <div style="flex:1;height:6mm;background:rgba(255,255,255,0.06);border-radius:1mm;overflow:hidden;">
+              <div style="width:100%;height:100%;background:linear-gradient(to right,#2F48DF,#E53E3E);border-radius:1mm;opacity:0.85;"></div>
+            </div>
+            <div style="font-family:'Kulim Park',sans-serif;font-size:7pt;color:rgba(255,255,255,0.55);width:68mm;flex-shrink:0;">Total — at limit. Hard stop.</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(229,62,62,0.1);border-radius:2mm;padding:3mm 4mm;border:0.3mm solid rgba(229,62,62,0.25);">
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#E53E3E;margin-bottom:1mm;">Hard Rule</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.6;color:rgba(255,255,255,0.65);">No <code style="font-size:6.5pt;background:rgba(255,255,255,0.08);padding:0 1mm;border-radius:0.8mm;">mix-blend-mode</code> on fixed full-viewport elements. No <code style="font-size:6.5pt;background:rgba(255,255,255,0.08);padding:0 1mm;border-radius:0.8mm;">backdrop-filter</code> on carousel cards. No animated <code style="font-size:6.5pt;background:rgba(255,255,255,0.08);padding:0 1mm;border-radius:0.8mm;">clip-path</code> — only animate <code style="font-size:6.5pt;background:rgba(255,255,255,0.08);padding:0 1mm;border-radius:0.8mm;">opacity</code> and <code style="font-size:6.5pt;background:rgba(255,255,255,0.08);padding:0 1mm;border-radius:0.8mm;">transform</code>.</div>
+        </div>
+      </div>
+
+      <!-- Right: architecture decisions -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:3mm;">
+        <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0;">Architecture Decisions</div>
+
+        <div style="background:rgba(255,255,255,0.05);border-radius:2mm;padding:3.5mm 4.5mm;border:0.3mm solid rgba(255,255,255,0.08);">
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.2mm;">No Framework</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.65;color:rgba(255,255,255,0.65);">Single HTML file, inline CSS, vanilla JS. Zero build step, zero dependency risk. Full control over what gets painted and when. The entire site loads in one HTTP request.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border-radius:2mm;padding:3.5mm 4.5mm;border:0.3mm solid rgba(255,255,255,0.08);">
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.2mm;">RAF Throttling</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.65;color:rgba(255,255,255,0.65);">Nav scroll handler runs inside <code style="font-size:6.5pt;background:rgba(255,255,255,0.08);padding:0 1mm;border-radius:0.8mm;">requestAnimationFrame</code> — one DOM read per frame maximum. Carousel <code style="font-size:6.5pt;background:rgba(255,255,255,0.08);padding:0 1mm;border-radius:0.8mm;">cancelAnimationFrame</code>s completely when scrolled off-screen.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border-radius:2mm;padding:3.5mm 4.5mm;border:0.3mm solid rgba(255,255,255,0.08);">
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.2mm;">IntersectionObserver</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.65;color:rgba(255,255,255,0.65);">Hero wave strips pause when scrolled out of view. Work marquee pauses when the section is invisible. Text scramble triggers once on first intersection. Zero wasted computation off-screen.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border-radius:2mm;padding:3.5mm 4.5mm;border:0.3mm solid rgba(255,255,255,0.08);">
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.2mm;">Video Preload Strategy</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.65;color:rgba(255,255,255,0.65);"><code style="font-size:6.5pt;background:rgba(255,255,255,0.08);padding:0 1mm;border-radius:0.8mm;">preload="metadata"</code> (not "none") ensures first frames are decoded for autoplay — avoiding the blank-card flash while still deferring full download.</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 8 — FINAL UI — SECTION SHOWCASE
+     ═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Final UI — Section Showcase</span><span class="ph-num">08 / 10</span></div>
+  <div class="body-inner" style="flex-direction:row;gap:4mm;">
+
+    <!-- 5 screen mockups side by side -->
+    <!-- 1: Hero -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:2mm;">
+      <div style="flex:1;background:#0A0A0A;border-radius:2mm;overflow:hidden;border:0.3mm solid rgba(0,0,0,0.15);">
+        <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <rect width="120" height="180" fill="#0d1028"/>
+          <!-- Wave strips (simplified) -->
+          <rect x="0" y="0" width="6" height="180" fill="rgba(47,72,223,0.08)"/>
+          <rect x="12" y="0" width="6" height="180" fill="rgba(47,72,223,0.22)"/>
+          <rect x="24" y="0" width="6" height="180" fill="rgba(47,72,223,0.35)"/>
+          <rect x="36" y="0" width="6" height="180" fill="rgba(47,72,223,0.18)"/>
+          <rect x="48" y="0" width="6" height="180" fill="rgba(47,72,223,0.28)"/>
+          <rect x="60" y="0" width="6" height="180" fill="rgba(47,72,223,0.12)"/>
+          <rect x="72" y="0" width="6" height="180" fill="rgba(47,72,223,0.30)"/>
+          <rect x="84" y="0" width="6" height="180" fill="rgba(47,72,223,0.20)"/>
+          <rect x="96" y="0" width="6" height="180" fill="rgba(47,72,223,0.10)"/>
+          <rect x="108" y="0" width="12" height="180" fill="rgba(47,72,223,0.15)"/>
+          <!-- Nav -->
+          <rect x="0" y="0" width="120" height="14" fill="rgba(10,10,10,0.92)"/>
+          <rect x="6" y="4" width="22" height="6" rx="1" fill="rgba(255,255,255,0.2)"/>
+          <rect x="86" y="3" width="28" height="8" rx="4" fill="#2F48DF"/>
+          <!-- Hero text -->
+          <rect x="8" y="32" width="55" height="5" rx="1" fill="rgba(255,255,255,0.14)"/>
+          <rect x="8" y="42" width="88" height="12" rx="1.5" fill="rgba(255,255,255,0.22)"/>
+          <rect x="8" y="58" width="70" height="9" rx="1.5" fill="rgba(255,255,255,0.16)"/>
+          <rect x="8" y="76" width="38" height="12" rx="6" fill="rgba(255,255,255,0)" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+          <text x="27" y="85" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="4.5" fill="rgba(255,255,255,0.7)">Start →</text>
+        </svg>
+      </div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;text-align:center;">Hero</div>
+      <div style="font-family:'Kulim Park',sans-serif;font-size:6.5pt;line-height:1.5;color:#666;text-align:center;">20-strip wave · text scramble · iOS-safe</div>
+    </div>
+
+    <!-- 2: Services -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:2mm;">
+      <div style="flex:1;background:#0A0A0A;border-radius:2mm;overflow:hidden;border:0.3mm solid rgba(0,0,0,0.15);">
+        <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <rect width="120" height="180" fill="#0A0A0A"/>
+          <rect x="8" y="16" width="40" height="4" rx="1" fill="rgba(47,72,223,0.7)"/>
+          <rect x="8" y="24" width="80" height="9" rx="1" fill="rgba(255,255,255,0.18)"/>
+          <!-- Service cards 2x2 -->
+          <rect x="8" y="42" width="48" height="52" rx="2" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+          <rect x="8" y="42" width="48" height="2" rx="0" fill="#2F48DF"/>
+          <rect x="12" y="48" width="28" height="4" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="12" y="55" width="38" height="3" rx="0.5" fill="rgba(255,255,255,0.12)"/>
+          <rect x="12" y="60" width="35" height="3" rx="0.5" fill="rgba(255,255,255,0.10)"/>
+          <rect x="12" y="65" width="38" height="3" rx="0.5" fill="rgba(255,255,255,0.08)"/>
+          <rect x="64" y="42" width="48" height="52" rx="2" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+          <rect x="64" y="42" width="48" height="2" rx="0" fill="#2F48DF"/>
+          <rect x="68" y="48" width="28" height="4" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="68" y="55" width="38" height="3" rx="0.5" fill="rgba(255,255,255,0.12)"/>
+          <rect x="68" y="60" width="35" height="3" rx="0.5" fill="rgba(255,255,255,0.10)"/>
+          <rect x="8" y="100" width="48" height="52" rx="2" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+          <rect x="8" y="100" width="48" height="2" rx="0" fill="#2F48DF"/>
+          <rect x="12" y="106" width="28" height="4" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="64" y="100" width="48" height="52" rx="2" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+          <rect x="64" y="100" width="48" height="2" rx="0" fill="#2F48DF"/>
+          <rect x="68" y="106" width="28" height="4" rx="1" fill="rgba(255,255,255,0.5)"/>
+        </svg>
+      </div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;text-align:center;">Services</div>
+      <div style="font-family:'Kulim Park',sans-serif;font-size:6.5pt;line-height:1.5;color:#666;text-align:center;">Dark bg · blue-top cards · 2×2 grid</div>
+    </div>
+
+    <!-- 3: Work (marquee) -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:2mm;">
+      <div style="flex:1;background:#2F48DF;border-radius:2mm;overflow:hidden;border:0.3mm solid rgba(0,0,0,0.15);">
+        <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <rect width="120" height="180" fill="#2F48DF"/>
+          <rect x="8" y="12" width="38" height="5" rx="1" fill="rgba(255,255,255,0.2)"/>
+          <rect x="8" y="20" width="65" height="8" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <!-- Portrait cards in marquee row -->
+          <rect x="8" y="36" width="46" height="82" rx="2" fill="rgba(0,0,0,0.25)"/>
+          <rect x="8" y="96" width="46" height="22" rx="0" fill="rgba(0,0,0,0.35)"/>
+          <rect x="12" y="100" width="30" height="3.5" rx="0.5" fill="rgba(255,255,255,0.5)"/>
+          <rect x="12" y="106" width="22" height="3" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+          <rect x="60" y="36" width="46" height="82" rx="2" fill="rgba(0,0,0,0.18)"/>
+          <rect x="60" y="96" width="46" height="22" rx="0" fill="rgba(0,0,0,0.3)"/>
+          <rect x="64" y="100" width="30" height="3.5" rx="0.5" fill="rgba(255,255,255,0.5)"/>
+          <rect x="64" y="106" width="22" height="3" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+          <!-- Partial card -->
+          <rect x="112" y="36" width="20" height="82" rx="2" fill="rgba(0,0,0,0.12)"/>
+          <!-- Marquee arrow -->
+          <text x="60" y="158" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="rgba(255,255,255,0.15)">→→→</text>
+          <text x="60" y="170" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.3)">auto-scroll</text>
+        </svg>
+      </div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;text-align:center;">Work</div>
+      <div style="font-family:'Kulim Park',sans-serif;font-size:6.5pt;line-height:1.5;color:#666;text-align:center;">9:16 portrait cards · marquee scroll</div>
+    </div>
+
+    <!-- 4: Testimonials -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:2mm;">
+      <div style="flex:1;background:#0A0A0A;border-radius:2mm;overflow:hidden;border:0.3mm solid rgba(0,0,0,0.15);">
+        <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <rect width="120" height="180" fill="#0A0A0A"/>
+          <rect x="8" y="14" width="38" height="4" rx="1" fill="rgba(47,72,223,0.7)"/>
+          <rect x="8" y="21" width="70" height="8" rx="1" fill="rgba(255,255,255,0.18)"/>
+          <!-- Glass card stack -->
+          <rect x="22" y="40" width="86" height="66" rx="3" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="0.7"/>
+          <rect x="16" y="46" width="86" height="66" rx="3" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="0.7"/>
+          <rect x="10" y="52" width="86" height="66" rx="3" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.14)" stroke-width="0.8"/>
+          <!-- Card content -->
+          <rect x="16" y="62" width="60" height="3.5" rx="0.5" fill="rgba(255,255,255,0.25)"/>
+          <rect x="16" y="68" width="70" height="2.5" rx="0.5" fill="rgba(255,255,255,0.12)"/>
+          <rect x="16" y="72" width="68" height="2.5" rx="0.5" fill="rgba(255,255,255,0.10)"/>
+          <rect x="16" y="76" width="55" height="2.5" rx="0.5" fill="rgba(255,255,255,0.08)"/>
+          <!-- Avatar + name -->
+          <circle cx="22" cy="98" r="6" fill="rgba(47,72,223,0.4)"/>
+          <rect x="32" y="94" width="30" height="3" rx="0.5" fill="rgba(255,255,255,0.3)"/>
+          <rect x="32" y="99" width="22" height="2.5" rx="0.5" fill="rgba(255,255,255,0.15)"/>
+          <!-- Drag hint -->
+          <text x="60" y="148" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="5" fill="rgba(255,255,255,0.18)">drag to reveal →</text>
+        </svg>
+      </div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;text-align:center;">Testimonials</div>
+      <div style="font-family:'Kulim Park',sans-serif;font-size:6.5pt;line-height:1.5;color:#666;text-align:center;">Glass morphism stack · draggable</div>
+    </div>
+
+    <!-- 5: CTA/Contact -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:2mm;">
+      <div style="flex:1;background:#2F48DF;border-radius:2mm;overflow:hidden;border:0.3mm solid rgba(0,0,0,0.15);">
+        <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+          <rect width="120" height="180" fill="#1a2a6e"/>
+          <rect x="8" y="14" width="40" height="4" rx="1" fill="rgba(255,255,255,0.18)"/>
+          <rect x="8" y="22" width="72" height="8" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <!-- Form fields -->
+          <rect x="8" y="40" width="104" height="14" rx="2" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6"/>
+          <text x="14" y="50" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.3)">Name</text>
+          <rect x="8" y="58" width="104" height="14" rx="2" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6"/>
+          <text x="14" y="68" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.3)">Email</text>
+          <rect x="8" y="76" width="104" height="14" rx="2" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6"/>
+          <text x="14" y="86" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.3)">Phone</text>
+          <rect x="8" y="94" width="104" height="24" rx="2" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <text x="14" y="108" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.22)">Message</text>
+          <!-- Submit -->
+          <rect x="22" y="126" width="76" height="16" rx="8" fill="#FBFBFB"/>
+          <text x="60" y="137" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="700" fill="#2F48DF">Send message →</text>
+          <!-- Success state sketch -->
+          <circle cx="94" cy="152" r="10" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="0.8"/>
+          <polyline points="88,152 92,156 100,146" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+          <text x="60" y="172" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="4.5" fill="rgba(255,255,255,0.2)">animated success state</text>
+        </svg>
+      </div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;text-align:center;">CTA / Contact</div>
+      <div style="font-family:'Kulim Park',sans-serif;font-size:6.5pt;line-height:1.5;color:#666;text-align:center;">Blue full-section · success animation</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 9 — OUTCOMES + REFLECTION
+     ═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Outcomes &amp; Reflection</span><span class="ph-num">09 / 10</span></div>
+  <div class="body-inner" style="flex-direction:row;gap:8mm;">
+
+    <!-- Left: outcomes -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:4mm;">
+      <div>
+        <div class="tag">Shipped Results</div>
+        <div class="h2">Designed, built, and deployed.<br/>Measurable outcomes.</div>
+      </div>
+
+      <!-- Metrics grid -->
+      <div class="g2" style="gap:3mm;">
+        <div style="background:#EEF2FF;border-radius:2mm;padding:4mm;border:0.3mm solid #D0D8FF;">
+          <div class="outcome-num">60fps</div>
+          <div class="outcome-label">Hero wave animation on<br/>iPhone 12 — no jank</div>
+        </div>
+        <div style="background:#EEF2FF;border-radius:2mm;padding:4mm;border:0.3mm solid #D0D8FF;">
+          <div class="outcome-num">50</div>
+          <div class="outcome-label">GPU compositor layers —<br/>exactly at budget, no crashes</div>
+        </div>
+        <div style="background:#EEF2FF;border-radius:2mm;padding:4mm;border:0.3mm solid #D0D8FF;">
+          <div class="outcome-num">1</div>
+          <div class="outcome-label">HTTP request for the<br/>full page (single HTML file)</div>
+        </div>
+        <div style="background:#EEF2FF;border-radius:2mm;padding:4mm;border:0.3mm solid #D0D8FF;">
+          <div class="outcome-num">3</div>
+          <div class="outcome-label">Scroll stops from landing<br/>to conversion action</div>
+        </div>
+      </div>
+
+      <div class="band-dark">
+        <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1.5mm;">What Shipped</div>
+        <div class="band-dark-text" style="font-size:8pt;">Full production website live at studiobee.co.in — responsive across all viewports, 0 dependencies, self-contained contact form with SMTP delivery, config admin panel, and a Vercel deployment pipeline. Every pixel in the browser matches the design intent.</div>
+      </div>
+    </div>
+
+    <!-- Right: learnings -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:3mm;">
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.3);margin-top:0.5mm;">Design Principles That Held</div>
+
+      <div class="card" style="border-left:1.5mm solid #2F48DF;border-radius:0 2.5mm 2.5mm 0;padding-left:4mm;">
+        <div class="card-tag">Constraints → Creativity</div>
+        <div class="card-b">The iOS 50-layer limit forced a systematic approach to animation. That constraint produced a more coherent motion language — every animated element had to earn its layer. The result is more disciplined than an unconstrained design would have been.</div>
+      </div>
+
+      <div class="card" style="border-left:1.5mm solid #2F48DF;border-radius:0 2.5mm 2.5mm 0;padding-left:4mm;">
+        <div class="card-tag">Restraint is a skill</div>
+        <div class="card-b">The hardest decisions were removals. A mid-scroll parallax effect was cut because it added a layer. A decorative grain overlay was cut because it conflicted with the inversion system. Every cut made the remaining elements stronger.</div>
+      </div>
+
+      <div class="card" style="border-left:1.5mm solid #2F48DF;border-radius:0 2.5mm 2.5mm 0;padding-left:4mm;">
+        <div class="card-tag">Build = Design Continued</div>
+        <div class="card-b">Implementing the design surfaced decisions that Figma couldn't — exact animation easing, scroll physics, the precise timing that makes the text scramble feel snappy not jittery. The design and build were one continuous process, not two handoffs.</div>
+      </div>
+
+      <div class="card" style="border-left:1.5mm solid #2F48DF;border-radius:0 2.5mm 2.5mm 0;padding-left:4mm;">
+        <div class="card-tag">Brand as System</div>
+        <div class="card-b">Defining the brand as tokens first (colours, type scales, section cadence) rather than starting with layouts meant every new section decision was guided — not invented. The system made design faster and more consistent.</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 10 — BACK COVER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div style="background:#0A0A0A;height:210mm;display:flex;flex-direction:column;justify-content:space-between;padding:14mm;position:relative;overflow:hidden;">
+    <!-- Background accent -->
+    <div style="position:absolute;top:-40mm;right:-30mm;width:140mm;height:140mm;border-radius:50%;background:radial-gradient(circle,rgba(47,72,223,0.18) 0%,transparent 70%);pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-30mm;left:-20mm;width:100mm;height:100mm;border-radius:50%;background:radial-gradient(circle,rgba(47,72,223,0.10) 0%,transparent 70%);pointer-events:none;"></div>
+
+    <!-- Top: logo area -->
+    <div style="position:relative;z-index:2;">
+      <div style="font-size:7pt;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.3);">studiobee.co.in</div>
+    </div>
+
+    <!-- Center: CTA -->
+    <div style="position:relative;z-index:2;text-align:center;">
+      <div style="font-size:7pt;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#2F48DF;margin-bottom:6mm;">Let's work together</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:36pt;font-weight:700;letter-spacing:-0.045em;line-height:0.9;color:#FBFBFB;margin-bottom:6mm;">Have a project<br/>in mind?</div>
+      <div style="font-family:'Kulim Park',sans-serif;font-size:10pt;line-height:1.65;color:rgba(255,255,255,0.55);max-width:120mm;margin:0 auto 8mm;">We design and build brand-forward digital experiences for founders and marketing leads who want to stand apart.</div>
+      <div style="display:inline-block;background:#2F48DF;padding:4mm 10mm;border-radius:10mm;">
+        <div style="font-size:9pt;font-weight:600;color:#FBFBFB;letter-spacing:0.02em;">hello@studiobee.co.in</div>
+      </div>
+    </div>
+
+    <!-- Bottom: project info row -->
+    <div style="position:relative;z-index:2;">
+      <div style="height:0.3mm;background:rgba(255,255,255,0.1);margin-bottom:5mm;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm;">
+        <div>
+          <div style="font-size:5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:1.2mm;">Document</div>
+          <div style="font-size:8pt;color:rgba(255,255,255,0.6);">Portfolio Case Study — 10 pages</div>
+        </div>
+        <div>
+          <div style="font-size:5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:1.2mm;">Project</div>
+          <div style="font-size:8pt;color:rgba(255,255,255,0.6);">studiobee.co.in — Agency Website</div>
+        </div>
+        <div>
+          <div style="font-size:5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:1.2mm;">Designer</div>
+          <div style="font-size:8pt;color:rgba(255,255,255,0.6);">Lead UX/UI + Front-end · 2025</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

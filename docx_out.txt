@@ -1,0 +1,140 @@
+Studio Bee
+Profit-Share Structure for Outsourced Work
+Internal policy · v1 · June 2026 · all figures in ₹
+1. Purpose
+This defines how money from outsourced work — jobs Studio Bee takes on over and above core in-house work — is shared between the company and the team. It is designed to reward effort, stay fair to the company that carries all the cost and risk, and give the team a real reason to chase and deliver outside work.
+This is income on top of salary. Salaries, equipment, studio rent, software and all overheads are paid by the company. The team carries no expense and no downside on these jobs, so their share is pure upside.
+2. The three principles
+The company carries all cost and risk, so it keeps the majority share. This is not stingy — it is the return on the capital, equipment and brand that make the work possible.
+The team's percentage tapers as a job gets bigger. Effort does not scale with price — a ₹50,000 job is not five times the work of a ₹10,000 one. The extra value on a big job comes from the company's brand, gear and client relationship, so the company keeps more of it. The team's rupee payout still grows; only the percentage falls.
+The doer earns more than the manager. The executor — videographer/editor, developer or designer — creates the deliverable and always gets a bigger slice than the manager, whose role is bringing the client, coordinating and quality control.
+3. Key terms
+Direct costs — money spent specifically for one job: travel, paid stock/music, props, hosting, paid plugins, subcontractors. Always reimbursed first to whoever paid, before any split.
+Loaded hourly cost — the true cost of an hour of the team's time: salary + overhead + equipment depreciation + non-billable time, divided by billable hours. This comes from the time-tracking tool. It must include overhead and equipment, not just salary — otherwise profit is overstated and the company overpays.
+Executor — the person producing the deliverable.
+Manager — brings the client, coordinates, handles QC and billing.
+4. Two ways to calculate
+Small jobs use a simple split; large jobs first protect the company's labour cost. The switch happens at a threshold set per service.
+Simple mode — below the threshold
+Take the price, subtract any direct costs, and split what is left by the tier percentages. Labour hours are NOT deducted. Used for small, quick, predictable jobs where tracking hours is not worth the effort.
+Split = (Price − Direct costs) × tier %
+Cost-plus mode — above the threshold
+First subtract the loaded labour cost and any direct costs, then split the remaining profit. Used for big or hour-heavy jobs, where without this a low-priced, high-effort job could pay out a bonus while the company actually loses money.
+Profit = Price − Loaded labour cost − Direct costs, then split Profit by the top-tier %
+5. Video & production
+Cost-deduction threshold: ₹50,000. Minimum price (floor): ₹8,000.
+Job value
+Mode
+Company
+Executor
+Manager
+Under ₹15,000
+Simple
+47%
+40%
+13%
+₹15,000 – 50,000
+Simple
+57%
+31%
+12%
+Above ₹50,000
+Cost-plus
+66%
+26%
+8%
+
+Examples
+₹10,000 reel → Company ₹4,700 · Executor ₹4,000 · Manager ₹1,300
+₹30,000 reel → Company ₹17,100 · Executor ₹9,300 · Manager ₹3,600
+₹80,000 shoot (cost-plus): say 20 hrs × ₹600 = ₹12,000 labour + ₹3,000 travel. Profit ₹65,000 → Company ₹42,900 · Executor ₹16,900 · Manager ₹5,200
+6. Web development
+Studio Bee does not take sites under ₹35,000, so web starts higher and uses fewer, larger tiers. Web is also hour-heavy and the developer carries the client relationship, so the split works a little differently from video and design. Minimum price (floor): ₹35,000. Cost-deduction threshold: ₹75,000.
+Splitting the client-facing work — pay the function, not the title
+On web jobs the developer usually deals with the end client more than the manager — gathering requirements, running revisions, handling delivery. So the manager's share is split into two functions, and each is paid to whoever actually does it:
+Origination — finding and closing the client. Normally the manager.
+Client handling (account management) — ongoing client communication, revisions, delivery. On web, normally the developer.
+By default the developer earns Build + Client handling, and the manager earns Origination. If on a given job the manager runs the client relationship instead, the manager takes the Client-handling slice. This keeps it fair both ways: the manager still has every reason to sell, and the developer is paid for the relationship work they actually do.
+Job value
+Mode
+Company
+Build
+Client handling
+Origination
+₹35,000 – 75,000
+Simple
+48%
+30%
+14%
+8%
+Above ₹75,000
+Cost-plus
+58%
+26%
+9%
+7%
+
+Examples (developer doing build + client handling)
+₹50,000 site → Company ₹24,000 · Developer ₹22,000 (₹15,000 build + ₹7,000 client) · Manager ₹4,000 origination
+₹1,00,000 build (cost-plus): 90 hrs × ₹500 = ₹45,000 labour + ₹5,000 direct. Profit ₹50,000 → Company ₹29,000 · Developer ₹17,500 (₹13,000 build + ₹4,500 client) · Manager ₹3,500 origination
+If the manager runs the client relationship on a job, the client-handling slice moves to the manager. On cost-plus jobs the developer's salary already pays for the hours worked (recovered as the labour-cost line); the share is a bonus on top.
+7. Graphic design
+Graphic design is the cheapest service, so it has its own lower breakpoints — otherwise almost every job would sit in one tier and never taper. On tiny jobs the executor gets a high percentage so the work is worth their time; the rupee amount is small regardless. Cost-deduction threshold: ₹25,000. Minimum price (floor): ₹1,000.
+Job value
+Mode
+Company
+Executor
+Manager
+Under ₹3,000
+Simple
+42%
+45%
+13%
+₹3,000 – 10,000
+Simple
+52%
+36%
+12%
+₹10,000 – 25,000
+Simple
+60%
+30%
+10%
+Above ₹25,000
+Cost-plus
+66%
+26%
+8%
+
+Examples
+₹1,500 social post → Company ₹630 · Executor ₹675 · Manager ₹195
+₹8,000 logo → Company ₹4,160 · Executor ₹2,880 · Manager ₹960
+₹20,000 brand kit → Company ₹12,000 · Executor ₹6,000 · Manager ₹2,000
+8. Retainers (fixed fee, fixed deliverables)
+A retainer is a fixed monthly fee for a fixed monthly scope. It is recurring, predictable and the client relationship is owned by the company, so it always uses cost-plus and the company keeps a higher steady share. The manager holds the account — relationship, reporting, scope control — for a steady 10%.
+Item
+Share
+Company
+65% of monthly profit
+Executor (the doer/s)
+25% of monthly profit
+Manager (account holder)
+10% of monthly profit
+
+How to run it
+Write down the fixed monthly deliverables (e.g. 12 posts + 4 reels + 1 report).
+Estimate the monthly hours to deliver them → loaded labour cost.
+Monthly profit = Fee − Loaded labour cost − Direct costs. Split by the table above.
+Scope-creep rule: anything beyond the agreed deliverables is billed as a separate job under the normal service tiers. This protects both the margin and the executor from doing free extra work.
+Multiple doers (e.g. designer + videographer on a social retainer): split the 25% executor pool between them by hours/contribution.
+
+Example
+₹40,000/month social retainer: 45 hrs × ₹500 = ₹22,500 labour + ₹2,500 stock/ads creative. Profit ₹15,000 → Company ₹9,750 · Executor pool ₹3,750 · Manager ₹1,500
+9. Guardrails
+Price floors: never take work below the floor for its service. Below the floor, overhead is not covered and even a high company share is a loss. Take it only as a deliberate goodwill exception, not on this split.
+Pay on receipt, not on invoice: shares are paid out monthly or quarterly only after the client has actually paid — to protect cash flow.
+Bad debt: if a client never pays, no share is due. The team shares the upside; the company has already borne the cost.
+Direct costs are always reimbursed to whoever paid them before any split is calculated.
+Get the loaded hourly cost right (salary + overhead + equipment + non-billable time). If it only counts salary, the company will systematically overpay on cost-plus jobs.
+10. From freelancer to owner (the longer game)
+This profit-share is the foundation: it pays cash now, which is what motivates a freelancer mindset. Equity and ESOPs are illiquid and years away, so they don't motivate the same way early on. The bridge to an owner mindset is to add a small slice of the company's in-house profit (not just each person's own jobs), paid quarterly — so the team starts caring about the whole business. Real equity or a phantom-equity pool can be layered on later for those who stay 18–24 months and behave like owners. Earn into ownership; don't hand it out upfront.

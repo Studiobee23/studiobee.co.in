@@ -24,17 +24,14 @@ export default async function ProjectsPage() {
 
   return (
     <>
-      <DashboardHeader
-        title="Projects"
-        actions={
-          <Link
-            href="/projects/new"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            <Plus className="h-3.5 w-3.5" /> New Project
-          </Link>
-        }
-      />
+      <DashboardHeader title="Projects">
+        <Link
+          href="/projects/new"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          <Plus className="h-3.5 w-3.5" /> New Project
+        </Link>
+      </DashboardHeader>
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="space-y-2">
           {!projects?.length && (
@@ -51,7 +48,7 @@ export default async function ProjectsPage() {
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{p.name}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {(p.clients as { name: string } | null)?.name ?? "No client"}
+                  {(p.clients as unknown as { name: string } | null)?.name ?? "No client"}
                   {p.category ? ` · ${p.category}` : ` · ${p.type}`}
                   {p.est_hours ? ` · ${p.est_hours}h est.` : ""}
                 </p>

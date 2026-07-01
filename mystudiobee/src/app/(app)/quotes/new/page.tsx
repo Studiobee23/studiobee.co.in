@@ -17,21 +17,24 @@ export default async function NewQuotePage() {
     supabase.from("service_presets").select("*").order("category"),
   ]);
 
-  // Roles/overheads are owner/admin-only via RLS; managers never receive these rows —
-  // the preset picker in the editor only needs names, which presets already carry.
   let roles: { id: string; name: string; hourly_rate: number }[] = [];
   let overheads: { id: string; name: string; cost: number }[] = [];
+  let teamMembers: { id: string; display_name: string; email: string; role: string }[] = [];
+  let splitSettings: unknown[] = [];
+
   if (seeCost) {
-    const [{ data: r }, { data: o }] = await Promise.all([
+    const admin = createAdminClient();
+    const [{ data: r }, { data: o }, { data: tm }, { data: ss }] = await Promise.all([
       supabase.from("cost_roles").select("id, name, hourly_rate").eq("active", true),
       supabase.from("overhead_items").select("id, name, cost").eq("active", true),
+      admin.from("profiles").select("id, display_name, email, role").eq("active", true).order("display_name"),
+      admin.from("profit_split_settings").select("*").order("category"),
     ]);
     roles = r ?? [];
     overheads = o ?? [];
+    teamMembers = tm ?? [];
+    splitSettings = ss ?? [];
   } else {
-    // Managers still need role/overhead *names* to build the "hours per role" form —
-    // fetched via the admin client (bypasses RLS) but rates/costs are stripped here so
-    // the manager's browser never receives them.
     const admin = createAdminClient();
     const [{ data: r }, { data: o }] = await Promise.all([
       admin.from("cost_roles").select("id, name").eq("active", true),
@@ -52,6 +55,8 @@ export default async function NewQuotePage() {
             roles={roles}
             overheads={overheads}
             canSeeCost={seeCost}
+            teamMembers={teamMembers}
+            splitSettings={splitSettings as never}
           />
         </div>
       </div>

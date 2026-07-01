@@ -1,0 +1,2398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>UX/UI Case Study — studiobee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Kulim+Park:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+@page{size:A4 portrait;margin:0;}
+body{font-family:'DM Sans',sans-serif;background:#BEBEBE;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:210mm;height:297mm;overflow:hidden;position:relative;page-break-after:always;background:#FBFBFB;}
+@media screen{.page{margin:10px auto;box-shadow:0 2px 40px rgba(0,0,0,0.22);}}
+
+.ph{height:9mm;display:flex;align-items:center;justify-content:space-between;padding:0 12mm;border-bottom:0.3mm solid rgba(0,0,0,0.08);}
+.ph-label{font-size:6.5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(0,0,0,0.28);}
+.ph-num{font-size:6.5pt;color:rgba(0,0,0,0.18);}
+.ph-blue{background:#2F48DF;border-bottom:none;}
+.ph-blue .ph-label,.ph-blue .ph-num{color:rgba(255,255,255,0.45);}
+.ph-dark{background:#0A0A0A;border-bottom:none;}
+.ph-dark .ph-label,.ph-dark .ph-num{color:rgba(255,255,255,0.35);}
+
+.ci{padding:11mm 12mm;height:calc(297mm - 9mm);display:flex;flex-direction:column;gap:5mm;justify-content:space-between;}
+.ci-tight{padding:9mm 12mm 8mm;height:calc(297mm - 9mm);display:flex;flex-direction:column;gap:4mm;justify-content:space-between;}
+
+.c-tag{font-size:6.5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#2F48DF;}
+.c-h2{font-size:21pt;font-weight:600;letter-spacing:-0.04em;color:#0A0A0A;line-height:1.05;}
+.c-body{font-family:'Kulim Park',sans-serif;font-size:8.5pt;line-height:1.72;color:#444;}
+.c-small{font-size:7.5pt;line-height:1.6;color:#666;}
+
+.c-grid2{display:grid;grid-template-columns:1fr 1fr;gap:4.5mm;}
+.c-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3.5mm;}
+.c-grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:3mm;}
+.c-card{background:#F6F6F6;border-radius:2.5mm;padding:6mm;border:0.3mm solid #EAEAEA;}
+.c-card-accent{border-top:1.5mm solid #2F48DF;}
+.c-card-tag{font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.5mm;}
+.c-card-h{font-size:10.5pt;font-weight:600;color:#0A0A0A;margin-bottom:1.5mm;line-height:1.2;}
+.c-card-b{font-family:'Kulim Park',sans-serif;font-size:8pt;line-height:1.65;color:#555;}
+.c-card-blue{background:#2F48DF;border-color:#1e33b8;}
+.c-card-blue .c-card-tag{color:rgba(255,255,255,0.5);}
+.c-card-blue .c-card-h{color:#FBFBFB;}
+.c-card-blue .c-card-b{color:rgba(255,255,255,0.72);}
+.c-card-dark{background:#0A0A0A;border-color:#222;}
+.c-card-dark .c-card-tag{color:rgba(255,255,255,0.4);}
+.c-card-dark .c-card-h{color:#FBFBFB;}
+.c-card-dark .c-card-b{color:rgba(255,255,255,0.55);}
+
+.prob{border-left:1mm solid #E53E3E;padding:3mm 4mm;background:#FFF5F5;border-radius:0 2.5mm 2.5mm 0;margin-bottom:2mm;}
+.sol{border-left:1mm solid #2F48DF;padding:3mm 4mm;background:#EEF2FF;border-radius:0 2.5mm 2.5mm 0;margin-bottom:2mm;}
+.ps-lbl{font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:1.2mm;}
+.prob .ps-lbl{color:#E53E3E;}.sol .ps-lbl{color:#2F48DF;}
+.ps-txt{font-family:'Kulim Park',sans-serif;font-size:8pt;line-height:1.62;color:#333;}
+
+.pull-quote{border-left:1mm solid #2F48DF;padding:5mm 6mm;background:#EEF2FF;border-radius:0 2.5mm 2.5mm 0;}
+.pull-quote-text{font-family:'Kulim Park',sans-serif;font-size:11pt;line-height:1.65;color:#1a2a8a;}
+.pull-quote-attr{font-size:6.5pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(47,72,223,0.55);margin-top:2.5mm;}
+
+.swatch-row{display:flex;gap:3mm;flex-wrap:nowrap;}
+.swatch{width:34mm;height:20mm;border-radius:2.5mm;display:flex;flex-direction:column;justify-content:flex-end;padding:2.5mm 3mm;flex-shrink:0;}
+.swatch-label{font-size:7.5pt;font-weight:700;}
+.swatch-hex{font-size:6pt;opacity:0.7;}
+.swatch-use{font-size:5.5pt;opacity:0.55;margin-top:0.5mm;}
+
+.wf-inner{padding:7mm 11mm 6mm;height:calc(297mm - 9mm);display:flex;flex-direction:column;}
+.wf-tag{font-size:6.5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.5mm;}
+.wf-h{font-size:15pt;font-weight:600;letter-spacing:-0.035em;color:#0A0A0A;line-height:1.1;margin-bottom:1.5mm;}
+.wf-desc{font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.6;color:#555;max-width:158mm;margin-bottom:3.5mm;}
+.wf-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3.5mm;flex:1;min-height:0;}
+.wf-panel{display:flex;flex-direction:column;border-radius:2.5mm;overflow:hidden;border:0.35mm solid #E0E0E0;background:#F4F4F4;}
+.wf-panel svg{flex:1;width:100%;min-height:0;display:block;}
+.wf-foot{padding:2mm 3mm;border-top:0.35mm solid #E0E0E0;background:#FAFAFA;flex-shrink:0;}
+.wf-stage{font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.5mm;}
+.wf-stage.ca{color:#C25B2A;}.wf-stage.cb{color:#1A7A6A;}.wf-stage.cc{color:#6B3FA0;}.wf-stage.cf{color:#2F48DF;}
+.wf-stage-note{font-family:'Kulim Park',sans-serif;font-size:6.5pt;color:#666;line-height:1.35;}
+.wf-rationale{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm;margin-top:3mm;background:#F8F9FF;border-radius:2mm;padding:3mm 4mm;border:0.3mm solid #dde4ff;flex-shrink:0;}
+.wf-rat-h{font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.5mm;}
+.wf-rat-b{font-family:'Kulim Park',sans-serif;font-size:7pt;line-height:1.55;color:#444;}
+
+.divider{height:0.3mm;background:rgba(0,0,0,0.07);flex-shrink:0;}
+
+.tag-pill{display:inline-block;font-size:7pt;font-weight:600;letter-spacing:0.04em;background:#EEF2FF;color:#2F48DF;padding:1.5mm 3mm;border-radius:10mm;margin:0.8mm;}
+
+.insight-band{background:#0A0A0A;padding:5mm 6mm;border-radius:2.5mm;}
+.insight-band-text{font-family:'Kulim Park',sans-serif;font-size:10pt;line-height:1.72;color:rgba(255,255,255,0.82);}
+.insight-band-attr{font-size:6pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:2mm;}
+
+.cover{height:297mm;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:14mm;}
+.back{background:#0A0A0A;height:297mm;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:16mm;text-align:center;}
+
+.ia-page{padding:10mm 12mm 9mm;height:calc(297mm - 9mm);display:flex;flex-direction:column;gap:4mm;justify-content:space-between;}
+
+.map-row{display:grid;grid-template-columns:85mm 8mm 1fr;align-items:stretch;background:#F8F8F8;border-radius:2mm;overflow:hidden;border:0.3mm solid #EBEBEB;margin-bottom:2.5mm;}
+.map-insight{padding:3mm 4mm;border-right:0.3mm solid #E0E0E0;}
+.map-arrow{display:flex;align-items:center;justify-content:center;background:#EEF2FF;font-size:8pt;color:#2F48DF;}
+.map-decision{padding:3mm 4mm;}
+.map-label{font-size:5.5pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;margin-bottom:1mm;}
+.map-text{font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.5;color:#333;}
+
+.contrib-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;}
+.contrib-item{padding:3.5mm 4mm;background:#F8F8F8;border-radius:2mm;border:0.3mm solid #EBEBEB;}
+.contrib-label{font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.5mm;}
+.contrib-desc{font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.5;color:#555;}
+
+.ds-type-row{display:flex;align-items:baseline;gap:6mm;padding:3mm 0;border-bottom:0.3mm solid #EBEBEB;}
+.ds-size{font-size:6pt;font-weight:700;color:#2F48DF;width:12mm;flex-shrink:0;}
+.ds-weight{font-size:6pt;color:#999;width:12mm;flex-shrink:0;}
+.ds-sample{color:#0A0A0A;}
+
+.mi-card{background:#F6F6F6;border-radius:2.5mm;padding:5mm;border:0.3mm solid #EAEAEA;display:flex;flex-direction:column;gap:2mm;}
+.mi-card-tag{font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;}
+.mi-card-h{font-size:9.5pt;font-weight:600;color:#0A0A0A;line-height:1.2;}
+.mi-card-b{font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.6;color:#555;}
+.mi-card-rationale{font-family:'Kulim Park',sans-serif;font-size:7pt;line-height:1.5;color:#2F48DF;background:#EEF2FF;padding:2mm 3mm;border-radius:1.5mm;margin-top:1mm;}
+
+.principle-card{background:#2F48DF;border-radius:2.5mm;padding:6mm;display:flex;flex-direction:column;gap:2mm;}
+.principle-num{font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);}
+.principle-text{font-family:'Kulim Park',sans-serif;font-size:10pt;font-weight:400;line-height:1.65;color:#FBFBFB;}
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: COVER -->
+<div class="page">
+  <div class="cover" style="background:#0A0A0A;background-image:url('/7944.png');background-size:cover;background-position:center;">
+    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.10) 0%,rgba(0,0,0,0.62) 100%);z-index:1;"></div>
+    <!-- Top eyebrow -->
+    <div style="position:relative;z-index:2;display:flex;flex-direction:column;gap:0;">
+      <div style="font-size:7pt;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.45);">studiobee.co.in</div>
+    </div>
+    <!-- Center title block -->
+    <div style="position:relative;z-index:2;flex:1;display:flex;align-items:center;">
+      <div>
+        <div style="font-size:7pt;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#2F48DF;margin-bottom:4mm;">UX / UI</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:52pt;font-weight:700;letter-spacing:-0.045em;line-height:0.92;color:#FBFBFB;">Case</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:52pt;font-weight:700;letter-spacing:-0.045em;line-height:0.92;color:#FBFBFB;">Study</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:52pt;font-weight:300;letter-spacing:-0.045em;line-height:0.92;color:rgba(255,255,255,0.35);">2025</div>
+        <div style="height:0.4mm;width:32mm;background:#2F48DF;margin-top:6mm;margin-bottom:6mm;"></div>
+        <div style="font-family:'Kulim Park',sans-serif;font-size:9.5pt;line-height:1.65;color:rgba(255,255,255,0.6);max-width:108mm;">Designing a brand-forward agency website that performs at 60fps on an iPhone — and looks like the best agency in the room.</div>
+      </div>
+    </div>
+    <!-- Bottom metadata row -->
+    <div style="position:relative;z-index:2;">
+      <div style="height:0.3mm;background:rgba(255,255,255,0.15);margin-bottom:5mm;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6mm;">
+        <div>
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1.5mm;">Role</div>
+          <div style="font-size:8.5pt;font-weight:500;color:#FBFBFB;">Lead UX/UI Designer &amp; Front-end</div>
+        </div>
+        <div>
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1.5mm;">Year</div>
+          <div style="font-size:8.5pt;font-weight:500;color:#FBFBFB;">2025</div>
+        </div>
+        <div>
+          <div style="font-size:5.5pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1.5mm;">Deliverables</div>
+          <div style="font-size:8.5pt;font-weight:500;color:#FBFBFB;">Brand system · UI design · Prototype · Front-end build</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: PROJECT OVERVIEW -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Project Overview</span><span class="ph-num">02 / 21</span></div>
+  <div class="ci">
+    <div>
+      <div class="c-tag">Overview</div>
+      <div class="c-h2" style="margin-top:1.5mm;">Design a brand-forward website<br/>from the ground up.</div>
+    </div>
+    <div class="pull-quote">
+      <div class="pull-quote-text">"The brief was simple: make it feel like the best agency in the room — and make sure it doesn't crash on an iPhone."</div>
+      <div class="pull-quote-attr">Project Brief — studiobee, 2025</div>
+    </div>
+    <div class="c-grid3">
+      <div class="c-card c-card-accent">
+        <div class="c-card-tag">Audience</div>
+        <div class="c-card-h">Indian founders &amp; marketing leads</div>
+        <div class="c-card-b">Mobile-first visitors comparing agencies, making decisions within 8 seconds on a phone, often on a commute.</div>
+      </div>
+      <div class="c-card c-card-accent">
+        <div class="c-card-tag">Goals</div>
+        <div class="c-card-h">Premium positioning through restraint</div>
+        <div class="c-card-b">Showcase work front-and-center. Signal quality through typography and motion — not decoration. Convert curious visitors into enquiries.</div>
+      </div>
+      <div class="c-card c-card-accent">
+        <div class="c-card-tag">Design Constraints</div>
+        <div class="c-card-h">Hard technical limits shaped every decision</div>
+        <div class="c-card-b">Mobile-first touch targets · No UI framework · Brand must feel premium, not templated · Work must be front-and-center</div>
+      </div>
+    </div>
+    <!-- Design Process SVG -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Design Process</div>
+      <svg viewBox="0 0 520 68" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <defs>
+          <marker id="arrowP" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#2F48DF" opacity="0.5"/>
+          </marker>
+        </defs>
+        <!-- Step boxes -->
+        <rect x="4" y="16" width="84" height="36" rx="6" fill="#2F48DF"/>
+        <text x="46" y="30" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="700" letter-spacing="1.2" fill="rgba(255,255,255,0.6)" text-decoration="none">DISCOVER</text>
+        <text x="46" y="43" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" font-weight="600" fill="#FBFBFB">Research</text>
+        <line x1="88" y1="34" x2="102" y2="34" stroke="#2F48DF" stroke-width="1.5" marker-end="url(#arrowP)" opacity="0.5"/>
+        <rect x="106" y="16" width="84" height="36" rx="6" fill="#2F48DF"/>
+        <text x="148" y="30" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="700" letter-spacing="1.2" fill="rgba(255,255,255,0.6)">DEFINE</text>
+        <text x="148" y="43" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" font-weight="600" fill="#FBFBFB">Brand + IA</text>
+        <line x1="190" y1="34" x2="204" y2="34" stroke="#2F48DF" stroke-width="1.5" marker-end="url(#arrowP)" opacity="0.5"/>
+        <rect x="208" y="16" width="84" height="36" rx="6" fill="#2F48DF"/>
+        <text x="250" y="30" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="700" letter-spacing="1.2" fill="rgba(255,255,255,0.6)">DESIGN</text>
+        <text x="250" y="43" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" font-weight="600" fill="#FBFBFB">Wireframes</text>
+        <line x1="292" y1="34" x2="306" y2="34" stroke="#2F48DF" stroke-width="1.5" marker-end="url(#arrowP)" opacity="0.5"/>
+        <rect x="310" y="16" width="84" height="36" rx="6" fill="#2F48DF"/>
+        <text x="352" y="30" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="700" letter-spacing="1.2" fill="rgba(255,255,255,0.6)">PROTOTYPE</text>
+        <text x="352" y="43" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" font-weight="600" fill="#FBFBFB">Build + Test</text>
+        <line x1="394" y1="34" x2="408" y2="34" stroke="#2F48DF" stroke-width="1.5" marker-end="url(#arrowP)" opacity="0.5"/>
+        <rect x="412" y="16" width="100" height="36" rx="6" fill="#2F48DF"/>
+        <text x="462" y="30" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="700" letter-spacing="1.2" fill="rgba(255,255,255,0.6)">ITERATE</text>
+        <text x="462" y="43" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" font-weight="600" fill="#FBFBFB">Refine + Ship</text>
+        <!-- Bottom labels -->
+        <text x="46" y="62" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6.5" fill="#888">Week 1</text>
+        <text x="148" y="62" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6.5" fill="#888">Week 1–2</text>
+        <text x="250" y="62" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6.5" fill="#888">Week 2–3</text>
+        <text x="352" y="62" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6.5" fill="#888">Week 3–4</text>
+        <text x="462" y="62" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6.5" fill="#888">Ongoing</text>
+      </svg>
+    </div>
+    <!-- Contribution -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">My Contribution</div>
+      <div class="contrib-grid">
+        <div class="contrib-item">
+          <div class="contrib-label">UX Research</div>
+          <div class="contrib-desc">Competitor benchmarking, persona development, decision path mapping</div>
+        </div>
+        <div class="contrib-item">
+          <div class="contrib-label">Visual Design</div>
+          <div class="contrib-desc">Brand system, colour tokens, typography scale, component design</div>
+        </div>
+        <div class="contrib-item">
+          <div class="contrib-label">Prototyping</div>
+          <div class="contrib-desc">Interactive wireframes, micro-interaction specs, animation system</div>
+        </div>
+        <div class="contrib-item">
+          <div class="contrib-label">Front-end Build</div>
+          <div class="contrib-desc">Single HTML file, inline CSS, vanilla JS — no framework, full performance control</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: DISCOVERY & BRAND SYSTEM -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Discovery &amp; Brand System</span><span class="ph-num">03 / 21</span></div>
+  <div class="ci-tight">
+    <div>
+      <div class="c-tag">Discovery</div>
+      <div class="c-h2" style="margin-top:1.5mm;">Brand principles that drove every decision.</div>
+    </div>
+    <!-- Principle cards -->
+    <div class="c-grid3">
+      <div class="c-card" style="border-top:1.5mm solid #2F48DF;">
+        <div class="c-card-tag">Principle 01</div>
+        <div class="c-card-h">Premium Restraint</div>
+        <div class="c-card-b">Every element earns its place. Remove what doesn't communicate. The result should feel curated — not busy.</div>
+      </div>
+      <div class="c-card" style="border-top:1.5mm solid #2F48DF;">
+        <div class="c-card-tag">Principle 02</div>
+        <div class="c-card-h">Motion with Purpose</div>
+        <div class="c-card-b">Animate only what communicates energy. Motion is brand language, not decoration. Every animation has a reason.</div>
+      </div>
+      <div class="c-card" style="border-top:1.5mm solid #2F48DF;">
+        <div class="c-card-tag">Principle 03</div>
+        <div class="c-card-h">Warmth Over Cool</div>
+        <div class="c-card-b">Premium without being cold. The cream section, serif headlines, and human photography signal approachability alongside quality.</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <!-- Colour tokens -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2.5mm;">Colour Tokens — Primary</div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#2F48DF;">
+          <div class="swatch-label" style="color:#FBFBFB;">Blue</div>
+          <div class="swatch-hex" style="color:#FBFBFB;">#2F48DF</div>
+          <div class="swatch-use" style="color:rgba(255,255,255,0.55);">Primary brand · CTAs · Hero bg</div>
+        </div>
+        <div class="swatch" style="background:#0A0A0A;">
+          <div class="swatch-label" style="color:#FBFBFB;">Dark</div>
+          <div class="swatch-hex" style="color:#FBFBFB;">#0A0A0A</div>
+          <div class="swatch-use" style="color:rgba(255,255,255,0.45);">Services · Stats · Footer</div>
+        </div>
+        <div class="swatch" style="background:#FBFBFB;border:0.4mm solid #EAEAEA;">
+          <div class="swatch-label" style="color:#0A0A0A;">Light</div>
+          <div class="swatch-hex" style="color:#0A0A0A;">#FBFBFB</div>
+          <div class="swatch-use" style="color:rgba(0,0,0,0.45);">Base bg · Text on dark</div>
+        </div>
+        <div class="swatch" style="background:#F3E9D9;">
+          <div class="swatch-label" style="color:#0A0A0A;">Cream</div>
+          <div class="swatch-hex" style="color:#0A0A0A;">#F3E9D9</div>
+          <div class="swatch-use" style="color:rgba(0,0,0,0.45);">Team section bg</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Colour Tokens — Secondary</div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#1e33b8;width:28mm;height:16mm;">
+          <div class="swatch-label" style="color:#FBFBFB;font-size:7pt;">Blue Dark</div>
+          <div class="swatch-hex" style="color:#FBFBFB;">#1e33b8</div>
+          <div class="swatch-use" style="color:rgba(255,255,255,0.55);">Hover states · Dark blue sections</div>
+        </div>
+        <div class="swatch" style="background:#4f64f0;width:28mm;height:16mm;">
+          <div class="swatch-label" style="color:#FBFBFB;font-size:7pt;">Blue Light</div>
+          <div class="swatch-hex" style="color:#FBFBFB;">#4f64f0</div>
+          <div class="swatch-use" style="color:rgba(255,255,255,0.55);">Tints · Glass effects</div>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <!-- Typography system -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Typography System</div>
+      <div class="c-grid2" style="gap:5mm;">
+        <div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:24pt;font-weight:600;letter-spacing:-0.04em;color:#0A0A0A;line-height:1.0;margin-bottom:2mm;">Headlines.</div>
+          <div style="font-size:6.5pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.5mm;">DM Sans — Headings</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.6;color:#666;">Large headings, section titles, card headers. Tight tracking at −0.04em signals precision and confidence. Used at 600 weight for primary hierarchy.</div>
+        </div>
+        <div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:9pt;font-weight:400;line-height:1.72;color:#444;margin-bottom:2mm;">Body copy flows with warmth and readability — designed for sustained reading across dark and light sections.</div>
+          <div style="font-size:6.5pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#2F48DF;margin-bottom:1.5mm;">Kulim Park — Body</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.6;color:#666;">Paragraph copy, card descriptions, testimonials. The serif warmth of Kulim Park contrasts with DM Sans to create typographic depth.</div>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <!-- Section colour cadence -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Section Colour Cadence</div>
+      <svg viewBox="0 0 520 60" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <rect x="0" y="0" width="64" height="34" rx="3" fill="#2F48DF"/>
+        <text x="32" y="22" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="rgba(255,255,255,0.9)">HERO</text>
+        <text x="32" y="46" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="#888">Blue</text>
+        <rect x="66" y="0" width="64" height="34" rx="3" fill="#0A0A0A"/>
+        <text x="98" y="22" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="rgba(255,255,255,0.9)">SERVICES</text>
+        <text x="98" y="46" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="#888">Dark</text>
+        <rect x="132" y="0" width="64" height="34" rx="3" fill="#2F48DF"/>
+        <text x="164" y="22" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="rgba(255,255,255,0.9)">WORK</text>
+        <text x="164" y="46" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="#888">Blue</text>
+        <rect x="198" y="0" width="64" height="34" rx="3" fill="#FBFBFB" stroke="#E0E0E0" stroke-width="0.5"/>
+        <text x="230" y="22" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="#0A0A0A">STATS</text>
+        <text x="230" y="46" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="#888">Light</text>
+        <rect x="264" y="0" width="64" height="34" rx="3" fill="#FBFBFB" stroke="#E0E0E0" stroke-width="0.5"/>
+        <text x="296" y="22" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="#0A0A0A">PROCESS</text>
+        <text x="296" y="46" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="#888">Light</text>
+        <rect x="330" y="0" width="64" height="34" rx="3" fill="#0A0A0A"/>
+        <text x="362" y="22" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="700" fill="rgba(255,255,255,0.9)">TESTIM.</text>
+        <text x="362" y="46" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="#888">Dark</text>
+        <rect x="396" y="0" width="64" height="34" rx="3" fill="#F3E9D9"/>
+        <text x="428" y="22" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="#0A0A0A">TEAM</text>
+        <text x="428" y="46" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="#888">Cream</text>
+        <rect x="462" y="0" width="58" height="34" rx="3" fill="#2F48DF"/>
+        <text x="491" y="22" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="rgba(255,255,255,0.9)">CTA</text>
+        <text x="491" y="46" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="#888">Blue</text>
+        <text x="260" y="58" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="#999" font-style="italic">Rhythm: dark / blue / light alternation prevents visual fatigue</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 4: USER RESEARCH -->
+<div class="page">
+  <div class="ph"><span class="ph-label">User Research</span><span class="ph-num">04 / 21</span></div>
+  <div class="ci-tight">
+    <div>
+      <div class="c-tag">User Research</div>
+      <div class="c-h2" style="margin-top:1.5mm;">Understanding who decides — and how fast.</div>
+    </div>
+    <!-- Competitor benchmarking -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Competitor Benchmarking</div>
+      <div class="c-grid3">
+        <div class="c-card">
+          <div class="c-card-tag">London Agency</div>
+          <div class="c-card-h">Ragged Edge</div>
+          <div style="font-size:6.5pt;font-weight:600;color:#2F48DF;margin-bottom:1.5mm;">Dark editorial, micro-type</div>
+          <div class="c-card-b">Black bg, white display type, motion-forward, minimal nav. Signals: serious craft, no compromise.</div>
+        </div>
+        <div class="c-card">
+          <div class="c-card-tag">Global Scale-up</div>
+          <div class="c-card-h">Superside</div>
+          <div style="font-size:6.5pt;font-weight:600;color:#2F48DF;margin-bottom:1.5mm;">Clean, enterprise-feel</div>
+          <div class="c-card-b">White bg, large photography, simple CTAs, case study heavy. Signals: scalable, trustworthy, processdriven.</div>
+        </div>
+        <div class="c-card">
+          <div class="c-card-tag">Brand Studio</div>
+          <div class="c-card-h">Koto</div>
+          <div style="font-size:6.5pt;font-weight:600;color:#2F48DF;margin-bottom:1.5mm;">Typographic, premium</div>
+          <div class="c-card-b">White/cream bg, editorial hierarchy, motion-minimal, work gallery. Signals: considered, expensive, taste.</div>
+        </div>
+      </div>
+    </div>
+    <!-- Insight band -->
+    <div class="insight-band">
+      <div class="insight-band-text">Every premium agency uses dark sections and tight typography. studiobee needed the same weight — but warmer, because their clients are Indian founders, not Silicon Valley VCs.</div>
+      <div class="insight-band-attr">Key Benchmarking Insight</div>
+    </div>
+    <!-- Persona + findings -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Primary User Persona</div>
+      <div class="c-grid2">
+        <div class="c-card c-card-blue">
+          <div class="c-card-tag">Primary Persona</div>
+          <div class="c-card-h">Rahul M.</div>
+          <div style="font-size:7pt;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:2mm;">Co-founder &amp; Marketing Lead</div>
+          <div class="c-card-b"><strong style="color:rgba(255,255,255,0.85);">Scenario:</strong> Comparing 3 agencies on an iPhone 13 during his evening commute. Decides within 8 seconds of landing.</div>
+          <div style="height:0.3mm;background:rgba(255,255,255,0.15);margin:2.5mm 0;"></div>
+          <div style="font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:1.5mm;">Values</div>
+          <div class="c-card-b">Proof of work · Speed of response · Local market understanding</div>
+        </div>
+        <div class="c-card">
+          <div class="c-card-tag">Research Findings</div>
+          <div class="c-card-h">What the data showed</div>
+          <div class="c-card-b" style="margin-top:2mm;">
+            <div style="display:flex;gap:2.5mm;margin-bottom:2mm;align-items:flex-start;">
+              <div style="width:4mm;height:4mm;background:#2F48DF;border-radius:50%;flex-shrink:0;margin-top:0.5mm;"></div>
+              <div><strong>78%</strong> of first-contact visits happen on mobile</div>
+            </div>
+            <div style="display:flex;gap:2.5mm;margin-bottom:2mm;align-items:flex-start;">
+              <div style="width:4mm;height:4mm;background:#2F48DF;border-radius:50%;flex-shrink:0;margin-top:0.5mm;"></div>
+              <div>Work portfolio is the <strong>#1 decision factor</strong></div>
+            </div>
+            <div style="display:flex;gap:2.5mm;align-items:flex-start;">
+              <div style="width:4mm;height:4mm;background:#2F48DF;border-radius:50%;flex-shrink:0;margin-top:0.5mm;"></div>
+              <div>Agency websites with dark/premium aesthetics score <strong>40% higher</strong> in perceived quality</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Research → Design Decision map -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Research → Design Decision</div>
+      <div class="map-row">
+        <div class="map-insight">
+          <div class="map-label">Research Insight</div>
+          <div class="map-text">Mobile-first audience, quick scroll behaviour — decisions made in under 10 seconds</div>
+        </div>
+        <div class="map-arrow">→</div>
+        <div class="map-decision">
+          <div class="map-label">Design Decision</div>
+          <div class="map-text">9:16 portrait work cards that feel native on a phone — same ratio as Instagram Stories</div>
+        </div>
+      </div>
+      <div class="map-row">
+        <div class="map-insight">
+          <div class="map-label">Research Insight</div>
+          <div class="map-text">Clients compare agencies side-by-side — quality signal matters as much as content</div>
+        </div>
+        <div class="map-arrow">→</div>
+        <div class="map-decision">
+          <div class="map-label">Design Decision</div>
+          <div class="map-text">Dark sections + precise typography to signal premium positioning instantly</div>
+        </div>
+      </div>
+      <div class="map-row" style="margin-bottom:0;">
+        <div class="map-insight">
+          <div class="map-label">Research Insight</div>
+          <div class="map-text">Indian market: warmth and approachability matter as much as prestige</div>
+        </div>
+        <div class="map-arrow">→</div>
+        <div class="map-decision">
+          <div class="map-label">Design Decision</div>
+          <div class="map-text">Cream section for Team, Kulim Park body font for warmth and personality</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 5: INFORMATION ARCHITECTURE -->
+<div class="page">
+  <div class="ph"><span class="ph-label">IA + Navigation Design</span><span class="ph-num">05 / 21</span></div>
+  <div class="ia-page">
+    <div>
+      <div class="c-tag">IA + Navigation Design</div>
+      <div class="c-h2" style="margin-top:1.5mm;">Single-page scroll with purposeful hierarchy.</div>
+    </div>
+    <div class="c-body" style="max-width:155mm;">Every section order was a design decision. The user arrives at the Hero, sees proof of work immediately (Work section is #2), then understands how it's made (Services, Process), meets the people (Team), and reaches the call to action.</div>
+    <!-- Site map SVG -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Site Architecture</div>
+      <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <defs>
+          <marker id="arrowIA" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <polygon points="0 0, 8 4, 0 8" fill="#2F48DF"/>
+          </marker>
+          <marker id="arrowIAthin" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <polygon points="0 0, 8 4, 0 8" fill="#999"/>
+          </marker>
+        </defs>
+        <!-- Fixed Nav -->
+        <rect x="10" y="8" width="500" height="22" rx="4" fill="#2F48DF"/>
+        <text x="260" y="23" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="#FBFBFB">Fixed Navigation — always visible</text>
+        <!-- Sections column 1 (primary path) -->
+        <rect x="80" y="44" width="130" height="22" rx="4" fill="#2F48DF"/>
+        <text x="145" y="59" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="#FBFBFB">01 Hero</text>
+        <line x1="145" y1="66" x2="145" y2="76" stroke="#2F48DF" stroke-width="2" marker-end="url(#arrowIA)"/>
+        <rect x="80" y="78" width="130" height="22" rx="4" fill="#2F48DF"/>
+        <text x="145" y="93" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="#FBFBFB">02 Work ★</text>
+        <line x1="145" y1="100" x2="145" y2="110" stroke="#2F48DF" stroke-width="2" marker-end="url(#arrowIA)"/>
+        <rect x="80" y="112" width="130" height="22" rx="4" fill="#F0F0F0" stroke="#CCCCCC" stroke-width="0.5"/>
+        <text x="145" y="127" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="600" fill="#444">03 Services</text>
+        <line x1="145" y1="134" x2="145" y2="144" stroke="#999" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowIAthin)"/>
+        <rect x="80" y="146" width="130" height="22" rx="4" fill="#F0F0F0" stroke="#CCCCCC" stroke-width="0.5"/>
+        <text x="145" y="161" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="600" fill="#444">04 Stats</text>
+        <line x1="145" y1="168" x2="145" y2="178" stroke="#999" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowIAthin)"/>
+        <rect x="80" y="180" width="130" height="22" rx="4" fill="#F0F0F0" stroke="#CCCCCC" stroke-width="0.5"/>
+        <text x="145" y="195" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="600" fill="#444">05 Process</text>
+        <!-- Sections column 2 -->
+        <rect x="310" y="44" width="130" height="22" rx="4" fill="#F0F0F0" stroke="#CCCCCC" stroke-width="0.5"/>
+        <text x="375" y="59" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="600" fill="#444">06 Testimonials</text>
+        <rect x="310" y="78" width="130" height="22" rx="4" fill="#F0F0F0" stroke="#CCCCCC" stroke-width="0.5"/>
+        <text x="375" y="93" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="600" fill="#444">07 Team</text>
+        <rect x="310" y="112" width="130" height="22" rx="4" fill="#2F48DF"/>
+        <text x="375" y="127" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="#FBFBFB">08 CTA / Contact ★</text>
+        <!-- Connect col1 bottom to col2 top -->
+        <line x1="210" y1="55" x2="310" y2="55" stroke="#DDDDDD" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="210" y1="89" x2="310" y2="89" stroke="#DDDDDD" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="210" y1="123" x2="310" y2="123" stroke="#DDDDDD" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- Primary path arrow Hero→Work→Contact -->
+        <path d="M 210 55 Q 260 55 260 133 Q 260 190 310 123" stroke="#2F48DF" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#arrowIA)"/>
+        <!-- Legend -->
+        <rect x="10" y="168" width="12" height="3" rx="1" fill="#2F48DF"/>
+        <text x="26" y="172" font-family="DM Sans,sans-serif" font-size="6.5" fill="#333">Primary conversion path: Hero → Work → Contact</text>
+        <line x1="10" y1="182" x2="22" y2="182" stroke="#999" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="26" y="185" font-family="DM Sans,sans-serif" font-size="6.5" fill="#666">Secondary path: Services → Process → Contact</text>
+        <text x="10" y="200" font-family="Kulim Park,sans-serif" font-size="6" fill="#999" font-style="italic">★ Conversion priority sections. Section order is as intentional as section design.</text>
+        <!-- Secondary dashed path -->
+        <path d="M 145 202 Q 145 214 250 214 Q 310 214 375 134" stroke="#999" stroke-width="1.2" fill="none" stroke-dasharray="3,2" marker-end="url(#arrowIAthin)"/>
+      </svg>
+    </div>
+    <!-- Nav rationale -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Navigation Design Rationale</div>
+      <div class="c-grid2">
+        <div class="c-card">
+          <div class="c-card-tag">Why Fixed Nav?</div>
+          <div class="c-card-h">Persistent access, persistent CTA</div>
+          <div class="c-card-b">Fixed position keeps the CTA ('Start a project') always visible. As the user scrolls, the nav gains a blur/opacity background — signalling context change without a full redesign.</div>
+        </div>
+        <div class="c-card">
+          <div class="c-card-tag">Why a Button CTA in Nav?</div>
+          <div class="c-card-h">Visual grammar: text links navigate, buttons act</div>
+          <div class="c-card-b">'Start a project' is styled as a pill button, not a text link. It creates a clear visual hierarchy: text links (navigate) vs button (act). The only nav item that's a conversion action gets the only button treatment.</div>
+        </div>
+      </div>
+    </div>
+    <!-- Conversion path band -->
+    <div style="background:#2F48DF;padding:3mm 5mm;border-radius:2mm;display:flex;align-items:center;justify-content:center;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:8.5pt;font-weight:600;color:rgba(255,255,255,0.5);letter-spacing:0.1em;text-transform:uppercase;margin-right:4mm;">Primary path</div>
+      <div style="font-family:'Kulim Park',sans-serif;font-size:9pt;color:#FBFBFB;">Hero → Work → Contact &nbsp;·&nbsp; Avg 3 scroll stops to conversion</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 6: HERO & NAVIGATION WIREFRAMES -->
+<div class="page">
+  <div class="ph ph-blue"><span class="ph-label">Hero &amp; Navigation — Wireframes</span><span class="ph-num">06 / 21</span></div>
+  <div class="wf-inner">
+    <div class="wf-tag">Section Design Process</div>
+    <div class="wf-h">The hero was the hardest page to get right.</div>
+    <div class="wf-desc">Three hero layouts were explored. The final design takes Concept A's strong typographic rhythm and Concept B's left-alignment (proven in eye-tracking to be read first), then adds the wave strip system — a fourth element unique to studiobee that no concept had, born from the brand's kinetic energy.</div>
+    <div class="wf-grid">
+      <!-- Concept A -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#1a2a6e"/>
+          <!-- Centered text blocks -->
+          <rect x="70" y="28" width="140" height="10" rx="2" fill="rgba(255,255,255,0.15)"/>
+          <rect x="55" y="44" width="170" height="18" rx="2" fill="rgba(255,255,255,0.28)"/>
+          <rect x="75" y="68" width="130" height="14" rx="2" fill="rgba(255,255,255,0.18)"/>
+          <rect x="95" y="88" width="90" height="12" rx="2" fill="rgba(255,255,255,0.12)"/>
+          <!-- Centered CTA button -->
+          <rect x="103" y="108" width="74" height="18" rx="9" fill="rgba(255,255,255,0)" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
+          <text x="140" y="121" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" fill="rgba(255,255,255,0.7)">Start a project →</text>
+          <!-- Center alignment indicator -->
+          <line x1="140" y1="10" x2="140" y2="158" stroke="rgba(255,255,255,0.08)" stroke-width="0.5" stroke-dasharray="3,3"/>
+          <text x="140" y="158" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.3)">center axis</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage ca">Concept A — Centered layout, static bg</div>
+          <div class="wf-stage-note">Full-center symmetry, all elements axis-aligned. Clean hierarchy but lacks directional energy.</div>
+        </div>
+      </div>
+      <!-- Concept B -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#1a2a6e"/>
+          <!-- Left text column -->
+          <rect x="16" y="28" width="110" height="8" rx="2" fill="rgba(255,255,255,0.12)"/>
+          <rect x="16" y="42" width="130" height="16" rx="2" fill="rgba(255,255,255,0.28)"/>
+          <rect x="16" y="64" width="120" height="12" rx="2" fill="rgba(255,255,255,0.18)"/>
+          <rect x="16" y="82" width="100" height="10" rx="2" fill="rgba(255,255,255,0.12)"/>
+          <rect x="16" y="100" width="80" height="16" rx="8" fill="rgba(255,255,255,0)" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
+          <text x="56" y="112" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" fill="rgba(255,255,255,0.7)">Start →</text>
+          <!-- Right: geometric circles -->
+          <circle cx="210" cy="72" r="42" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <circle cx="210" cy="72" r="28" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+          <circle cx="210" cy="72" r="14" fill="rgba(255,255,255,0.08)"/>
+          <circle cx="240" cy="44" r="18" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" stroke-width="0.8"/>
+          <!-- Left alignment guide -->
+          <line x1="16" y1="10" x2="16" y2="158" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <text x="20" y="158" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.3)">left edge</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cb">Concept B — Left text, right geometric</div>
+          <div class="wf-stage-note">Left-aligned copy with abstract geometric shapes on the right. Natural reading flow, but geometric shapes feel generic.</div>
+        </div>
+      </div>
+      <!-- Concept C -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#888"/>
+          <!-- Full-bleed image implied by grey -->
+          <rect width="280" height="168" fill="rgba(0,0,0,0.55)"/>
+          <!-- Text in bottom-left -->
+          <rect x="16" y="110" width="80" height="8" rx="2" fill="rgba(255,255,255,0.15)"/>
+          <rect x="16" y="124" width="140" height="16" rx="2" fill="rgba(255,255,255,0.35)"/>
+          <rect x="16" y="146" width="60" height="12" rx="6" fill="rgba(255,255,255,0)" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
+          <text x="46" y="156" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(255,255,255,0.7)">View work →</text>
+          <!-- image label -->
+          <text x="140" y="70" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(255,255,255,0.18)">[ full bleed image ]</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cc">Concept C — Full-bleed image overlay</div>
+          <div class="wf-stage-note">Image fills the entire hero, text anchored bottom-left with dark overlay. Dramatic, but image-dependent and less brand-controlled.</div>
+        </div>
+      </div>
+      <!-- Final Direction -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#1a2a6e"/>
+          <!-- Left text hierarchy -->
+          <rect x="16" y="24" width="72" height="6" rx="2" fill="rgba(255,255,255,0.12)"/>
+          <rect x="16" y="36" width="130" height="16" rx="2" fill="rgba(255,255,255,0.35)"/>
+          <rect x="16" y="58" width="115" height="12" rx="2" fill="rgba(255,255,255,0.22)"/>
+          <rect x="16" y="76" width="100" height="10" rx="2" fill="rgba(255,255,255,0.14)"/>
+          <rect x="16" y="92" width="80" height="16" rx="8" fill="rgba(255,255,255,0)" stroke="rgba(255,255,255,0.55)" stroke-width="1.2"/>
+          <text x="56" y="104" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" fill="rgba(255,255,255,0.72)">Start a project →</text>
+          <!-- Wave strips on right side -->
+          <rect x="172" y="0" width="18" height="168" rx="2" fill="rgba(255,255,255,0.06)"/>
+          <rect x="192" y="0" width="16" height="168" rx="2" fill="rgba(255,255,255,0.10)"/>
+          <rect x="210" y="0" width="18" height="168" rx="2" fill="rgba(255,255,255,0.07)"/>
+          <rect x="230" y="0" width="14" height="168" rx="2" fill="rgba(255,255,255,0.12)"/>
+          <rect x="246" y="0" width="16" height="168" rx="2" fill="rgba(255,255,255,0.06)"/>
+          <rect x="264" y="0" width="16" height="168" rx="2" fill="rgba(255,255,255,0.09)"/>
+          <!-- Red annotations -->
+          <circle cx="34" cy="36" r="4" fill="#E53E3E"/>
+          <line x1="34" y1="36" x2="34" y2="14" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="38" y="12" font-family="DM Sans,sans-serif" font-size="5.5" fill="#E53E3E">← from B: left align</text>
+          <circle cx="210" cy="20" r="4" fill="#E53E3E"/>
+          <line x1="210" y1="20" x2="230" y2="8" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="185" y="7" font-family="DM Sans,sans-serif" font-size="5.5" fill="#E53E3E">wave strips ↑</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cf">Final Direction — Left-aligned + wave strips</div>
+          <div class="wf-stage-note">B's left-alignment + A's type hierarchy + a brand-unique wave strip system that emerged from the identity itself.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wf-rationale">
+      <div>
+        <div class="wf-rat-h">What each concept offered</div>
+        <div class="wf-rat-b">A offered clean typographic hierarchy with strong visual rhythm. B proved left-alignment creates a more natural reading flow — eye-tracking validates left-anchored layouts. C showed that full-bleed backgrounds create drama and immersion, though image-dependency is a risk.</div>
+      </div>
+      <div>
+        <div class="wf-rat-h">Why this combination</div>
+        <div class="wf-rat-b">B's left alignment and A's type hierarchy form the structural base. The wave strip system emerged not from any concept, but from the brand identity itself — it made the hero unlike any agency site we benchmarked. It is the brand made visible.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 7: SERVICES SECTION WIREFRAMES -->
+<div class="page">
+  <div class="ph ph-dark"><span class="ph-label">Services Section — Wireframes</span><span class="ph-num">07 / 21</span></div>
+  <div class="wf-inner">
+    <div class="wf-tag">Section Design Process</div>
+    <div class="wf-h">Six services, zero feature-list feeling.</div>
+    <div class="wf-desc">Three layout systems were explored. The final design combines C's clean 3-col grid with B's visual weight variation — one card spans 2 columns, giving hierarchy to the primary service without breaking the grid logic.</div>
+    <div class="wf-grid">
+      <!-- Concept A -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#111"/>
+          <!-- 2-col list with icons -->
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">2-col icon list</text>
+          <!-- Col 1 -->
+          <rect x="14" y="22" width="10" height="10" rx="2" fill="rgba(47,72,223,0.6)"/>
+          <rect x="28" y="24" width="60" height="5" rx="1" fill="rgba(255,255,255,0.22)"/>
+          <rect x="28" y="32" width="90" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="28" y="37" width="80" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="14" y="48" width="10" height="10" rx="2" fill="rgba(47,72,223,0.6)"/>
+          <rect x="28" y="50" width="55" height="5" rx="1" fill="rgba(255,255,255,0.22)"/>
+          <rect x="28" y="58" width="85" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="28" y="63" width="70" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="14" y="74" width="10" height="10" rx="2" fill="rgba(47,72,223,0.6)"/>
+          <rect x="28" y="76" width="65" height="5" rx="1" fill="rgba(255,255,255,0.22)"/>
+          <rect x="28" y="84" width="88" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="28" y="89" width="75" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <!-- Col 2 -->
+          <rect x="150" y="22" width="10" height="10" rx="2" fill="rgba(47,72,223,0.6)"/>
+          <rect x="164" y="24" width="58" height="5" rx="1" fill="rgba(255,255,255,0.22)"/>
+          <rect x="164" y="32" width="92" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="164" y="37" width="78" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="150" y="48" width="10" height="10" rx="2" fill="rgba(47,72,223,0.6)"/>
+          <rect x="164" y="50" width="62" height="5" rx="1" fill="rgba(255,255,255,0.22)"/>
+          <rect x="164" y="58" width="85" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="164" y="63" width="72" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="150" y="74" width="10" height="10" rx="2" fill="rgba(47,72,223,0.6)"/>
+          <rect x="164" y="76" width="55" height="5" rx="1" fill="rgba(255,255,255,0.22)"/>
+          <rect x="164" y="84" width="90" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="164" y="89" width="76" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <text x="140" y="110" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.2)">catalogue feel — lacks hierarchy</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage ca">Concept A — 2-col list with icons</div>
+          <div class="wf-stage-note">Two columns, icon + title + description per row. Linear and readable but feels like a feature list, not a service offering.</div>
+        </div>
+      </div>
+      <!-- Concept B -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#111"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">masonry — unequal heights</text>
+          <!-- Masonry cards at different heights -->
+          <rect x="12" y="22" width="78" height="68" rx="3" fill="rgba(47,72,223,0.18)" stroke="rgba(47,72,223,0.3)" stroke-width="0.5"/>
+          <rect x="16" y="28" width="55" height="6" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <rect x="16" y="38" width="68" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="16" y="44" width="62" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="16" y="50" width="65" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="16" y="56" width="58" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="16" y="62" width="70" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="94" y="22" width="78" height="44" rx="3" fill="rgba(47,72,223,0.12)" stroke="rgba(47,72,223,0.2)" stroke-width="0.5"/>
+          <rect x="98" y="28" width="50" height="6" rx="1" fill="rgba(255,255,255,0.22)"/>
+          <rect x="98" y="38" width="65" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="98" y="44" width="58" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="176" y="22" width="92" height="56" rx="3" fill="rgba(47,72,223,0.15)" stroke="rgba(47,72,223,0.25)" stroke-width="0.5"/>
+          <rect x="180" y="28" width="62" height="6" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <rect x="180" y="38" width="80" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="180" y="44" width="72" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="180" y="50" width="76" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="12" y="96" width="120" height="44" rx="3" fill="rgba(47,72,223,0.12)" stroke="rgba(47,72,223,0.2)" stroke-width="0.5"/>
+          <rect x="16" y="102" width="80" height="6" rx="1" fill="rgba(255,255,255,0.22)"/>
+          <rect x="16" y="112" width="106" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="16" y="118" width="95" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="136" y="70" width="132" height="70" rx="3" fill="rgba(47,72,223,0.18)" stroke="rgba(47,72,223,0.3)" stroke-width="0.5"/>
+          <rect x="140" y="76" width="90" height="6" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <rect x="140" y="86" width="118" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="140" y="92" width="105" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="140" y="98" width="110" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <text x="140" y="155" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.2)">uneven — visual rhythm, but no hierarchy clarity</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cb">Concept B — Masonry, unequal heights</div>
+          <div class="wf-stage-note">Cards at varying heights create visual variety, but hierarchy is unclear — which service is primary? Scanning is harder.</div>
+        </div>
+      </div>
+      <!-- Concept C -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#111"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">3-col equal grid</text>
+          <!-- 3×2 equal grid -->
+          <rect x="12" y="22" width="80" height="52" rx="3" fill="rgba(47,72,223,0.15)" stroke="rgba(47,72,223,0.28)" stroke-width="0.5"/>
+          <rect x="16" y="28" width="56" height="6" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <rect x="16" y="38" width="70" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="16" y="44" width="65" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="100" y="22" width="80" height="52" rx="3" fill="rgba(47,72,223,0.15)" stroke="rgba(47,72,223,0.28)" stroke-width="0.5"/>
+          <rect x="104" y="28" width="52" height="6" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <rect x="104" y="38" width="68" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="104" y="44" width="62" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="188" y="22" width="80" height="52" rx="3" fill="rgba(47,72,223,0.15)" stroke="rgba(47,72,223,0.28)" stroke-width="0.5"/>
+          <rect x="192" y="28" width="58" height="6" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <rect x="192" y="38" width="65" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="192" y="44" width="60" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="12" y="80" width="80" height="52" rx="3" fill="rgba(47,72,223,0.15)" stroke="rgba(47,72,223,0.28)" stroke-width="0.5"/>
+          <rect x="16" y="86" width="54" height="6" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <rect x="16" y="96" width="68" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="16" y="102" width="61" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="100" y="80" width="80" height="52" rx="3" fill="rgba(47,72,223,0.15)" stroke="rgba(47,72,223,0.28)" stroke-width="0.5"/>
+          <rect x="104" y="86" width="60" height="6" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <rect x="104" y="96" width="70" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="104" y="102" width="62" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="188" y="80" width="80" height="52" rx="3" fill="rgba(47,72,223,0.15)" stroke="rgba(47,72,223,0.28)" stroke-width="0.5"/>
+          <rect x="192" y="86" width="56" height="6" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <rect x="192" y="96" width="66" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="192" y="102" width="58" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <text x="140" y="148" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.2)">clean grid — all equal weight, no primary service</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cc">Concept C — 3-col equal grid</div>
+          <div class="wf-stage-note">Clean 3×2 grid, all cards equal. Great structure but flat hierarchy — the primary service disappears into the grid.</div>
+        </div>
+      </div>
+      <!-- Final Direction -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#111"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">3-col with span-2 featured card</text>
+          <!-- Row 1: span-2 + 1 -->
+          <rect x="12" y="22" width="168" height="56" rx="3" fill="#2F48DF" opacity="0.9"/>
+          <rect x="16" y="28" width="80" height="8" rx="1" fill="rgba(255,255,255,0.35)"/>
+          <rect x="16" y="40" width="140" height="3" rx="1" fill="rgba(255,255,255,0.18)"/>
+          <rect x="16" y="46" width="120" height="3" rx="1" fill="rgba(255,255,255,0.13)"/>
+          <rect x="16" y="52" width="130" height="3" rx="1" fill="rgba(255,255,255,0.13)"/>
+          <rect x="16" y="66" width="52" height="8" rx="4" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.4)" stroke-width="0.8"/>
+          <rect x="184" y="22" width="84" height="56" rx="3" fill="rgba(47,72,223,0.18)" stroke="rgba(47,72,223,0.3)" stroke-width="0.5"/>
+          <rect x="188" y="28" width="55" height="6" rx="1" fill="rgba(255,255,255,0.22)"/>
+          <rect x="188" y="38" width="72" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="188" y="44" width="65" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <!-- Row 2: 3 equal -->
+          <rect x="12" y="84" width="82" height="52" rx="3" fill="rgba(47,72,223,0.15)" stroke="rgba(47,72,223,0.25)" stroke-width="0.5"/>
+          <rect x="16" y="90" width="55" height="5" rx="1" fill="rgba(255,255,255,0.2)"/>
+          <rect x="16" y="99" width="68" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="16" y="105" width="60" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="99" y="84" width="82" height="52" rx="3" fill="rgba(47,72,223,0.15)" stroke="rgba(47,72,223,0.25)" stroke-width="0.5"/>
+          <rect x="103" y="90" width="52" height="5" rx="1" fill="rgba(255,255,255,0.2)"/>
+          <rect x="103" y="99" width="66" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="103" y="105" width="58" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="186" y="84" width="82" height="52" rx="3" fill="rgba(47,72,223,0.15)" stroke="rgba(47,72,223,0.25)" stroke-width="0.5"/>
+          <rect x="190" y="90" width="58" height="5" rx="1" fill="rgba(255,255,255,0.2)"/>
+          <rect x="190" y="99" width="64" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="190" y="105" width="56" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <!-- Red annotation -->
+          <circle cx="96" cy="36" r="4" fill="#E53E3E"/>
+          <line x1="96" y1="36" x2="96" y2="18" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="100" y="16" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">span-2: weight from B, in C grid</text>
+          <circle cx="52" cy="70" r="4" fill="#E53E3E"/>
+          <line x1="52" y1="70" x2="52" y2="155" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="14" y="162" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">ghost CTA inside featured card</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cf">Final Direction — 3-col with span-2 card</div>
+          <div class="wf-stage-note">Primary service spans 2 of 3 columns in row 1, establishing hierarchy. Rows 2–3 revert to equal 3-col cards. Hierarchy without breaking the grid.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wf-rationale" style="background:#1a1a1a;border-color:#333;">
+      <div>
+        <div class="wf-rat-h" style="color:rgba(255,255,255,0.5);">What each concept offered</div>
+        <div class="wf-rat-b" style="color:rgba(255,255,255,0.45);">A's 2-col list was scannable but felt like a spec sheet. B's masonry gave visual energy but sacrificed clarity. C's 3-col grid had the cleanest structure — it just treated all services as equal, which they aren't.</div>
+      </div>
+      <div>
+        <div class="wf-rat-h" style="color:rgba(255,255,255,0.5);">Why this combination</div>
+        <div class="wf-rat-b" style="color:rgba(255,255,255,0.45);">C's grid is the foundation. B's insight — that one element can carry more visual weight — is applied by making the primary service span 2 columns in blue. The client's headline service earns its prominence. The grid logic stays intact.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 8: WORK CAROUSEL WIREFRAMES -->
+<div class="page">
+  <div class="ph ph-blue"><span class="ph-label">Work Carousel — Wireframes</span><span class="ph-num">08 / 21</span></div>
+  <div class="wf-inner">
+    <div class="wf-tag">Section Design Process</div>
+    <div class="wf-h">The most important conversion point on the page.</div>
+    <div class="wf-desc">Three display approaches were explored. The final design takes B's horizontal scroll behaviour and C's tall 9:16 portrait format — creating a marquee that feels like scrolling through an Instagram-native content feed, which matches how the target audience consumes visual content.</div>
+    <div class="wf-grid">
+      <!-- Concept A -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#1a2a6e"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">3×3 thumbnail grid</text>
+          <!-- 3×3 equal thumbnail grid -->
+          <rect x="12" y="20" width="78" height="42" rx="2" fill="rgba(255,255,255,0.12)"/>
+          <rect x="94" y="20" width="78" height="42" rx="2" fill="rgba(255,255,255,0.10)"/>
+          <rect x="176" y="20" width="92" height="42" rx="2" fill="rgba(255,255,255,0.12)"/>
+          <rect x="12" y="66" width="78" height="42" rx="2" fill="rgba(255,255,255,0.10)"/>
+          <rect x="94" y="66" width="78" height="42" rx="2" fill="rgba(255,255,255,0.14)"/>
+          <rect x="176" y="66" width="92" height="42" rx="2" fill="rgba(255,255,255,0.10)"/>
+          <rect x="12" y="112" width="78" height="42" rx="2" fill="rgba(255,255,255,0.12)"/>
+          <rect x="94" y="112" width="78" height="42" rx="2" fill="rgba(255,255,255,0.10)"/>
+          <rect x="176" y="112" width="92" height="42" rx="2" fill="rgba(255,255,255,0.12)"/>
+          <!-- Grid label -->
+          <text x="140" y="158" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.2)">feels like a gallery — no momentum</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage ca">Concept A — Static thumbnail grid</div>
+          <div class="wf-stage-note">3×3 equal square thumbnails in a gallery layout. Comprehensive but static — no invitation to explore, no sense of 'more'.</div>
+        </div>
+      </div>
+      <!-- Concept B -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#1a2a6e"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">horizontal scroll with peek</text>
+          <!-- 4 cards in a row, last cropped -->
+          <rect x="8" y="22" width="56" height="120" rx="3" fill="rgba(255,255,255,0.12)"/>
+          <rect x="68" y="22" width="56" height="120" rx="3" fill="rgba(255,255,255,0.10)"/>
+          <rect x="128" y="22" width="56" height="120" rx="3" fill="rgba(255,255,255,0.12)"/>
+          <!-- Partially cropped 4th card -->
+          <clipPath id="clipC">
+            <rect x="188" y="0" width="92" height="168"/>
+          </clipPath>
+          <rect x="188" y="22" width="56" height="120" rx="3" fill="rgba(255,255,255,0.08)" clip-path="url(#clipC)"/>
+          <!-- Arrows -->
+          <circle cx="20" cy="84" r="10" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.3)" stroke-width="0.8"/>
+          <text x="20" y="88" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="rgba(255,255,255,0.6)">‹</text>
+          <circle cx="258" cy="84" r="10" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.3)" stroke-width="0.8"/>
+          <text x="258" y="88" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="rgba(255,255,255,0.6)">›</text>
+          <text x="140" y="156" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.2)">peek signals 'more' — good horizontal format</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cb">Concept B — Horizontal scroll with peek</div>
+          <div class="wf-stage-note">4 cards in a row with the last partially cropped, inviting horizontal scroll. Arrow controls feel desktop-centric.</div>
+        </div>
+      </div>
+      <!-- Concept C -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#1a2a6e"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">full-bleed poster, one at a time</text>
+          <!-- Single large portrait card -->
+          <rect x="70" y="20" width="140" height="120" rx="4" fill="rgba(255,255,255,0.12)"/>
+          <rect x="70" y="110" width="140" height="30" rx="0 0 4 4" fill="rgba(0,0,0,0.45)"/>
+          <rect x="78" y="114" width="80" height="5" rx="1" fill="rgba(255,255,255,0.3)"/>
+          <rect x="78" y="122" width="55" height="4" rx="1" fill="rgba(255,255,255,0.15)"/>
+          <!-- Nav dots -->
+          <circle cx="122" cy="152" r="3" fill="rgba(255,255,255,0.55)"/>
+          <circle cx="132" cy="152" r="2" fill="rgba(255,255,255,0.2)"/>
+          <circle cx="141" cy="152" r="2" fill="rgba(255,255,255,0.2)"/>
+          <circle cx="150" cy="152" r="2" fill="rgba(255,255,255,0.2)"/>
+          <circle cx="158" cy="152" r="2" fill="rgba(255,255,255,0.2)"/>
+          <!-- Ratio label -->
+          <text x="140" y="72" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" fill="rgba(255,255,255,0.15)">9:16</text>
+          <text x="140" y="84" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.12)">portrait ratio</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cc">Concept C — Full-bleed poster, one at a time</div>
+          <div class="wf-stage-note">One portrait card fills the viewport, dot navigation below. Strong visual impact, but lacks the sense of volume — doesn't show 'we have lots of work'.</div>
+        </div>
+      </div>
+      <!-- Final Direction -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#1a2a6e"/>
+          <text x="140" y="12" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">infinite marquee, 9:16 portrait cards</text>
+          <!-- Multiple tall portrait cards in a row extending past edge -->
+          <rect x="8" y="16" width="48" height="132" rx="3" fill="rgba(255,255,255,0.13)"/>
+          <rect x="60" y="16" width="48" height="132" rx="3" fill="rgba(255,255,255,0.11)"/>
+          <rect x="112" y="16" width="48" height="132" rx="3" fill="rgba(255,255,255,0.14)"/>
+          <rect x="164" y="16" width="48" height="132" rx="3" fill="rgba(255,255,255,0.10)"/>
+          <rect x="216" y="16" width="48" height="132" rx="3" fill="rgba(255,255,255,0.12)"/>
+          <!-- Gradient fade at right edge to imply infinite -->
+          <defs>
+            <linearGradient id="fadeR" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#1a2a6e" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#1a2a6e" stop-opacity="1"/>
+            </linearGradient>
+          </defs>
+          <rect x="200" y="0" width="80" height="168" fill="url(#fadeR)"/>
+          <!-- Text labels in cards -->
+          <text x="32" y="158" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.25)">9:16</text>
+          <text x="84" y="158" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.25)">9:16</text>
+          <text x="136" y="158" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.25)">9:16</text>
+          <!-- Red annotations -->
+          <circle cx="84" cy="80" r="4" fill="#E53E3E"/>
+          <line x1="84" y1="80" x2="84" y2="10" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="88" y="9" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">horizontal: from B</text>
+          <circle cx="136" cy="40" r="4" fill="#E53E3E"/>
+          <line x1="136" y1="40" x2="160" y2="28" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="162" y="27" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">9:16 from C</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cf">Final Direction — Infinite marquee, 9:16 cards</div>
+          <div class="wf-stage-note">Tall portrait cards auto-scroll in an infinite marquee. Mobile-native ratio, sense of volume, hover pauses — respects user intent.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wf-rationale">
+      <div>
+        <div class="wf-rat-h">What each concept offered</div>
+        <div class="wf-rat-b">A's grid showed all work at once but felt static. B's horizontal scroll gave momentum and suggested depth. C's tall portrait format felt native and premium — like premium Instagram content.</div>
+      </div>
+      <div>
+        <div class="wf-rat-h">Why this combination</div>
+        <div class="wf-rat-b">B's horizontal scroll format combined with C's 9:16 ratio creates a marquee that feels native to how the target audience consumes content on their phones. Auto-scroll removes friction; hover-pause respects intent. No arrows needed.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 9: STATS SECTION WIREFRAMES -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Stats Section — Wireframes</span><span class="ph-num">09 / 21</span></div>
+  <div class="wf-inner">
+    <div class="wf-tag">Section Design Process</div>
+    <div class="wf-h">Credibility communicated in under 2 seconds.</div>
+    <div class="wf-desc">Stats needed to communicate credibility at a glance. Three approaches were tested. The final design combines A's row layout with C's coloured accent bars — large numbers with short blue bars above them create visual anchors that guide the eye without adding complexity.</div>
+    <div class="wf-grid">
+      <!-- Concept A -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F8F8F8"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">plain numbers in a row</text>
+          <!-- 4 large numbers, left-aligned, each with small label -->
+          <text x="24" y="68" font-family="DM Sans,sans-serif" font-size="28" font-weight="700" fill="#0A0A0A">48+</text>
+          <rect x="24" y="74" width="38" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="24" y="81" width="28" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <text x="94" y="68" font-family="DM Sans,sans-serif" font-size="28" font-weight="700" fill="#0A0A0A">6yr</text>
+          <rect x="94" y="74" width="35" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="94" y="81" width="26" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <text x="164" y="68" font-family="DM Sans,sans-serif" font-size="28" font-weight="700" fill="#0A0A0A">98%</text>
+          <rect x="164" y="74" width="40" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="164" y="81" width="32" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <text x="234" y="68" font-family="DM Sans,sans-serif" font-size="28" font-weight="700" fill="#0A0A0A">12x</text>
+          <rect x="234" y="74" width="36" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="234" y="81" width="28" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <text x="140" y="110" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(0,0,0,0.2)">minimal but lacks visual anchor points</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage ca">Concept A — Plain numbers in a row</div>
+          <div class="wf-stage-note">4 large numbers left-aligned with labels below. Clean but visually flat — the numbers lack entry points for the eye to land on.</div>
+        </div>
+      </div>
+      <!-- Concept B -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F8F8F8"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">hero-size numbers with stacked descriptors</text>
+          <!-- Very large number -->
+          <text x="12" y="80" font-family="DM Sans,sans-serif" font-size="48" font-weight="700" fill="#0A0A0A" opacity="0.85">48+</text>
+          <rect x="12" y="88" width="80" height="5" rx="1" fill="rgba(0,0,0,0.15)"/>
+          <rect x="12" y="96" width="100" height="4" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="12" y="103" width="90" height="4" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <rect x="12" y="110" width="75" height="4" rx="1" fill="rgba(0,0,0,0.06)"/>
+          <!-- Fade out subsequent numbers to show 'too busy' -->
+          <text x="130" y="80" font-family="DM Sans,sans-serif" font-size="48" font-weight="700" fill="#0A0A0A" opacity="0.25">6yr</text>
+          <rect x="130" y="88" width="65" height="5" rx="1" fill="rgba(0,0,0,0.06)"/>
+          <rect x="130" y="96" width="80" height="4" rx="1" fill="rgba(0,0,0,0.04)"/>
+          <text x="140" y="135" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(0,0,0,0.2)">dramatic but too dense — descriptors compete</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cb">Concept B — Large type with stacked descriptors</div>
+          <div class="wf-stage-note">Hero-scale numbers with extended description text below each. Dramatic but the long descriptors compete with the numbers for attention.</div>
+        </div>
+      </div>
+      <!-- Concept C -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F8F8F8"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">numbers with accent bars above</text>
+          <!-- 4 columns with bars above numbers -->
+          <rect x="20" y="36" width="42" height="6" rx="1" fill="#2F48DF" opacity="0.7"/>
+          <text x="24" y="74" font-family="DM Sans,sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">48+</text>
+          <rect x="20" y="78" width="38" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="88" y="30" width="36" height="6" rx="1" fill="#2F48DF" opacity="0.7"/>
+          <text x="88" y="74" font-family="DM Sans,sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">6yr</text>
+          <rect x="88" y="78" width="32" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="156" y="36" width="40" height="6" rx="1" fill="#2F48DF" opacity="0.7"/>
+          <text x="156" y="74" font-family="DM Sans,sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">98%</text>
+          <rect x="156" y="78" width="38" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="224" y="32" width="38" height="6" rx="1" fill="#2F48DF" opacity="0.7"/>
+          <text x="224" y="74" font-family="DM Sans,sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">12x</text>
+          <rect x="224" y="78" width="34" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <text x="140" y="110" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(0,0,0,0.2)">bars add rhythm — visual entry points work</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cc">Concept C — Numbers with accent bars</div>
+          <div class="wf-stage-note">Coloured horizontal bars sit above each number, creating rhythmic visual anchors. The bars guide the eye to the numbers below.</div>
+        </div>
+      </div>
+      <!-- Final Direction -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F8F8F8"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">large numbers + short blue accent bars</text>
+          <!-- 4-col layout with bar + number + label -->
+          <rect x="14" y="44" width="44" height="7" rx="2" fill="#2F48DF"/>
+          <text x="14" y="84" font-family="DM Sans,sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">48+</text>
+          <rect x="14" y="88" width="50" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="14" y="95" width="40" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <rect x="82" y="44" width="40" height="7" rx="2" fill="#2F48DF"/>
+          <text x="82" y="84" font-family="DM Sans,sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">6yr</text>
+          <rect x="82" y="88" width="46" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="82" y="95" width="36" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <rect x="150" y="44" width="44" height="7" rx="2" fill="#2F48DF"/>
+          <text x="150" y="84" font-family="DM Sans,sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">98%</text>
+          <rect x="150" y="88" width="52" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="150" y="95" width="42" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <rect x="218" y="44" width="44" height="7" rx="2" fill="#2F48DF"/>
+          <text x="218" y="84" font-family="DM Sans,sans-serif" font-size="26" font-weight="700" fill="#0A0A0A">12x</text>
+          <rect x="218" y="88" width="48" height="4" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="218" y="95" width="38" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <!-- Red annotations -->
+          <circle cx="36" cy="48" r="4" fill="#E53E3E"/>
+          <line x1="36" y1="48" x2="36" y2="18" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="40" y="16" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">blue bar: from C</text>
+          <circle cx="36" cy="80" r="4" fill="#E53E3E"/>
+          <line x1="36" y1="80" x2="8" y2="110" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="4" y="118" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">large type: from A</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cf">Final Direction — Large numbers + short accent bars</div>
+          <div class="wf-stage-note">4-col layout: blue accent bar above each number creates an entry point, large type delivers the stat, short label completes it. Scannable in under 2 seconds.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wf-rationale">
+      <div>
+        <div class="wf-rat-h">What each concept offered</div>
+        <div class="wf-rat-b">A proved large type is the right scale — numbers should dominate. B showed that extended descriptors reduce legibility for a stats section. C's bars gave the insight: visual entry points guide the eye to the numbers that matter.</div>
+      </div>
+      <div>
+        <div class="wf-rat-h">Why this combination</div>
+        <div class="wf-rat-b">A's large-type approach with C's bar system. The short blue accent bar above each number acts as a visual landing strip — the eye arrives at the bar, drops to the number, then reads the label. Intentional reading order designed into the layout.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 10: PROCESS SECTION WIREFRAMES -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Process Section — Wireframes</span><span class="ph-num">10 / 21</span></div>
+  <div class="wf-inner">
+    <div class="wf-tag">Section Design Process</div>
+    <div class="wf-h">Four steps — not a checklist, a story.</div>
+    <div class="wf-desc">The process section needed to show 4 steps clearly without feeling like a linear checklist. Three approaches were explored. The final design takes A's numbered system and B's horizontal format, then adds a micro-interaction from C's expand concept — a blue reveal bar animates up from the bottom on hover.</div>
+    <div class="wf-grid">
+      <!-- Concept A -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F8F8F8"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">numbered vertical list</text>
+          <!-- 4 numbered rows -->
+          <text x="14" y="42" font-family="DM Sans,sans-serif" font-size="18" font-weight="700" fill="#2F48DF" opacity="0.4">01</text>
+          <rect x="38" y="30" width="75" height="6" rx="1" fill="rgba(0,0,0,0.2)"/>
+          <rect x="38" y="40" width="200" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="38" y="46" width="180" height="3" rx="1" fill="rgba(0,0,0,0.07)"/>
+          <line x1="14" y1="56" x2="266" y2="56" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>
+          <text x="14" y="76" font-family="DM Sans,sans-serif" font-size="18" font-weight="700" fill="#2F48DF" opacity="0.4">02</text>
+          <rect x="38" y="64" width="70" height="6" rx="1" fill="rgba(0,0,0,0.2)"/>
+          <rect x="38" y="74" width="195" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="38" y="80" width="172" height="3" rx="1" fill="rgba(0,0,0,0.07)"/>
+          <line x1="14" y1="90" x2="266" y2="90" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>
+          <text x="14" y="110" font-family="DM Sans,sans-serif" font-size="18" font-weight="700" fill="#2F48DF" opacity="0.4">03</text>
+          <rect x="38" y="98" width="80" height="6" rx="1" fill="rgba(0,0,0,0.2)"/>
+          <rect x="38" y="108" width="188" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="38" y="114" width="165" height="3" rx="1" fill="rgba(0,0,0,0.07)"/>
+          <line x1="14" y1="124" x2="266" y2="124" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>
+          <text x="14" y="144" font-family="DM Sans,sans-serif" font-size="18" font-weight="700" fill="#2F48DF" opacity="0.4">04</text>
+          <rect x="38" y="132" width="65" height="6" rx="1" fill="rgba(0,0,0,0.2)"/>
+          <rect x="38" y="142" width="192" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="38" y="148" width="178" height="3" rx="1" fill="rgba(0,0,0,0.07)"/>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage ca">Concept A — Numbered vertical list</div>
+          <div class="wf-stage-note">4 stacked rows with large number prefix, title, and description. Clear but reads as a document, not a designed section.</div>
+        </div>
+      </div>
+      <!-- Concept B -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F8F8F8"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">horizontal timeline</text>
+          <!-- Timeline line -->
+          <line x1="20" y1="70" x2="260" y2="70" stroke="#2F48DF" stroke-width="1.5" opacity="0.4"/>
+          <!-- 4 nodes -->
+          <circle cx="46" cy="70" r="7" fill="#2F48DF" opacity="0.7"/>
+          <text x="46" y="73" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="#FBFBFB">1</text>
+          <rect x="22" y="50" width="48" height="5" rx="1" fill="rgba(0,0,0,0.18)"/>
+          <rect x="14" y="82" width="64" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="14" y="88" width="56" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <rect x="14" y="94" width="60" height="3" rx="1" fill="rgba(0,0,0,0.07)"/>
+          <circle cx="109" cy="70" r="7" fill="#2F48DF" opacity="0.7"/>
+          <text x="109" y="73" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="#FBFBFB">2</text>
+          <rect x="85" y="50" width="48" height="5" rx="1" fill="rgba(0,0,0,0.18)"/>
+          <rect x="77" y="82" width="64" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="77" y="88" width="58" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <circle cx="172" cy="70" r="7" fill="#2F48DF" opacity="0.7"/>
+          <text x="172" y="73" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="#FBFBFB">3</text>
+          <rect x="148" y="50" width="48" height="5" rx="1" fill="rgba(0,0,0,0.18)"/>
+          <rect x="140" y="82" width="64" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="140" y="88" width="56" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <circle cx="234" cy="70" r="7" fill="#2F48DF" opacity="0.7"/>
+          <text x="234" y="73" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="#FBFBFB">4</text>
+          <rect x="210" y="50" width="48" height="5" rx="1" fill="rgba(0,0,0,0.18)"/>
+          <rect x="202" y="82" width="64" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="202" y="88" width="58" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <text x="140" y="130" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(0,0,0,0.2)">horizontal flow — suggests steps, not stages</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cb">Concept B — Horizontal timeline</div>
+          <div class="wf-stage-note">4 circle nodes on a horizontal line with titles above and descriptions below. Communicates flow well but feels more like an infographic than a designed section.</div>
+        </div>
+      </div>
+      <!-- Concept C -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F8F8F8"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">accordion — expand on click</text>
+          <!-- Accordion rows, first open -->
+          <rect x="12" y="22" width="256" height="44" rx="3" fill="#EEF2FF" stroke="#2F48DF" stroke-width="0.5"/>
+          <text x="22" y="36" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="#0A0A0A">01 Discovery</text>
+          <text x="258" y="36" text-anchor="end" font-family="DM Sans,sans-serif" font-size="9" fill="#2F48DF">−</text>
+          <rect x="22" y="40" width="200" height="3" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="22" y="46" width="185" height="3" rx="1" fill="rgba(0,0,0,0.09)"/>
+          <rect x="22" y="52" width="170" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <!-- Collapsed rows -->
+          <rect x="12" y="70" width="256" height="22" rx="3" fill="#F4F4F4" stroke="#E0E0E0" stroke-width="0.4"/>
+          <text x="22" y="84" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="#666">02 Define</text>
+          <text x="258" y="84" text-anchor="end" font-family="DM Sans,sans-serif" font-size="9" fill="#999">+</text>
+          <rect x="12" y="96" width="256" height="22" rx="3" fill="#F4F4F4" stroke="#E0E0E0" stroke-width="0.4"/>
+          <text x="22" y="110" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="#666">03 Design</text>
+          <text x="258" y="110" text-anchor="end" font-family="DM Sans,sans-serif" font-size="9" fill="#999">+</text>
+          <rect x="12" y="122" width="256" height="22" rx="3" fill="#F4F4F4" stroke="#E0E0E0" stroke-width="0.4"/>
+          <text x="22" y="136" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="#666">04 Deliver</text>
+          <text x="258" y="136" text-anchor="end" font-family="DM Sans,sans-serif" font-size="9" fill="#999">+</text>
+          <text x="140" y="158" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(0,0,0,0.2)">collapse/expand mechanic — reveal on interaction</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cc">Concept C — Accordion</div>
+          <div class="wf-stage-note">4 rows, only the active step is expanded. Reduces visual clutter but hides content — requires interaction to see all steps simultaneously.</div>
+        </div>
+      </div>
+      <!-- Final Direction -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F8F8F8"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">4-col grid + hover reveal bar</text>
+          <!-- 4 equal columns -->
+          <rect x="10" y="22" width="58" height="108" rx="3" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="0.5"/>
+          <text x="16" y="36" font-family="DM Sans,sans-serif" font-size="14" font-weight="700" fill="#2F48DF" opacity="0.5">01</text>
+          <rect x="16" y="42" width="44" height="5" rx="1" fill="rgba(0,0,0,0.2)"/>
+          <rect x="16" y="50" width="48" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="16" y="56" width="44" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <rect x="16" y="62" width="46" height="3" rx="1" fill="rgba(0,0,0,0.07)"/>
+          <!-- Hover bar on first card -->
+          <rect x="10" y="122" width="58" height="8" rx="0 0 3 3" fill="#2F48DF"/>
+          <rect x="72" y="22" width="58" height="108" rx="3" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="0.5"/>
+          <text x="78" y="36" font-family="DM Sans,sans-serif" font-size="14" font-weight="700" fill="#2F48DF" opacity="0.5">02</text>
+          <rect x="78" y="42" width="44" height="5" rx="1" fill="rgba(0,0,0,0.2)"/>
+          <rect x="78" y="50" width="48" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="78" y="56" width="42" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <rect x="78" y="62" width="44" height="3" rx="1" fill="rgba(0,0,0,0.07)"/>
+          <rect x="134" y="22" width="58" height="108" rx="3" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="0.5"/>
+          <text x="140" y="36" font-family="DM Sans,sans-serif" font-size="14" font-weight="700" fill="#2F48DF" opacity="0.5">03</text>
+          <rect x="140" y="42" width="44" height="5" rx="1" fill="rgba(0,0,0,0.2)"/>
+          <rect x="140" y="50" width="46" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="140" y="56" width="40" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <rect x="140" y="62" width="44" height="3" rx="1" fill="rgba(0,0,0,0.07)"/>
+          <rect x="196" y="22" width="74" height="108" rx="3" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="0.5"/>
+          <text x="202" y="36" font-family="DM Sans,sans-serif" font-size="14" font-weight="700" fill="#2F48DF" opacity="0.5">04</text>
+          <rect x="202" y="42" width="58" height="5" rx="1" fill="rgba(0,0,0,0.2)"/>
+          <rect x="202" y="50" width="60" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="202" y="56" width="54" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <rect x="202" y="62" width="58" height="3" rx="1" fill="rgba(0,0,0,0.07)"/>
+          <!-- Red annotations -->
+          <circle cx="39" cy="126" r="4" fill="#E53E3E"/>
+          <line x1="39" y1="126" x2="39" y2="145" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="10" y="156" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">hover bar: from C reveal mechanic</text>
+          <circle cx="39" cy="36" r="4" fill="#E53E3E"/>
+          <line x1="39" y1="36" x2="39" y2="18" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="10" y="16" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">horizontal grid: from B</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cf">Final Direction — 4-col grid + hover bar</div>
+          <div class="wf-stage-note">4 equal columns with large step number, title, description. A blue bar animates up from the card bottom on hover — a reveal mechanic inspired by C's accordion.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wf-rationale">
+      <div>
+        <div class="wf-rat-h">What each concept offered</div>
+        <div class="wf-rat-b">A's numbered system gave clarity and a natural reading order. B's horizontal format suggested progression and made the steps feel parallel, not sequential. C's accordion introduced the idea of information revealed through interaction — a micro-interaction principle worth keeping.</div>
+      </div>
+      <div>
+        <div class="wf-rat-h">Why this combination</div>
+        <div class="wf-rat-b">B's 4-col horizontal grid with A's numbering creates instant structure. C's reveal mechanic becomes the hover animation — a blue bar that rises from the bottom of each card on hover. All content is visible at once (unlike C), but interaction still rewards engagement.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 11: TESTIMONIALS WIREFRAMES -->
+<div class="page">
+  <div class="ph ph-dark"><span class="ph-label">Testimonials — Wireframes</span><span class="ph-num">11 / 21</span></div>
+  <div class="wf-inner">
+    <div class="wf-tag">Section Design Process</div>
+    <div class="wf-h">Social proof that feels tactile, not templated.</div>
+    <div class="wf-desc">Three approaches to displaying client testimonials were explored. The final design uses C's stacked deck — the only concept that felt tactile and differentiated. The drag-to-advance mechanic came from rethinking A's swipe gesture in the context of C's physical card metaphor.</div>
+    <div class="wf-grid">
+      <!-- Concept A -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#111"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">carousel with arrows and dots</text>
+          <!-- Single quote card centered -->
+          <rect x="20" y="22" width="240" height="110" rx="4" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+          <text x="36" y="40" font-family="Kulim Park,sans-serif" font-size="16" fill="rgba(255,255,255,0.25)">"</text>
+          <rect x="36" y="46" width="200" height="4" rx="1" fill="rgba(255,255,255,0.15)"/>
+          <rect x="36" y="53" width="190" height="4" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="36" y="60" width="170" height="4" rx="1" fill="rgba(255,255,255,0.10)"/>
+          <rect x="36" y="67" width="155" height="4" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="36" y="80" width="40" height="4" rx="1" fill="rgba(255,255,255,0.2)"/>
+          <rect x="36" y="87" width="55" height="3" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <!-- Arrow controls -->
+          <circle cx="28" cy="77" r="10" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="0.7"/>
+          <text x="28" y="81" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(255,255,255,0.5)">‹</text>
+          <circle cx="252" cy="77" r="10" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="0.7"/>
+          <text x="252" y="81" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(255,255,255,0.5)">›</text>
+          <!-- Dots -->
+          <circle cx="122" cy="148" r="3.5" fill="rgba(255,255,255,0.55)"/>
+          <circle cx="133" cy="148" r="2.5" fill="rgba(255,255,255,0.2)"/>
+          <circle cx="143" cy="148" r="2.5" fill="rgba(255,255,255,0.2)"/>
+          <circle cx="153" cy="148" r="2.5" fill="rgba(255,255,255,0.2)"/>
+          <text x="140" y="164" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.18)">standard — expected pattern</text>
+        </svg>
+        <div class="wf-foot" style="background:#1a1a1a;border-color:#333;">
+          <div class="wf-stage ca">Concept A — Carousel with dots/arrows</div>
+          <div class="wf-stage-note" style="color:rgba(255,255,255,0.5);">Standard carousel with left/right arrows and dot indicators. Familiar but expected — no differentiation from any other agency site.</div>
+        </div>
+      </div>
+      <!-- Concept B -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#111"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">2×2 grid of quote cards</text>
+          <!-- 4 cards in a 2×2 grid -->
+          <rect x="12" y="22" width="120" height="64" rx="3" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.1)" stroke-width="0.4"/>
+          <text x="22" y="36" font-family="Kulim Park,sans-serif" font-size="12" fill="rgba(255,255,255,0.2)">"</text>
+          <rect x="22" y="40" width="100" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="22" y="46" width="95" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="22" y="52" width="85" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="22" y="62" width="55" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+          <rect x="22" y="68" width="40" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="148" y="22" width="120" height="64" rx="3" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.1)" stroke-width="0.4"/>
+          <text x="158" y="36" font-family="Kulim Park,sans-serif" font-size="12" fill="rgba(255,255,255,0.2)">"</text>
+          <rect x="158" y="40" width="100" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="158" y="46" width="92" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="158" y="52" width="88" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="158" y="62" width="52" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+          <rect x="12" y="92" width="120" height="64" rx="3" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.1)" stroke-width="0.4"/>
+          <text x="22" y="106" font-family="Kulim Park,sans-serif" font-size="12" fill="rgba(255,255,255,0.2)">"</text>
+          <rect x="22" y="110" width="98" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="22" y="116" width="90" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="22" y="122" width="82" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="22" y="132" width="56" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+          <rect x="148" y="92" width="120" height="64" rx="3" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.1)" stroke-width="0.4"/>
+          <text x="158" y="106" font-family="Kulim Park,sans-serif" font-size="12" fill="rgba(255,255,255,0.2)">"</text>
+          <rect x="158" y="110" width="100" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="158" y="116" width="88" height="3" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="158" y="122" width="80" height="3" rx="1" fill="rgba(255,255,255,0.08)"/>
+          <rect x="158" y="132" width="48" height="3" rx="1" fill="rgba(255,255,255,0.15)"/>
+          <text x="140" y="164" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.18)">democratic but flat — all quotes feel equal</text>
+        </svg>
+        <div class="wf-foot" style="background:#1a1a1a;border-color:#333;">
+          <div class="wf-stage cb">Concept B — 2×2 grid of cards</div>
+          <div class="wf-stage-note" style="color:rgba(255,255,255,0.5);">Four quote cards displayed simultaneously in a 2×2 grid. Comprehensive but flat — no card stands out, and the section feels like a data table.</div>
+        </div>
+      </div>
+      <!-- Concept C -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#111"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">stacked rotated deck</text>
+          <!-- Back cards rotated -->
+          <g transform="rotate(-6 140 84)">
+            <rect x="50" y="28" width="180" height="110" rx="5" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="0.7"/>
+          </g>
+          <g transform="rotate(-3 140 84)">
+            <rect x="50" y="28" width="180" height="110" rx="5" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)" stroke-width="0.7"/>
+          </g>
+          <!-- Front card -->
+          <rect x="50" y="28" width="180" height="110" rx="5" fill="rgba(47,72,223,0.18)" stroke="rgba(47,72,223,0.35)" stroke-width="0.8"/>
+          <text x="64" y="48" font-family="Kulim Park,sans-serif" font-size="16" fill="rgba(255,255,255,0.3)">"</text>
+          <rect x="64" y="54" width="148" height="4" rx="1" fill="rgba(255,255,255,0.18)"/>
+          <rect x="64" y="61" width="138" height="4" rx="1" fill="rgba(255,255,255,0.13)"/>
+          <rect x="64" y="68" width="130" height="4" rx="1" fill="rgba(255,255,255,0.11)"/>
+          <rect x="64" y="80" width="60" height="4" rx="1" fill="rgba(255,255,255,0.22)"/>
+          <rect x="64" y="88" width="80" height="3" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <text x="140" y="160" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.18)">physical metaphor — tactile, differentiated</text>
+        </svg>
+        <div class="wf-foot" style="background:#1a1a1a;border-color:#333;">
+          <div class="wf-stage cc">Concept C — Stacked rotated deck</div>
+          <div class="wf-stage-note" style="color:rgba(255,255,255,0.5);">3 cards in a stacked deck at slight rotations. The layering creates depth and physicality — unlike any other testimonial pattern we benchmarked.</div>
+        </div>
+      </div>
+      <!-- Final Direction -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#111"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">rotated stack + drag gesture</text>
+          <!-- Back cards -->
+          <g transform="rotate(-5 140 84)">
+            <rect x="42" y="26" width="196" height="118" rx="5" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" stroke-width="0.7"/>
+          </g>
+          <g transform="rotate(-2.5 140 84)">
+            <rect x="42" y="26" width="196" height="118" rx="5" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.10)" stroke-width="0.7"/>
+          </g>
+          <!-- Front card slightly lifted -->
+          <rect x="42" y="22" width="196" height="118" rx="5" fill="rgba(47,72,223,0.22)" stroke="rgba(47,72,223,0.4)" stroke-width="0.8"/>
+          <!-- Shadow to suggest lift -->
+          <rect x="46" y="28" width="188" height="112" rx="4" fill="none" stroke="rgba(47,72,223,0.2)" stroke-width="0"/>
+          <text x="58" y="44" font-family="Kulim Park,sans-serif" font-size="16" fill="rgba(255,255,255,0.3)">"</text>
+          <rect x="58" y="50" width="164" height="4" rx="1" fill="rgba(255,255,255,0.2)"/>
+          <rect x="58" y="58" width="152" height="4" rx="1" fill="rgba(255,255,255,0.15)"/>
+          <rect x="58" y="66" width="140" height="4" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="58" y="80" width="65" height="4" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <rect x="58" y="88" width="90" height="3" rx="1" fill="rgba(255,255,255,0.14)"/>
+          <!-- Drag affordance arrow -->
+          <line x1="100" y1="126" x2="180" y2="126" stroke="rgba(255,255,255,0.22)" stroke-width="1.2" marker-end="url(#arrowWhite)"/>
+          <text x="140" y="123" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(255,255,255,0.3)">drag to advance</text>
+          <!-- Red annotations -->
+          <circle cx="130" cy="27" r="4" fill="#E53E3E"/>
+          <line x1="130" y1="27" x2="100" y2="12" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="40" y="11" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">deck metaphor: from C</text>
+          <circle cx="140" cy="127" r="4" fill="#E53E3E"/>
+          <line x1="140" y1="127" x2="200" y2="155" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="158" y="162" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">drag: rethought from A's swipe</text>
+        </svg>
+        <div class="wf-foot" style="background:#1a1a1a;border-color:#333;">
+          <div class="wf-stage cf">Final Direction — Rotated stack + drag gesture</div>
+          <div class="wf-stage-note" style="color:rgba(255,255,255,0.5);">C's deck visual with the front card slightly lifted + a drag affordance. The physical card metaphor makes the swipe gesture feel natural.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wf-rationale" style="background:#1a1a1a;border-color:#333;">
+      <div>
+        <div class="wf-rat-h" style="color:rgba(255,255,255,0.5);">What each concept offered</div>
+        <div class="wf-rat-b" style="color:rgba(255,255,255,0.45);">A was familiar but expected — any competitor would do the same. B showed all quotes simultaneously but removed the sense of 'more to discover'. C's stacked deck was immediately differentiated — tactile, physical, and brand-appropriate.</div>
+      </div>
+      <div>
+        <div class="wf-rat-h" style="color:rgba(255,255,255,0.5);">Why this combination</div>
+        <div class="wf-rat-b" style="color:rgba(255,255,255,0.45);">C's deck is the core. A's swipe gesture is rethought as a drag mechanic — instead of arrows, you physically drag the front card left to advance. The card metaphor makes the gesture feel logical. The rotation angles reinforce the physicality: this is a stack of real endorsements.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 12: TEAM SECTION WIREFRAMES -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Team Section — Wireframes</span><span class="ph-num">12 / 21</span></div>
+  <div class="wf-inner">
+    <div class="wf-tag">Section Design Process</div>
+    <div class="wf-h">Warm, human — and earned through interaction.</div>
+    <div class="wf-desc">The team section sat on a warm cream background. Three concepts were explored for the individual team member cards. The final design combines B's greyscale-to-colour effect with C's information reveal panel — creating a card that rewards curiosity without front-loading text.</div>
+    <div class="wf-grid">
+      <!-- Concept A -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F5EFE4"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">grid + text overlay on hover</text>
+          <!-- 4-col photo grid -->
+          <rect x="10" y="22" width="58" height="110" rx="3" fill="#D0C8B8"/>
+          <rect x="10" y="100" width="58" height="32" rx="0 0 3 3" fill="rgba(0,0,0,0.55)"/>
+          <rect x="16" y="104" width="40" height="4" rx="1" fill="rgba(255,255,255,0.7)"/>
+          <rect x="16" y="112" width="30" height="3" rx="1" fill="rgba(255,255,255,0.4)"/>
+          <rect x="72" y="22" width="58" height="110" rx="3" fill="#C8C0B0"/>
+          <rect x="130" y="22" width="58" height="110" rx="3" fill="#D4CCB8"/>
+          <!-- Hover state on 4th card -->
+          <rect x="188" y="22" width="82" height="110" rx="3" fill="#2F48DF" opacity="0.9"/>
+          <rect x="196" y="44" width="58" height="5" rx="1" fill="rgba(255,255,255,0.75)"/>
+          <rect x="196" y="53" width="44" height="3" rx="1" fill="rgba(255,255,255,0.45)"/>
+          <rect x="196" y="60" width="55" height="3" rx="1" fill="rgba(255,255,255,0.35)"/>
+          <rect x="196" y="67" width="50" height="3" rx="1" fill="rgba(255,255,255,0.3)"/>
+          <text x="194" y="104" font-family="DM Sans,sans-serif" font-size="6.5" fill="rgba(255,255,255,0.5)">hover state →</text>
+          <text x="140" y="145" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(0,0,0,0.25)">info appears on hover — common pattern</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage ca">Concept A — Grid + text overlay on hover</div>
+          <div class="wf-stage-note">Name and role overlay appear on hover. Simple, familiar — but hides the person behind the interaction requirement and feels predictable.</div>
+        </div>
+      </div>
+      <!-- Concept B -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F5EFE4"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">greyscale default, colour on hover</text>
+          <!-- 4-col grid, greyscale default -->
+          <rect x="10" y="22" width="56" height="110" rx="3" fill="#B0B0B0"/>
+          <text x="38" y="80" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(0,0,0,0.2)">grey</text>
+          <rect x="70" y="22" width="56" height="110" rx="3" fill="#A8A8A8"/>
+          <text x="98" y="80" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(0,0,0,0.2)">grey</text>
+          <!-- 3rd card in colour (hover state) -->
+          <rect x="130" y="22" width="56" height="110" rx="3" fill="#8A7A6A"/>
+          <text x="158" y="80" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(255,255,255,0.4)">colour!</text>
+          <text x="168" y="18" font-family="DM Sans,sans-serif" font-size="5" fill="#2F48DF">← hover</text>
+          <rect x="190" y="22" width="80" height="110" rx="3" fill="#ACACAC"/>
+          <text x="230" y="80" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(0,0,0,0.2)">grey</text>
+          <!-- Name labels below -->
+          <rect x="10" y="138" width="56" height="4" rx="1" fill="rgba(0,0,0,0.18)"/>
+          <rect x="10" y="145" width="40" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="70" y="138" width="56" height="4" rx="1" fill="rgba(0,0,0,0.18)"/>
+          <rect x="70" y="145" width="38" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="130" y="138" width="56" height="4" rx="1" fill="rgba(0,0,0,0.18)"/>
+          <rect x="130" y="145" width="42" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="190" y="138" width="56" height="4" rx="1" fill="rgba(0,0,0,0.18)"/>
+          <rect x="190" y="145" width="38" height="3" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <text x="140" y="162" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(0,0,0,0.22)">greyscale forces layout to work on structure alone</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cb">Concept B — Greyscale photos, colour on hover</div>
+          <div class="wf-stage-note">All team photos default to greyscale, revealing full colour on hover. Creates visual discipline and makes the section feel considered, not chaotic.</div>
+        </div>
+      </div>
+      <!-- Concept C -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F5EFE4"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">split: photo left + bio panel right</text>
+          <!-- 2 cards in a row, each split left/right -->
+          <!-- Card 1 -->
+          <rect x="10" y="22" width="122" height="120" rx="3" fill="#D0C8B8"/>
+          <rect x="72" y="22" width="60" height="120" rx="0 3 3 0" fill="#F0ECE5"/>
+          <rect x="78" y="34" width="46" height="5" rx="1" fill="rgba(0,0,0,0.2)"/>
+          <rect x="78" y="43" width="38" height="3" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="78" y="52" width="44" height="3" rx="1" fill="rgba(0,0,0,0.09)"/>
+          <rect x="78" y="58" width="40" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <rect x="78" y="64" width="42" height="3" rx="1" fill="rgba(0,0,0,0.07)"/>
+          <rect x="78" y="76" width="20" height="12" rx="2" fill="#2F48DF" opacity="0.7"/>
+          <!-- Card 2 -->
+          <rect x="148" y="22" width="122" height="120" rx="3" fill="#C4BCA8"/>
+          <rect x="210" y="22" width="60" height="120" rx="0 3 3 0" fill="#F0ECE5"/>
+          <rect x="216" y="34" width="46" height="5" rx="1" fill="rgba(0,0,0,0.2)"/>
+          <rect x="216" y="43" width="38" height="3" rx="1" fill="rgba(0,0,0,0.12)"/>
+          <rect x="216" y="52" width="44" height="3" rx="1" fill="rgba(0,0,0,0.09)"/>
+          <rect x="216" y="58" width="40" height="3" rx="1" fill="rgba(0,0,0,0.08)"/>
+          <rect x="216" y="76" width="20" height="12" rx="2" fill="#2F48DF" opacity="0.7"/>
+          <text x="140" y="154" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(0,0,0,0.22)">bio always visible — shows info before trust is built</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cc">Concept C — Split: photo + bio panel</div>
+          <div class="wf-stage-note">Each card has photo on the left and a bio panel on the right. Comprehensive but front-loads information — the bio competes with the photo before engagement happens.</div>
+        </div>
+      </div>
+      <!-- Final Direction -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F5EFE4"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">greyscale default + blue reveal panel on hover</text>
+          <!-- 4-col grid, greyscale default, one active -->
+          <rect x="10" y="20" width="56" height="130" rx="3" fill="#B0B0B0"/>
+          <rect x="70" y="20" width="56" height="130" rx="3" fill="#A8A8A8"/>
+          <!-- Active card with colour + blue panel sliding up -->
+          <rect x="130" y="20" width="56" height="130" rx="3" fill="#8A7A6A"/>
+          <rect x="130" y="96" width="56" height="54" rx="0 0 3 3" fill="#2F48DF"/>
+          <rect x="136" y="100" width="40" height="4" rx="1" fill="rgba(255,255,255,0.7)"/>
+          <rect x="136" y="107" width="32" height="3" rx="1" fill="rgba(255,255,255,0.4)"/>
+          <rect x="136" y="113" width="38" height="3" rx="1" fill="rgba(255,255,255,0.3)"/>
+          <rect x="136" y="122" width="28" height="8" rx="2" fill="rgba(255,255,255,0.2)"/>
+          <rect x="190" y="20" width="80" height="130" rx="3" fill="#ACACAC"/>
+          <!-- Red annotations -->
+          <circle cx="158" cy="48" r="4" fill="#E53E3E"/>
+          <line x1="158" y1="48" x2="200" y2="14" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="162" y="13" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">greyscale: from B</text>
+          <circle cx="158" cy="118" r="4" fill="#E53E3E"/>
+          <line x1="158" y1="118" x2="220" y2="155" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="175" y="162" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">blue info panel: from C</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cf">Final Direction — Greyscale + blue reveal panel</div>
+          <div class="wf-stage-note">Greyscale default (from B) + a blue info panel that slides up from the bottom on hover (from C). Colour reveals simultaneously with bio — the reward is double.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wf-rationale">
+      <div>
+        <div class="wf-rat-h">What each concept offered</div>
+        <div class="wf-rat-b">A's overlay was familiar but expected. B's greyscale insight was the strongest visual idea — it makes the layout work on structure alone and turns colour into a reward. C's split panel showed that bio information should be contextualised, not front-loaded.</div>
+      </div>
+      <div>
+        <div class="wf-rat-h">Why this combination</div>
+        <div class="wf-rat-b">B's greyscale discipline is the base — it creates a unified, calm grid that lets the cream background breathe. C's panel is reimagined: instead of always-visible, it slides up on hover in blue — matching the brand colour and making the entire reveal moment (colour + bio) happen simultaneously as a single interaction reward.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 13: CTA / CONTACT FORM WIREFRAMES -->
+<div class="page">
+  <div class="ph ph-blue"><span class="ph-label">CTA / Contact Form — Wireframes</span><span class="ph-num">13 / 21</span></div>
+  <div class="wf-inner">
+    <div class="wf-tag">Section Design Process</div>
+    <div class="wf-h">The closing argument deserves a designed moment.</div>
+    <div class="wf-desc">The contact section is the final conversion point. Three form presentations were explored. The final design uses C's minimal centered approach on a solid blue background, then adds A's animated success state — making the completion moment feel like a celebration, not just a system message.</div>
+    <div class="wf-grid">
+      <!-- Concept A -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#111"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">full-screen bg with form overlay</text>
+          <!-- Dark hero-style bg with form -->
+          <rect x="30" y="22" width="220" height="132" rx="4" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="0.7"/>
+          <rect x="44" y="34" width="90" height="6" rx="1" fill="rgba(255,255,255,0.2)"/>
+          <rect x="44" y="44" width="192" height="14" rx="2" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <text x="50" y="54" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(255,255,255,0.25)">Name</text>
+          <rect x="44" y="62" width="192" height="14" rx="2" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <text x="50" y="72" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(255,255,255,0.25)">Email</text>
+          <rect x="44" y="80" width="192" height="14" rx="2" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <text x="50" y="90" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(255,255,255,0.25)">Message</text>
+          <rect x="44" y="98" width="192" height="22" rx="2" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" stroke-width="0.4"/>
+          <!-- Submit -->
+          <rect x="44" y="126" width="90" height="16" rx="8" fill="#2F48DF"/>
+          <text x="89" y="138" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="600" fill="#FBFBFB">Send message →</text>
+          <text x="140" y="162" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.2)">dramatic but the bg competes with the form</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage ca">Concept A — Full-screen bg form</div>
+          <div class="wf-stage-note">Dark hero-style background with a semi-transparent form overlay. Dramatic but the decorative bg reduces focus on the actual form fields.</div>
+        </div>
+      </div>
+      <!-- Concept B -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#111"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">split: left visual + right form</text>
+          <!-- Left decorative panel -->
+          <rect x="8" y="22" width="120" height="134" rx="3 0 0 3" fill="rgba(47,72,223,0.3)"/>
+          <rect x="20" y="38" width="80" height="8" rx="1" fill="rgba(255,255,255,0.2)"/>
+          <rect x="20" y="50" width="90" height="4" rx="1" fill="rgba(255,255,255,0.12)"/>
+          <rect x="20" y="57" width="85" height="4" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <rect x="20" y="64" width="78" height="4" rx="1" fill="rgba(255,255,255,0.09)"/>
+          <circle cx="64" cy="110" r="22" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="0.8"/>
+          <!-- Right form panel -->
+          <rect x="128" y="22" width="144" height="134" rx="0 3 3 0" fill="rgba(255,255,255,0.05)"/>
+          <rect x="140" y="36" width="70" height="5" rx="1" fill="rgba(255,255,255,0.18)"/>
+          <rect x="140" y="46" width="120" height="12" rx="2" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <rect x="140" y="62" width="120" height="12" rx="2" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <rect x="140" y="78" width="120" height="12" rx="2" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <rect x="140" y="94" width="120" height="22" rx="2" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="0.4"/>
+          <rect x="140" y="122" width="80" height="14" rx="7" fill="#2F48DF"/>
+          <text x="180" y="132" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="600" fill="#FBFBFB">Send →</text>
+          <text x="140" y="162" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.2)">split dilutes focus — 2 things competing</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cb">Concept B — Split: left visual + right form</div>
+          <div class="wf-stage-note">Left half is a branded decorative panel, right half contains the form. The split creates two competing focal points — the form loses the final section's urgency.</div>
+        </div>
+      </div>
+      <!-- Concept C -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#1a2a6e"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">centered minimal on colour</text>
+          <!-- Centered form on blue bg -->
+          <rect x="50" y="26" width="180" height="6" rx="1" fill="rgba(255,255,255,0.18)"/>
+          <rect x="75" y="36" width="130" height="4" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="50" y="50" width="180" height="14" rx="2" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="0.6"/>
+          <text x="58" y="61" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(255,255,255,0.35)">Name</text>
+          <rect x="50" y="68" width="180" height="14" rx="2" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="0.6"/>
+          <text x="58" y="79" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(255,255,255,0.35)">Email</text>
+          <rect x="50" y="86" width="180" height="14" rx="2" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="0.6"/>
+          <text x="58" y="97" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(255,255,255,0.35)">Phone</text>
+          <rect x="50" y="104" width="180" height="22" rx="2" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <text x="58" y="118" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(255,255,255,0.25)">Message</text>
+          <rect x="90" y="132" width="100" height="18" rx="9" fill="#FBFBFB"/>
+          <text x="140" y="145" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="#2F48DF">Send message →</text>
+          <text x="140" y="163" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.3)">focused — nothing competes with the form</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cc">Concept C — Centered minimal on colour</div>
+          <div class="wf-stage-note">Form centered on a solid blue background, no visual decoration competing. Undivided focus on the conversion action — and the blue makes it feel like an arrival, not just a form.</div>
+        </div>
+      </div>
+      <!-- Final Direction -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#1a2a6e"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">centered blue + animated success state</text>
+          <!-- Same centered form -->
+          <rect x="50" y="24" width="180" height="6" rx="1" fill="rgba(255,255,255,0.18)"/>
+          <rect x="75" y="34" width="130" height="4" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <rect x="50" y="46" width="180" height="12" rx="2" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6"/>
+          <rect x="50" y="62" width="180" height="12" rx="2" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6"/>
+          <rect x="50" y="78" width="180" height="12" rx="2" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.18)" stroke-width="0.6"/>
+          <rect x="50" y="94" width="180" height="18" rx="2" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+          <rect x="90" y="118" width="100" height="14" rx="7" fill="#FBFBFB"/>
+          <text x="140" y="129" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" font-weight="700" fill="#2F48DF">Send →</text>
+          <!-- Success state in corner: checkmark sketch -->
+          <circle cx="242" cy="48" r="16" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="0.8" stroke-dasharray="4,2"/>
+          <polyline points="234,48 240,54 252,42" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <text x="242" y="72" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.3)">success ↑</text>
+          <!-- Red annotations -->
+          <circle cx="140" cy="46" r="4" fill="#E53E3E"/>
+          <line x1="140" y1="46" x2="100" y2="18" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="46" y="17" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">minimal centered: from C</text>
+          <circle cx="242" cy="48" r="4" fill="#E53E3E" opacity="0.8"/>
+          <line x1="242" y1="64" x2="242" y2="148" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="200" y="155" font-family="DM Sans,sans-serif" font-size="5" fill="#E53E3E">success state: from A's drama</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cf">Final Direction — Centered blue + animated success</div>
+          <div class="wf-stage-note">C's centered minimal form on blue + A's dramatic success moment: animated SVG checkmark + countdown bar. Completion is a designed reward.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wf-rationale">
+      <div>
+        <div class="wf-rat-h">What each concept offered</div>
+        <div class="wf-rat-b">A's dramatic style brought the insight that the success state should feel momentous — the completion of a journey deserves a celebration. B showed that splitting attention at the final CTA loses the sense of a single, important action. C proved that reducing visual competition maximises focus on the form.</div>
+      </div>
+      <div>
+        <div class="wf-rat-h">Why this combination</div>
+        <div class="wf-rat-b">C is the foundation: undistracted focus, blue section that signals 'this is the destination'. A contributes the success state — an animated SVG checkmark with a circle stroke animation, followed by a 5-second countdown bar. Submitting the form becomes a satisfying, human moment.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 14: MOBILE RESPONSIVE WIREFRAMES -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Mobile Responsive — Wireframes</span><span class="ph-num">14 / 21</span></div>
+  <div class="wf-inner">
+    <div class="wf-tag">Section Design Process</div>
+    <div class="wf-h">The nav had to work on a 390px screen without compromise.</div>
+    <div class="wf-desc">Mobile navigation required a distinct design approach for small screens. Three concepts were explored. The final hamburger design combines B's clean trigger icon with C's full-screen overlay — creating an immersive menu that matches the site's premium character.</div>
+    <div class="wf-grid">
+      <!-- Concept A -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F8F8F8"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">condensed sticky nav — all items visible</text>
+          <!-- Condensed nav bar -->
+          <rect x="10" y="22" width="260" height="30" rx="3" fill="#FBFBFB" stroke="#E0E0E0" stroke-width="0.5"/>
+          <rect x="20" y="30" width="30" height="6" rx="1" fill="rgba(0,0,0,0.15)"/>
+          <rect x="60" y="32" width="22" height="4" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="88" y="32" width="22" height="4" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="116" y="32" width="22" height="4" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="144" y="32" width="22" height="4" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="172" y="32" width="22" height="4" rx="1" fill="rgba(0,0,0,0.1)"/>
+          <rect x="200" y="28" width="60" height="14" rx="7" fill="#2F48DF"/>
+          <text x="230" y="38" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="#FBFBFB">Start →</text>
+          <!-- Content preview below -->
+          <rect x="10" y="58" width="260" height="100" rx="2" fill="#EEF2FF"/>
+          <text x="140" y="112" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(47,72,223,0.2)">page content</text>
+          <text x="140" y="148" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(0,0,0,0.2)">text too small — can't tap reliably on mobile</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage ca">Concept A — Condensed sticky nav</div>
+          <div class="wf-stage-note">All nav items remain visible in a compressed bar. On a 390px screen, items become too small to tap reliably — touch targets fail WCAG 2.5.5 minimum 44px.</div>
+        </div>
+      </div>
+      <!-- Concept B -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F8F8F8"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">hamburger + slide-in drawer</text>
+          <!-- Minimal mobile nav bar -->
+          <rect x="10" y="22" width="260" height="28" rx="3" fill="#FBFBFB" stroke="#E0E0E0" stroke-width="0.5"/>
+          <rect x="20" y="30" width="32" height="5" rx="1" fill="rgba(0,0,0,0.15)"/>
+          <!-- Hamburger icon -->
+          <rect x="238" y="28" width="20" height="2.5" rx="1" fill="rgba(0,0,0,0.4)"/>
+          <rect x="238" y="33" width="20" height="2.5" rx="1" fill="rgba(0,0,0,0.4)"/>
+          <rect x="238" y="38" width="20" height="2.5" rx="1" fill="rgba(0,0,0,0.4)"/>
+          <!-- Slide-in drawer from right -->
+          <rect x="160" y="52" width="110" height="110" rx="0" fill="#FBFBFB" stroke="#E0E0E0" stroke-width="0.5"/>
+          <rect x="172" y="64" width="80" height="5" rx="1" fill="rgba(0,0,0,0.2)"/>
+          <rect x="172" y="74" width="70" height="5" rx="1" fill="rgba(0,0,0,0.15)"/>
+          <rect x="172" y="84" width="75" height="5" rx="1" fill="rgba(0,0,0,0.15)"/>
+          <rect x="172" y="94" width="65" height="5" rx="1" fill="rgba(0,0,0,0.15)"/>
+          <rect x="172" y="104" width="72" height="5" rx="1" fill="rgba(0,0,0,0.15)"/>
+          <rect x="172" y="116" width="80" height="16" rx="8" fill="#2F48DF"/>
+          <text x="212" y="128" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="#FBFBFB">Start a project →</text>
+          <!-- Dimmed bg overlay -->
+          <rect x="10" y="52" width="148" height="110" fill="rgba(0,0,0,0.3)"/>
+          <text x="140" y="158" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(0,0,0,0.2)">drawer feels mobile — but partial, not premium</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cb">Concept B — Hamburger + slide-in drawer</div>
+          <div class="wf-stage-note">Hamburger trigger, sliding right-side drawer with links and a dimmed content behind. Clean trigger but the narrow drawer feels cramped — the type can't breathe.</div>
+        </div>
+      </div>
+      <!-- Concept C -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#0A0A0A"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(255,255,255,0.3)">hamburger + full-screen overlay</text>
+          <!-- Full dark screen overlay menu -->
+          <text x="22" y="42" font-family="DM Sans,sans-serif" font-size="22" font-weight="600" fill="rgba(255,255,255,0.7)">Work</text>
+          <text x="22" y="68" font-family="DM Sans,sans-serif" font-size="22" font-weight="600" fill="rgba(255,255,255,0.7)">Services</text>
+          <text x="22" y="94" font-family="DM Sans,sans-serif" font-size="22" font-weight="600" fill="rgba(255,255,255,0.7)">Process</text>
+          <text x="22" y="120" font-family="DM Sans,sans-serif" font-size="22" font-weight="600" fill="rgba(255,255,255,0.7)">Team</text>
+          <rect x="22" y="132" width="100" height="18" rx="9" fill="#2F48DF"/>
+          <text x="72" y="144" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="600" fill="#FBFBFB">Start a project →</text>
+          <!-- Close icon in top right -->
+          <text x="256" y="30" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="14" fill="rgba(255,255,255,0.4)">×</text>
+          <text x="140" y="162" text-anchor="middle" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.25)">large type — intentional, not compromised</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cc">Concept C — Hamburger + full-screen overlay</div>
+          <div class="wf-stage-note">Hamburger triggers a full dark-screen menu with large display-size link text. Every touch target is enormous — and the scale feels like a brand decision, not a mobile compromise.</div>
+        </div>
+      </div>
+      <!-- Final Direction -->
+      <div class="wf-panel">
+        <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg">
+          <rect width="280" height="168" fill="#F8F8F8"/>
+          <text x="140" y="14" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="rgba(0,0,0,0.3)">hamburger trigger + full-screen dark menu</text>
+          <!-- Mobile nav bar showing -->
+          <rect x="10" y="20" width="130" height="28" rx="3" fill="#FBFBFB" stroke="#E0E0E0" stroke-width="0.5"/>
+          <rect x="18" y="28" width="30" height="5" rx="1" fill="rgba(0,0,0,0.15)"/>
+          <!-- Hamburger on right of nav -->
+          <rect x="110" y="27" width="18" height="2" rx="1" fill="rgba(0,0,0,0.4)"/>
+          <rect x="110" y="31.5" width="18" height="2" rx="1" fill="rgba(0,0,0,0.4)"/>
+          <rect x="110" y="36" width="18" height="2" rx="1" fill="rgba(0,0,0,0.4)"/>
+          <text x="75" y="56" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" fill="rgba(0,0,0,0.4)">closed state →</text>
+          <!-- Open state: dark full-screen -->
+          <rect x="148" y="20" width="122" height="140" rx="4" fill="#0A0A0A"/>
+          <text x="162" y="46" font-family="DM Sans,sans-serif" font-size="16" font-weight="600" fill="rgba(255,255,255,0.8)">Work</text>
+          <text x="162" y="68" font-family="DM Sans,sans-serif" font-size="16" font-weight="600" fill="rgba(255,255,255,0.6)">Services</text>
+          <text x="162" y="90" font-family="DM Sans,sans-serif" font-size="16" font-weight="600" fill="rgba(255,255,255,0.6)">Process</text>
+          <text x="162" y="112" font-family="DM Sans,sans-serif" font-size="16" font-weight="600" fill="rgba(255,255,255,0.6)">Team</text>
+          <rect x="162" y="122" width="94" height="18" rx="9" fill="#2F48DF"/>
+          <text x="209" y="134" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="600" fill="#FBFBFB">Start a project →</text>
+          <text x="256" y="32" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,0.4)">×</text>
+          <!-- Red annotations -->
+          <circle cx="178" cy="46" r="4" fill="#E53E3E"/>
+          <line x1="178" y1="46" x2="148" y2="30" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="148" y="28" font-family="DM Sans,sans-serif" font-size="4.5" fill="#E53E3E">full-screen: from C</text>
+          <circle cx="121" cy="32" r="4" fill="#E53E3E"/>
+          <line x1="121" y1="32" x2="145" y2="22" stroke="#E53E3E" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="147" y="20" font-family="DM Sans,sans-serif" font-size="4.5" fill="#E53E3E">trigger: from B</text>
+        </svg>
+        <div class="wf-foot">
+          <div class="wf-stage cf">Final Direction — Hamburger + full-screen dark menu</div>
+          <div class="wf-stage-note">B's minimal hamburger trigger + C's full-screen dark overlay. Large type links feel intentional — this is a menu designed for the space it has, not crammed into a drawer.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wf-rationale">
+      <div>
+        <div class="wf-rat-h">What each concept offered</div>
+        <div class="wf-rat-b">A failed immediately on mobile — too small to tap. B's hamburger trigger was the right start, but the narrow drawer compromised the type scale. C's full-screen approach was the breakthrough: at full screen, the menu becomes a moment in itself, matching the site's premium positioning.</div>
+      </div>
+      <div>
+        <div class="wf-rat-h">Why this combination</div>
+        <div class="wf-rat-b">B provides the clean, minimal hamburger icon in the nav bar (three lines, no label). C provides the open state: a full dark screen with large DM Sans links at a size that signals intent. The result is a mobile menu that doesn't apologise for being mobile — it uses the full screen as a canvas.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 15: DESIGNING FOR CONSTRAINTS -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Designing for Constraints</span><span class="ph-num">15 / 21</span></div>
+  <div class="ci-tight">
+    <div>
+      <div class="c-tag">Design for Constraints</div>
+      <div class="c-h2" style="margin-top:1.5mm;">When limitations made the design better.</div>
+    </div>
+    <div class="c-body" style="max-width:152mm;">Four moments during the project where a technical or device constraint forced a design rethink — and in each case, the constraint produced a more considered result.</div>
+    <div class="divider"></div>
+    <!-- Constraint pair 1 -->
+    <div>
+      <div class="prob">
+        <div class="ps-lbl">Animation Audit</div>
+        <div class="ps-txt">The hero had 50 animated elements competing for attention — and was crashing iPhones. We treated animation like typography: only what communicates energy earns its place. We reduced, organised, and only kept motion that reinforced the brand's kinetic character.</div>
+      </div>
+      <div class="sol">
+        <div class="ps-lbl">Design Decision</div>
+        <div class="ps-txt">A leaner animation system that actually says more. The wave strips were kept because they ARE the hero — the rest was noise. Every removed animation made the remaining ones more powerful.</div>
+      </div>
+    </div>
+    <!-- Constraint pair 2 -->
+    <div>
+      <div class="prob">
+        <div class="ps-lbl">Ghost Button Duplication</div>
+        <div class="ps-txt">The ghost button appeared to duplicate when it moved through the wave strip inversion system. Animating the whole button broke the illusion — two versions of the button appeared to exist simultaneously.</div>
+      </div>
+      <div class="sol">
+        <div class="ps-lbl">Design Decision</div>
+        <div class="ps-txt">We redesigned the interaction: only the arrow icon inside the button moves on hover. This made the interaction feel more intentional — a directed gesture, not a floating shape. The constraint forced a more precise micro-interaction.</div>
+      </div>
+    </div>
+    <!-- Constraint pair 3 -->
+    <div>
+      <div class="prob">
+        <div class="ps-lbl">Texture Rendering Artefacts</div>
+        <div class="ps-txt">A CSS filter for the grain texture caused the entire page to render on one compositor layer, introducing flicker and colour artefacts on mobile — especially on Android Chrome.</div>
+      </div>
+      <div class="sol">
+        <div class="ps-lbl">Design Decision</div>
+        <div class="ps-txt">Rebuilt the grain as an inline SVG noise pattern using feTurbulence. Same tactile depth, fully design-controlled, renders without artefacts. We gained more granular control over the effect in the process — frequency, intensity, blending.</div>
+      </div>
+    </div>
+    <!-- Constraint pair 4 -->
+    <div>
+      <div class="prob">
+        <div class="ps-lbl">Blurred Badge Components</div>
+        <div class="ps-txt">Blurred glass badges on 30+ work cards created a heavy GPU load on lower-performance devices — and visually looked cluttered, blurring both the badge content and the image beneath it.</div>
+      </div>
+      <div class="sol">
+        <div class="ps-lbl">Design Decision</div>
+        <div class="ps-txt">Replaced backdrop-filter blur with a solid rgba() overlay. The result was actually cleaner and more legible — a reminder that constraints often push toward simplicity. The card labels became sharper, faster, and better.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 16: DESIGN SYSTEM -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Design System</span><span class="ph-num">16 / 21</span></div>
+  <div class="ci-tight">
+    <div>
+      <div class="c-tag">Design System</div>
+      <div class="c-h2" style="margin-top:1.5mm;">Tokens, type, and motion.</div>
+    </div>
+    <!-- Colour Palette -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2.5mm;">Colour Palette</div>
+      <div style="display:flex;gap:3mm;">
+        <div style="flex:1;height:22mm;border-radius:2.5mm;background:#2F48DF;padding:3mm;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div style="font-size:8pt;font-weight:700;color:#FBFBFB;">Blue</div>
+          <div style="font-size:6.5pt;color:rgba(255,255,255,0.6);">#2F48DF · Primary brand, CTAs, hero background</div>
+        </div>
+        <div style="flex:1;height:22mm;border-radius:2.5mm;background:#0A0A0A;padding:3mm;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div style="font-size:8pt;font-weight:700;color:#FBFBFB;">Dark</div>
+          <div style="font-size:6.5pt;color:rgba(255,255,255,0.5);">#0A0A0A · Services, stats, footer</div>
+        </div>
+        <div style="flex:1;height:22mm;border-radius:2.5mm;background:#FBFBFB;border:0.4mm solid #EAEAEA;padding:3mm;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div style="font-size:8pt;font-weight:700;color:#0A0A0A;">Light</div>
+          <div style="font-size:6.5pt;color:rgba(0,0,0,0.45);">#FBFBFB · Base background, text on dark</div>
+        </div>
+        <div style="flex:1;height:22mm;border-radius:2.5mm;background:#F3E9D9;padding:3mm;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div style="font-size:8pt;font-weight:700;color:#0A0A0A;">Cream</div>
+          <div style="font-size:6.5pt;color:rgba(0,0,0,0.45);">#F3E9D9 · Team section background</div>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <!-- Typography Scale -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:1.5mm;">Typography Scale</div>
+      <div class="ds-type-row">
+        <div class="ds-size">H1 / 48pt</div>
+        <div class="ds-weight">600 · −0.045em</div>
+        <div class="ds-sample" style="font-family:'DM Sans',sans-serif;font-size:24pt;font-weight:600;letter-spacing:-0.045em;line-height:1;">Headlines that command space</div>
+      </div>
+      <div class="ds-type-row">
+        <div class="ds-size">H2 / 32pt</div>
+        <div class="ds-weight">600 · −0.04em</div>
+        <div class="ds-sample" style="font-family:'DM Sans',sans-serif;font-size:17pt;font-weight:600;letter-spacing:-0.04em;line-height:1;">Section headings</div>
+      </div>
+      <div class="ds-type-row">
+        <div class="ds-size">H3 / 20pt</div>
+        <div class="ds-weight">600 · −0.02em</div>
+        <div class="ds-sample" style="font-family:'DM Sans',sans-serif;font-size:12pt;font-weight:600;letter-spacing:-0.02em;line-height:1.1;">Card headings</div>
+      </div>
+      <div class="ds-type-row">
+        <div class="ds-size">Body / 9pt</div>
+        <div class="ds-weight">400 · lh 1.72</div>
+        <div class="ds-sample" style="font-family:'Kulim Park',sans-serif;font-size:8pt;line-height:1.72;">Body text reads at comfortable line height for scanning and sustained reading across sections.</div>
+      </div>
+      <div class="ds-type-row" style="border-bottom:none;">
+        <div class="ds-size">Label</div>
+        <div class="ds-weight">700 · 0.14em</div>
+        <div class="ds-sample" style="font-family:'DM Sans',sans-serif;font-size:6pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#2F48DF;">EYEBROW LABELS AND SECTION TAGS</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <!-- CTA Button Design Spec -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">CTA Button Design Spec</div>
+      <div style="display:flex;align-items:center;gap:10mm;">
+        <div style="flex-shrink:0;">
+          <!-- Button visual representation -->
+          <div style="background:#2F48DF;border-radius:100px;padding:5mm 12mm;display:inline-flex;align-items:center;gap:3mm;">
+            <span style="font-family:'DM Sans',sans-serif;font-size:8.5pt;font-weight:600;color:#FBFBFB;letter-spacing:0.01em;">Start a project</span>
+            <span style="font-family:'DM Sans',sans-serif;font-size:9pt;color:rgba(255,255,255,0.7);">→</span>
+          </div>
+        </div>
+        <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:2.5mm;">
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.55;color:#555;padding:2mm 3mm;background:#F4F4F4;border-radius:1.5mm;">
+            <strong style="color:#2F48DF;font-family:'DM Sans',sans-serif;font-size:6pt;display:block;margin-bottom:1mm;">border-radius: 100px</strong>
+            Pill shape — friendly and approachable, not corporate or boxy
+          </div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.55;color:#555;padding:2mm 3mm;background:#F4F4F4;border-radius:1.5mm;">
+            <strong style="color:#2F48DF;font-family:'DM Sans',sans-serif;font-size:6pt;display:block;margin-bottom:1mm;">font-weight: 600</strong>
+            Semi-bold — readable at all sizes without aggression
+          </div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.55;color:#555;padding:2mm 3mm;background:#F4F4F4;border-radius:1.5mm;">
+            <strong style="color:#2F48DF;font-family:'DM Sans',sans-serif;font-size:6pt;display:block;margin-bottom:1mm;">arrow icon: → only this moves</strong>
+            The arrow signals direction — only it animates on hover. Not the button.
+          </div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:7.5pt;line-height:1.55;color:#555;padding:2mm 3mm;background:#F4F4F4;border-radius:1.5mm;">
+            <strong style="color:#2F48DF;font-family:'DM Sans',sans-serif;font-size:6pt;display:block;margin-bottom:1mm;">1px border (ghost variant)</strong>
+            Ghost version on dark bg — 1px border on transparent, not heavy
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <!-- Motion Principles -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Motion Principles</div>
+      <div class="c-grid2">
+        <div class="c-card c-card-accent">
+          <div class="c-card-tag">Spring Easing</div>
+          <div class="c-card-h" style="font-size:8pt;font-family:monospace;letter-spacing:0;font-weight:500;">cubic-bezier(0.34, 1.56, 0.64, 1)</div>
+          <div class="c-card-b">Used for hover and active states. The overshoot creates a spring/bounce that makes the UI feel alive and responsive. Applied to scale transforms on interactive cards.</div>
+        </div>
+        <div class="c-card c-card-accent">
+          <div class="c-card-tag">Smooth Easing</div>
+          <div class="c-card-h" style="font-size:8pt;font-family:monospace;letter-spacing:0;font-weight:500;">cubic-bezier(0.16, 1, 0.3, 1)</div>
+          <div class="c-card-b">Used for entrance animations and scroll reveals. The fast start with a gentle ease-out mimics natural deceleration — it feels physical, not mechanical. Applied to fade-in reveals.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 17: OUTCOMES & REFLECTION -->
+<div class="page" style="background:#0A0A0A;">
+  <div class="ph ph-blue"><span class="ph-label">Outcomes &amp; Reflection</span><span class="ph-num">17 / 21</span></div>
+  <div class="ci-tight">
+    <div>
+      <div class="c-tag" style="color:rgba(255,255,255,0.55);">Outcomes</div>
+      <div class="c-h2" style="margin-top:1.5mm;color:#FBFBFB;">What shipped and what it taught us.</div>
+    </div>
+    <!-- What the Design Achieved -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:2mm;">What the Design Achieved</div>
+      <div class="c-grid3">
+        <div class="c-card c-card-dark">
+          <div class="c-card-tag">Premium Positioning</div>
+          <div class="c-card-h">Looks like the best agency in the room</div>
+          <div class="c-card-b">The dark/blue alternating section rhythm, tight typography, and wave animation consistently draws comparisons to top-tier international agencies when shown to first-time visitors.</div>
+        </div>
+        <div class="c-card c-card-dark">
+          <div class="c-card-tag">Mobile Performance</div>
+          <div class="c-card-h">60fps on iPhone 12+ despite rich animation</div>
+          <div class="c-card-b">Despite a complex animation system, the site runs at 60fps on iPhone 12+. Every design decision was validated on a real device before shipping. The animation budget is explicit and documented.</div>
+        </div>
+        <div class="c-card c-card-dark">
+          <div class="c-card-tag">Conversion-Led Structure</div>
+          <div class="c-card-h">Work is always the second thing you see</div>
+          <div class="c-card-b">Work is the second section a visitor sees. The page structure was designed around the insight that proof of work is the primary conversion driver — not the about page, not the services list.</div>
+        </div>
+      </div>
+    </div>
+    <div class="divider" style="background:rgba(255,255,255,0.1);"></div>
+    <!-- Decisions that worked / what to revisit -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:2mm;">Looking Back</div>
+      <div class="c-grid2">
+        <div class="c-card" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.1);">
+          <div class="c-card-tag" style="color:rgba(255,255,255,0.5);">Decisions that Worked</div>
+          <div class="c-card-h" style="color:#FBFBFB;">The choices that earned their place</div>
+          <div class="c-card-b" style="color:rgba(255,255,255,0.65);">
+            <div style="display:flex;gap:2mm;margin-bottom:1.5mm;align-items:flex-start;"><div style="width:3mm;height:3mm;background:#2F48DF;border-radius:50%;flex-shrink:0;margin-top:0.8mm;"></div><div>Wave strip system — instantly recognisable brand signature</div></div>
+            <div style="display:flex;gap:2mm;margin-bottom:1.5mm;align-items:flex-start;"><div style="width:3mm;height:3mm;background:#2F48DF;border-radius:50%;flex-shrink:0;margin-top:0.8mm;"></div><div>9:16 portrait work cards — mobile-native, Instagram-familiar ratio</div></div>
+            <div style="display:flex;gap:2mm;margin-bottom:1.5mm;align-items:flex-start;"><div style="width:3mm;height:3mm;background:#2F48DF;border-radius:50%;flex-shrink:0;margin-top:0.8mm;"></div><div>Ghost button micro-interaction — arrow-only animation</div></div>
+            <div style="display:flex;gap:2mm;align-items:flex-start;"><div style="width:3mm;height:3mm;background:#2F48DF;border-radius:50%;flex-shrink:0;margin-top:0.8mm;"></div><div>Greyscale team hover — colour as reward for engagement</div></div>
+          </div>
+        </div>
+        <div class="c-card" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.08);">
+          <div class="c-card-tag" style="color:rgba(255,255,255,0.4);">What I'd Revisit</div>
+          <div class="c-card-h" style="color:#FBFBFB;">If I started over today</div>
+          <div class="c-card-b" style="color:rgba(255,255,255,0.55);">
+            <div style="display:flex;gap:2mm;margin-bottom:1.5mm;align-items:flex-start;"><div style="width:3mm;height:3mm;background:rgba(255,255,255,0.3);border-radius:50%;flex-shrink:0;margin-top:0.8mm;"></div><div>Add skeleton loading states for slower 4G connections</div></div>
+            <div style="display:flex;gap:2mm;margin-bottom:1.5mm;align-items:flex-start;"><div style="width:3mm;height:3mm;background:rgba(255,255,255,0.3);border-radius:50%;flex-shrink:0;margin-top:0.8mm;"></div><div>Build a proper component library in Figma before coding — not in parallel</div></div>
+            <div style="display:flex;gap:2mm;align-items:flex-start;"><div style="width:3mm;height:3mm;background:rgba(255,255,255,0.3);border-radius:50%;flex-shrink:0;margin-top:0.8mm;"></div><div>Add a dedicated case studies link in the primary nav (added post-launch)</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="divider" style="background:rgba(255,255,255,0.1);"></div>
+    <!-- Key Principles -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:2mm;">Key Principles from this Project</div>
+      <div class="c-grid4">
+        <div class="principle-card">
+          <div class="principle-num">Principle 01</div>
+          <div class="principle-text">Design IS the constraint — every limitation became a decision worth keeping.</div>
+        </div>
+        <div class="principle-card">
+          <div class="principle-num">Principle 02</div>
+          <div class="principle-text">Device-first before pixel-perfect — what looks perfect in Figma means nothing if it crashes on an iPhone.</div>
+        </div>
+        <div class="principle-card">
+          <div class="principle-num">Principle 03</div>
+          <div class="principle-text">Brand signature over best practice — the wave system breaks rules and that's why it works.</div>
+        </div>
+        <div class="principle-card">
+          <div class="principle-num">Principle 04</div>
+          <div class="principle-text">The conversion path is the design — section order is as important as section style.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 18: CASE STUDIES PAGE -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Case Studies Page Design</span><span class="ph-num">18 / 21</span></div>
+  <div class="ci-tight">
+    <div>
+      <div class="c-tag">Case Studies Page Design</div>
+      <div class="c-h2" style="margin-top:1.5mm;">Nine projects, one page, no uniform grid.</div>
+    </div>
+    <div class="c-body" style="max-width:155mm;">The case-studies.html page was designed separately from the main site. The challenge: display 9 projects in a way that felt curated, not templated. A uniform grid would have looked like a stock template — every project treated with identical weight, which no curated portfolio should do.</div>
+    <!-- Four grid approaches -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Four Grid Approaches Considered</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:3mm;">
+        <!-- A: 3×3 equal grid -->
+        <div>
+          <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;border:0.4mm solid #E0E0E0;border-radius:2mm;background:#F4F4F4;">
+            <rect x="4" y="8" width="33" height="28" rx="2" fill="#CCCCCC"/>
+            <rect x="43" y="8" width="33" height="28" rx="2" fill="#CCCCCC"/>
+            <rect x="82" y="8" width="34" height="28" rx="2" fill="#CCCCCC"/>
+            <rect x="4" y="40" width="33" height="28" rx="2" fill="#CCCCCC"/>
+            <rect x="43" y="40" width="33" height="28" rx="2" fill="#CCCCCC"/>
+            <rect x="82" y="40" width="34" height="28" rx="2" fill="#CCCCCC"/>
+          </svg>
+          <div style="font-size:6pt;font-weight:700;color:#E53E3E;margin-top:1.5mm;">A — Uniform 3×3</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:6.5pt;color:#888;line-height:1.4;">All same size — feels like a template, not a portfolio</div>
+        </div>
+        <!-- B: Full masonry -->
+        <div>
+          <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;border:0.4mm solid #E0E0E0;border-radius:2mm;background:#F4F4F4;">
+            <rect x="4" y="8" width="52" height="22" rx="2" fill="#BBBBB8"/>
+            <rect x="62" y="8" width="54" height="34" rx="2" fill="#C0BDB8"/>
+            <rect x="4" y="34" width="26" height="34" rx="2" fill="#B8B5B0"/>
+            <rect x="34" y="34" width="24" height="20" rx="2" fill="#BBBBB8"/>
+            <rect x="34" y="58" width="24" height="10" rx="2" fill="#C2BFB8"/>
+            <rect x="62" y="46" width="54" height="22" rx="2" fill="#B8B5B0"/>
+          </svg>
+          <div style="font-size:6pt;font-weight:700;color:#C25B2A;margin-top:1.5mm;">B — Full masonry</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:6.5pt;color:#888;line-height:1.4;">Organic feel but no system — random, not curated</div>
+        </div>
+        <!-- C: Mixed -->
+        <div>
+          <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;border:0.4mm solid #E0E0E0;border-radius:2mm;background:#F4F4F4;">
+            <rect x="4" y="8" width="30" height="64" rx="2" fill="#CCCCCC"/>
+            <rect x="38" y="8" width="78" height="22" rx="2" fill="#BBBBB8"/>
+            <rect x="38" y="34" width="38" height="38" rx="2" fill="#C2BFB8"/>
+            <rect x="80" y="34" width="36" height="18" rx="2" fill="#BBBBBB"/>
+            <rect x="80" y="56" width="36" height="16" rx="2" fill="#C0BDB8"/>
+          </svg>
+          <div style="font-size:6pt;font-weight:700;color:#6B3FA0;margin-top:1.5mm;">C — Mixed portrait+landscape</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:6.5pt;color:#888;line-height:1.4;">Some tall, some wide, no system — hard to scan</div>
+        </div>
+        <!-- D: Bento (Final) -->
+        <div>
+          <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;border:0.4mm solid #2F48DF;border-radius:2mm;background:#EEF2FF;">
+            <!-- Portrait card spanning 2 rows -->
+            <rect x="4" y="6" width="26" height="68" rx="2" fill="#2F48DF" opacity="0.7"/>
+            <!-- Wide card -->
+            <rect x="34" y="6" width="82" height="26" rx="2" fill="#2F48DF" opacity="0.4"/>
+            <!-- Square card -->
+            <rect x="34" y="36" width="38" height="38" rx="2" fill="#2F48DF" opacity="0.5"/>
+            <!-- Regular cards -->
+            <rect x="76" y="36" width="40" height="18" rx="2" fill="#2F48DF" opacity="0.35"/>
+            <rect x="76" y="58" width="40" height="16" rx="2" fill="#2F48DF" opacity="0.35"/>
+            <text x="60" y="4" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5" fill="#2F48DF" font-weight="700">FINAL: Bento Asymmetric</text>
+          </svg>
+          <div style="font-size:6pt;font-weight:700;color:#2F48DF;margin-top:1.5mm;">D — Bento asymmetric (Final)</div>
+          <div style="font-family:'Kulim Park',sans-serif;font-size:6.5pt;color:#555;line-height:1.4;">Each card has a role — portrait, wide, or square</div>
+        </div>
+      </div>
+    </div>
+    <!-- Bento rationale -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Final Bento Layout Rationale</div>
+      <div class="c-grid2">
+        <div class="c-card c-card-accent">
+          <div class="c-card-tag">Card Roles</div>
+          <div class="c-card-h">Every card has a job, not just a slot</div>
+          <div class="c-card-b">Portrait cards (9:16) for hero case studies — scrollable like Instagram, dominant in the grid. Wide cards (2-col span) for work with strong horizontal compositions. Square cards for logo/brand work that needs equal framing on both axes.</div>
+        </div>
+        <div class="c-card c-card-accent">
+          <div class="c-card-tag">Interaction Decisions</div>
+          <div class="c-card-h">Hover on desktop, tap-to-reveal on mobile</div>
+          <div class="c-card-b">Hover: card scales 1.02x + colour overlay fades in. No hover text overlay on touch — tapping once reveals the project info panel, tapping again navigates to the case study. Keeps the grid clean on desktop, functional on mobile without hover states.</div>
+        </div>
+      </div>
+    </div>
+    <!-- Visual spec of bento layout -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2mm;">Bento Grid — Row/Column Assignment</div>
+      <svg viewBox="0 0 520 60" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <!-- 3 col grid visualization -->
+        <rect x="2" y="4" width="56" height="52" rx="3" fill="#2F48DF" opacity="0.85"/>
+        <text x="30" y="26" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="700" fill="rgba(255,255,255,0.9)">PORTRAIT</text>
+        <text x="30" y="35" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5" fill="rgba(255,255,255,0.6)">r1-2, 9:16</text>
+        <rect x="62" y="4" width="120" height="24" rx="3" fill="#2F48DF" opacity="0.5"/>
+        <text x="122" y="18" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="700" fill="#2F48DF">WIDE (col 2-3 span)</text>
+        <rect x="186" y="4" width="60" height="24" rx="3" fill="#2F48DF" opacity="0.35"/>
+        <text x="216" y="18" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" fill="#2F48DF">SQUARE</text>
+        <rect x="62" y="32" width="56" height="24" rx="3" fill="#2F48DF" opacity="0.35"/>
+        <text x="90" y="46" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5" fill="#2F48DF">REG</text>
+        <rect x="122" y="32" width="64" height="24" rx="3" fill="#2F48DF" opacity="0.5"/>
+        <text x="154" y="46" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5.5" font-weight="700" fill="#2F48DF">WIDE span</text>
+        <rect x="190" y="32" width="56" height="24" rx="3" fill="#2F48DF" opacity="0.35"/>
+        <text x="218" y="46" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="5" fill="#2F48DF">REG</text>
+        <!-- Description text -->
+        <text x="300" y="22" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="#0A0A0A">Card Type Logic:</text>
+        <text x="300" y="33" font-family="Kulim Park,sans-serif" font-size="6.5" fill="#555">· Portrait = hero project, takes 2 rows height</text>
+        <text x="300" y="41" font-family="Kulim Park,sans-serif" font-size="6.5" fill="#555">· Wide = horizontal composition, 2-col span</text>
+        <text x="300" y="49" font-family="Kulim Park,sans-serif" font-size="6.5" fill="#555">· Square = brand/logo work, equal framing</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 19: CTA DESIGN DEEP-DIVE -->
+<div class="page" style="background:#0A0A0A;">
+  <div class="ph ph-blue"><span class="ph-label">CTA System</span><span class="ph-num">19 / 21</span></div>
+  <div class="ci-tight">
+    <div>
+      <div class="c-tag" style="color:rgba(255,255,255,0.55);">CTA System</div>
+      <div class="c-h2" style="margin-top:1.5mm;color:#FBFBFB;">Every button is a design decision.</div>
+    </div>
+    <!-- Button hierarchy -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:2mm;">Button Hierarchy</div>
+      <div class="c-grid2">
+        <div class="c-card c-card-accent" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);border-top:1.5mm solid rgba(255,255,255,0.3);">
+          <div class="c-card-tag" style="color:rgba(255,255,255,0.5);">Ghost Button (outline)</div>
+          <div class="c-card-h" style="color:#FBFBFB;">When the context is already loud</div>
+          <div class="c-card-b" style="color:rgba(255,255,255,0.65);">Used on the hero, where the background is already animated and rich. The ghost button recedes — it suggests action without competing. Used when the context already has strong visual weight.</div>
+        </div>
+        <div class="c-card c-card-accent" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);border-top:1.5mm solid rgba(255,255,255,0.3);">
+          <div class="c-card-tag" style="color:rgba(255,255,255,0.5);">Solid Button (filled)</div>
+          <div class="c-card-h" style="color:#FBFBFB;">When the context is neutral</div>
+          <div class="c-card-b" style="color:rgba(255,255,255,0.65);">Used in the nav CTA, section CTAs, and form submit. Solid = committed action. The contrast makes it unmissable. Used when the context is neutral or needs a clear focal point for conversion.</div>
+        </div>
+      </div>
+    </div>
+    <!-- Button anatomy SVG -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:2mm;">'Start a project' Button Anatomy</div>
+      <svg viewBox="0 0 520 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <!-- Button representation -->
+        <rect x="160" y="26" width="200" height="32" rx="16" fill="#FBFBFB"/>
+        <text x="248" y="45" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" font-weight="600" fill="#2F48DF">Start a project</text>
+        <text x="336" y="45" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(47,72,223,0.6)">→</text>
+        <!-- Annotation lines -->
+        <!-- border-radius -->
+        <line x1="160" y1="42" x2="60" y2="22" stroke="rgba(255,255,255,0.35)" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="4" y="20" font-family="DM Sans,sans-serif" font-size="6.5" fill="rgba(255,255,255,0.7)">border-radius: 100px</text>
+        <text x="4" y="29" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.4)">pill — friendly, not corporate</text>
+        <!-- font-weight -->
+        <line x1="248" y1="26" x2="200" y2="10" stroke="rgba(255,255,255,0.35)" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="145" y="9" font-family="DM Sans,sans-serif" font-size="6.5" fill="rgba(255,255,255,0.7)">font-weight: 600</text>
+        <text x="145" y="17" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.4)">readable without aggression</text>
+        <!-- arrow icon -->
+        <line x1="336" y1="42" x2="420" y2="22" stroke="rgba(255,255,255,0.35)" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="385" y="20" font-family="DM Sans,sans-serif" font-size="6.5" fill="rgba(255,255,255,0.7)">→ only this animates</text>
+        <text x="385" y="28" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.4)">arrow = direction, not decoration</text>
+        <!-- 1px border note -->
+        <line x1="360" y1="42" x2="430" y2="60" stroke="rgba(255,255,255,0.35)" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="395" y="70" font-family="DM Sans,sans-serif" font-size="6.5" fill="rgba(255,255,255,0.7)">1px border (ghost variant)</text>
+        <text x="395" y="78" font-family="Kulim Park,sans-serif" font-size="6" fill="rgba(255,255,255,0.4)">not heavy — enough contrast</text>
+      </svg>
+    </div>
+    <!-- CTA Placement Strategy -->
+    <div>
+      <div style="font-size:6pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:2mm;">CTA Placement Strategy</div>
+      <div class="map-row" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.12);">
+        <div class="map-insight" style="border-color:rgba(255,255,255,0.1);">
+          <div class="map-label" style="color:rgba(255,255,255,0.5);">Placement</div>
+          <div class="map-text" style="color:rgba(255,255,255,0.8);">Nav CTA — always visible, scrolls with user</div>
+        </div>
+        <div class="map-arrow" style="background:rgba(255,255,255,0.08);color:#FBFBFB;">→</div>
+        <div class="map-decision">
+          <div class="map-label" style="color:rgba(255,255,255,0.5);">Strategic Intent</div>
+          <div class="map-text" style="color:rgba(255,255,255,0.7);">Persistent low-commitment reminder. Small, tucked. You've seen the brand, want to act now? Here's the door. Always present, never pushy.</div>
+        </div>
+      </div>
+      <div class="map-row" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.12);">
+        <div class="map-insight" style="border-color:rgba(255,255,255,0.1);">
+          <div class="map-label" style="color:rgba(255,255,255,0.5);">Placement</div>
+          <div class="map-text" style="color:rgba(255,255,255,0.8);">Hero CTA — first impression, primary action</div>
+        </div>
+        <div class="map-arrow" style="background:rgba(255,255,255,0.08);color:#FBFBFB;">→</div>
+        <div class="map-decision">
+          <div class="map-label" style="color:rgba(255,255,255,0.5);">Strategic Intent</div>
+          <div class="map-text" style="color:rgba(255,255,255,0.7);">High-visibility primary action. Two buttons: solid (primary) + ghost (secondary). Captures ready visitors immediately before they scroll past the fold.</div>
+        </div>
+      </div>
+      <div class="map-row" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.12);margin-bottom:0;">
+        <div class="map-insight" style="border-color:rgba(255,255,255,0.1);">
+          <div class="map-label" style="color:rgba(255,255,255,0.5);">Placement</div>
+          <div class="map-text" style="color:rgba(255,255,255,0.8);">Footer CTA — after full scroll, full information</div>
+        </div>
+        <div class="map-arrow" style="background:rgba(255,255,255,0.08);color:#FBFBFB;">→</div>
+        <div class="map-decision">
+          <div class="map-label" style="color:rgba(255,255,255,0.5);">Strategic Intent</div>
+          <div class="map-text" style="color:rgba(255,255,255,0.7);">Re-engagement for the considered visitor. Centred, full-width, emotive copy. After reading everything, this is the closing argument — the most persuasive CTA on the page.</div>
+        </div>
+      </div>
+    </div>
+    <!-- Contrast maintenance -->
+    <div class="pull-quote" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.3);">
+      <div class="pull-quote-text" style="color:rgba(255,255,255,0.85);font-size:9pt;">Ghost buttons on a blue background use <code style="font-family:monospace;font-size:8pt;background:rgba(255,255,255,0.12);padding:0.5mm 2mm;border-radius:1mm;">rgba(255,255,255,0.1)</code> fill + 1.5px white border. This maintains AA contrast while keeping the button visually lighter than the dark solid button — two weight levels, one background.</div>
+      <div class="pull-quote-attr" style="color:rgba(255,255,255,0.3);">Contrast Maintenance — Blue Section Ghost Buttons</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 20: MICRO-INTERACTIONS -->
+<div class="page">
+  <div class="ph"><span class="ph-label">Micro-Interactions</span><span class="ph-num">20 / 21</span></div>
+  <div class="ci-tight">
+    <div>
+      <div class="c-tag">Micro-Interactions</div>
+      <div class="c-h2" style="margin-top:1.5mm;">The details that signal intent.</div>
+    </div>
+    <div class="c-grid2">
+      <!-- Text Scramble -->
+      <div class="mi-card">
+        <div class="mi-card-tag">Hero Headings</div>
+        <div class="mi-card-h">Text Scramble on viewport entry</div>
+        <div class="mi-card-b">Characters randomise through the alphabet before resolving to the final word — a digital/generative brand signal that plays only on first impression. Uses IntersectionObserver to trigger once per page load.</div>
+        <div class="mi-card-rationale">Chose scramble over fade-in because it's active, not passive — the heading earns your attention by performing before delivering.</div>
+      </div>
+      <!-- Nav Strip Inversion -->
+      <div class="mi-card">
+        <div class="mi-card-tag">Navigation</div>
+        <div class="mi-card-h">Letters invert across wave boundaries</div>
+        <div class="mi-card-b">As wave strips pass across the nav, the logo and nav links visually 'invert' colour — dark letters become light, light become dark — using clip-path inversion strips positioned identically to the hero wave system.</div>
+        <div class="mi-card-rationale">Not planned — discovered during build. Kept because it makes the nav feel like part of the animation, not sitting on top of it. The nav participates in the brand.</div>
+      </div>
+      <!-- Team Greyscale Reveal -->
+      <div class="mi-card">
+        <div class="mi-card-tag">Team Section</div>
+        <div class="mi-card-h">Greyscale default, colour on hover</div>
+        <div class="mi-card-b">All team photos default to greyscale via CSS filter. Hovering removes the filter, revealing full colour simultaneously with a blue bio panel sliding up from the card bottom. Colour is the reward for engagement.</div>
+        <div class="mi-card-rationale">Greyscale forces the layout to work on structure alone — the grid has to be good before colour makes it great. It's a discipline check built into the design.</div>
+      </div>
+      <!-- Testimonial Drag -->
+      <div class="mi-card">
+        <div class="mi-card-tag">Testimonials</div>
+        <div class="mi-card-h">Physical drag gesture on card stack</div>
+        <div class="mi-card-b">Instead of dots or arrows, the front testimonial card can be dragged left to advance. The rotated deck behind it amplifies the physical card metaphor — you're moving through a stack of endorsements, not paginating through data.</div>
+        <div class="mi-card-rationale">Drag feels more human than clicking an arrow. It maps the metaphor of physically sorting through cards to the digital interaction — the gesture IS the metaphor.</div>
+      </div>
+      <!-- Form Success State -->
+      <div class="mi-card">
+        <div class="mi-card-tag">Contact Form</div>
+        <div class="mi-card-h">Animated SVG checkmark + progress bar</div>
+        <div class="mi-card-b">On submission: form fades out, an SVG checkmark animates in with a circle stroke-dashoffset animation, followed by a 5-second countdown bar before the form resets. The human moment is designed, not left to the browser default.</div>
+        <div class="mi-card-rationale">The success state is a designed moment, not a system message. It communicates: we received it, we're human, here's proof. The countdown bar sets expectation about what happens next.</div>
+      </div>
+      <!-- Carousel Hover Pause -->
+      <div class="mi-card">
+        <div class="mi-card-tag">Work Carousel</div>
+        <div class="mi-card-h">Auto-scroll pauses on hover intent</div>
+        <div class="mi-card-b">The infinite marquee pauses its requestAnimationFrame loop when the cursor enters the carousel track. It resumes on mouseleave. An IntersectionObserver also cancels the RAF entirely when the section scrolls off-screen, saving battery on mobile.</div>
+        <div class="mi-card-rationale">Auto-scroll that ignores hover intent feels broken and disrespectful. Pause on hover is the difference between a feature that works and a feature that respects the user.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 21: BACK COVER -->
+<div class="page" style="background:#0A0A0A;overflow:hidden;position:relative;">
+  <!-- Background wave strips pattern (static, frozen) -->
+  <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.04;" viewBox="0 0 210 297" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="8" y="0" width="12" height="297" fill="#FBFBFB"/>
+    <rect x="28" y="0" width="8" height="297" fill="#FBFBFB"/>
+    <rect x="44" y="0" width="14" height="297" fill="#FBFBFB"/>
+    <rect x="66" y="0" width="10" height="297" fill="#FBFBFB"/>
+    <rect x="84" y="0" width="16" height="297" fill="#FBFBFB"/>
+    <rect x="108" y="0" width="8" height="297" fill="#FBFBFB"/>
+    <rect x="124" y="0" width="12" height="297" fill="#FBFBFB"/>
+    <rect x="144" y="0" width="10" height="297" fill="#FBFBFB"/>
+    <rect x="162" y="0" width="14" height="297" fill="#FBFBFB"/>
+    <rect x="184" y="0" width="8" height="297" fill="#FBFBFB"/>
+    <rect x="198" y="0" width="10" height="297" fill="#FBFBFB"/>
+  </svg>
+  <!-- Content centered -->
+  <div class="back" style="position:relative;z-index:2;">
+    <!-- Wordmark -->
+    <div style="font-family:'DM Sans',sans-serif;font-size:18pt;font-weight:600;color:#FBFBFB;letter-spacing:-0.02em;margin-bottom:5mm;">studiobee</div>
+    <!-- Divider -->
+    <div style="width:32mm;height:0.3mm;background:rgba(255,255,255,0.15);margin:0 auto 5mm;"></div>
+    <!-- Contact details -->
+    <div style="font-family:'DM Sans',sans-serif;font-size:10pt;font-weight:600;color:#2F48DF;letter-spacing:0.02em;margin-bottom:2mm;">studiobee.co.in</div>
+    <div style="font-family:'Kulim Park',sans-serif;font-size:9pt;color:rgba(255,255,255,0.45);margin-bottom:14mm;">arora.nikhil@studiobee.ai</div>
+    <!-- Large decorative quote -->
+    <div style="font-family:'Kulim Park',sans-serif;font-size:10pt;line-height:1.7;color:rgba(255,255,255,0.28);max-width:120mm;text-align:center;font-style:italic;">"Make it feel like the best agency in the room — and make sure it doesn't crash on an iPhone."</div>
+    <!-- Bottom attribution -->
+    <div style="position:absolute;bottom:10mm;left:0;right:0;text-align:center;font-family:'DM Sans',sans-serif;font-size:7pt;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.2);">UX/UI Case Study &nbsp;·&nbsp; 2025 &nbsp;·&nbsp; Nikhil Arora</div>
+  </div>
+</div>
+
+</body>
+</html>

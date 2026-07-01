@@ -26,7 +26,7 @@ export default async function PnlReportPage() {
     const cost = labor + direct;
     const profit = revenue - cost;
     const margin = revenue > 0 ? Math.round((profit / revenue) * 100) : 0;
-    return { ...d, labor, direct, cost, profit, margin };
+    return { ...d, revenue, labor, direct, cost, profit, margin };
   });
 
   const totals = rows.reduce(
@@ -83,7 +83,7 @@ export default async function PnlReportPage() {
                 <tr key={r.id} className="bg-card hover:bg-muted/30">
                   <td className="px-4 py-3 font-medium">{r.number}</td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    {(r.clients as { name: string } | null)?.name ?? r.project_name ?? "—"}
+                    {(r.clients as unknown as { name: string } | null)?.name ?? r.project_name ?? "—"}
                   </td>
                   <td className="px-4 py-3">₹{r.revenue.toLocaleString("en-IN")}</td>
                   <td className="px-4 py-3 text-muted-foreground">₹{r.labor.toLocaleString("en-IN")}</td>

@@ -24,13 +24,21 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
 
   let roles: { id: string; name: string; hourly_rate: number }[] = [];
   let overheads: { id: string; name: string; cost: number }[] = [];
+  let teamMembers: { id: string; display_name: string; email: string; role: string }[] = [];
+  let splitSettings: unknown[] = [];
+
   if (seeCost) {
-    const [{ data: r }, { data: o }] = await Promise.all([
+    const admin = createAdminClient();
+    const [{ data: r }, { data: o }, { data: tm }, { data: ss }] = await Promise.all([
       supabase.from("cost_roles").select("id, name, hourly_rate").eq("active", true),
       supabase.from("overhead_items").select("id, name, cost").eq("active", true),
+      admin.from("profiles").select("id, display_name, email, role").eq("active", true).order("display_name"),
+      admin.from("profit_split_settings").select("*").order("category"),
     ]);
     roles = r ?? [];
     overheads = o ?? [];
+    teamMembers = tm ?? [];
+    splitSettings = ss ?? [];
   } else {
     const admin = createAdminClient();
     const [{ data: r }, { data: o }] = await Promise.all([
@@ -52,6 +60,8 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
             roles={roles}
             overheads={overheads}
             canSeeCost={seeCost}
+            teamMembers={teamMembers}
+            splitSettings={splitSettings as never}
             doc={{
               id: doc.id,
               number: doc.number,
@@ -66,6 +76,9 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               discount: doc.discount,
               notes: doc.notes,
               validity_days: doc.validity_days,
+              executor_id: (doc as Record<string, unknown>).executor_id as string | null,
+              manager_id: (doc as Record<string, unknown>).manager_id as string | null,
+              client_handler_id: (doc as Record<string, unknown>).client_handler_id as string | null,
             }}
           />
         </div>
