@@ -21,7 +21,7 @@ export default async function ProjectDetailPage({
     supabase.from("project_stages").select("*").eq("project_id", id).order("created_at"),
     supabase
       .from("tasks")
-      .select("*, profiles(display_name, email)")
+      .select("*, profiles!assigned_to(display_name, email)")
       .eq("project_id", id)
       .order("created_at"),
     supabase
