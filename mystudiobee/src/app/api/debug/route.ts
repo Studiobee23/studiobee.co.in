@@ -75,6 +75,22 @@ export async function GET() {
   const { error: rpcError } = await userClient.rpc("increment_doc_series", { series_type: "quote" });
   // If it worked, decrement it back (not critical for diagnostics)
 
+  // Debug: check receipts and their created_by
+  const { data: receipts } = await admin.from("documents").select("id, number, status, created_by").eq("type", "receipt");
+
+  // Debug: try the updateDocumentStatus pattern via user client
+  const testReceiptId = receipts?.[0]?.id;
+  let updateTest = null;
+  if (testReceiptId) {
+    const { data: ud, error: ue } = await userClient
+      .from("documents")
+      .update({ status: "draft" })
+      .eq("id", testReceiptId)
+      .eq("created_by", userData.user.id)
+      .select("id");
+    updateTest = { id: ud?.[0]?.id ?? null, error: ue?.message ?? null };
+  }
+
   return NextResponse.json({
     uid: userData.user.id,
     profile,
@@ -87,5 +103,7 @@ export async function GET() {
     tasksJoinTest: { ok: !tasksJoinError, error: tasksJoinError?.message ?? null, rowCount: tasksJoin?.length ?? 0 },
     profileColsTest: { ok: !profileColsError, error: profileColsError?.message ?? null },
     rpcTest: { ok: !rpcError, error: rpcError?.message ?? null },
+    receipts,
+    updateTest,
   });
 }
