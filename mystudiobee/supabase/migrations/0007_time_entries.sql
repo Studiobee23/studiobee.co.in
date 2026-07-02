@@ -43,3 +43,8 @@ create policy "owner admin delete entries" on time_entries
 
 create index time_entries_employee_idx on time_entries (employee_id);
 create index time_entries_clocked_in_idx on time_entries (clocked_in_at desc);
+
+-- Enforce only one open (not clocked-out) entry per employee at DB level
+create unique index if not exists time_entries_one_open_per_employee
+  on time_entries (employee_id)
+  where (clocked_out_at is null);

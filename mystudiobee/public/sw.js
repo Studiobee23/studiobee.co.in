@@ -1,10 +1,10 @@
 // mystudiobee/public/sw.js
 const CACHE = "msb-v1";
-const SHELL = ["/", "/clock", "/login"];
 
 self.addEventListener("install", (e) => {
+  // Only cache static assets at install time — no auth-sensitive HTML
   e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())
+    caches.open(CACHE).then((c) => c.addAll([])).then(() => self.skipWaiting())
   );
 });
 
@@ -17,11 +17,12 @@ self.addEventListener("activate", (e) => {
 });
 
 self.addEventListener("fetch", (e) => {
-  // Only cache GET requests; let API/POST requests pass through
   if (e.request.method !== "GET") return;
-  // Don't cache Supabase or external API calls
   if (e.request.url.includes("supabase.co")) return;
-
+  // Network-only for HTML navigation (auth-sensitive — never cache)
+  if (e.request.mode === "navigate") return;
+  // Cache-first only for immutable Next.js static assets
+  if (!e.request.url.includes("/_next/static/")) return;
   e.respondWith(
     caches.match(e.request).then((cached) => cached ?? fetch(e.request))
   );

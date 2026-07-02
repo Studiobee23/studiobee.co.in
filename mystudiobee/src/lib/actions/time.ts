@@ -65,5 +65,6 @@ export async function deleteTimeEntry(entryId: string) {
     .eq("id", entryId);
   if (error) throw new Error(error.message);
 
+  revalidatePath("/clock");
   revalidatePath("/reports/time");
 }
