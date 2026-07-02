@@ -116,6 +116,7 @@ export function AppSidebar({
   const pathname = usePathname();
   const router = useRouter();
   const isOwnerOrAdmin = role === "owner" || role === "admin";
+  const isBilling = isOwnerOrAdmin || role === "manager";
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -136,10 +137,10 @@ export function AppSidebar({
 
       <SidebarContent className="px-3 py-1.5">
         <Group items={workspaceNav} pathname={pathname} />
-        <Group label="CRM" items={crmNav} pathname={pathname} />
+        {isBilling && <Group label="CRM" items={crmNav} pathname={pathname} />}
         <Group label="Projects" items={projectNav} pathname={pathname} />
         <Group label="Tasks" items={taskNav} pathname={pathname} />
-        <Group label="Billing" items={billingNav} pathname={pathname} />
+        {isBilling && <Group label="Billing" items={billingNav} pathname={pathname} />}
         {isOwnerOrAdmin && <Group label="Admin" items={adminNav} pathname={pathname} />}
         {isOwnerOrAdmin && <Group label="Insights" items={reportNav} pathname={pathname} />}
       </SidebarContent>

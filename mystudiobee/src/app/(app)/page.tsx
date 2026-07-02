@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { FileText, Users, Plus, Clock, AlertTriangle, CheckCircle2, CircleDot } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { getCurrentProfile, isBillingRole } from "@/lib/profile";
@@ -9,21 +10,7 @@ export default async function DashboardPage() {
   if (!profile) return null;
 
   if (!isBillingRole(profile.role)) {
-    return (
-      <>
-        <DashboardHeader title="Dashboard" />
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-          <div className="animate-in-page mx-auto max-w-2xl space-y-2 pt-10 text-center">
-            <h2 className="font-heading text-lg font-semibold">
-              Welcome, {profile.display_name || profile.email}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Your account doesn&apos;t have access to any modules yet. Check back soon.
-            </p>
-          </div>
-        </div>
-      </>
-    );
+    redirect("/tasks");
   }
 
   const supabase = await createClient();

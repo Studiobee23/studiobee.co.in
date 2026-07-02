@@ -29,6 +29,7 @@ import type { LineItem } from "@/lib/costing/types";
 import { createQuote, updateDocument, convertDocument, priceLineItem } from "@/lib/actions/documents";
 
 type Client = { id: string; name: string };
+type EquipmentItem = { id: string; name: string; daily_rental_cost: number | null };
 type Preset = {
   id: string;
   category: string;
@@ -69,6 +70,7 @@ export function QuoteEditor({
   doc,
   teamMembers = [],
   splitSettings = [],
+  equipmentItems = [],
 }: {
   clients: Client[];
   presets: Preset[];
@@ -78,6 +80,7 @@ export function QuoteEditor({
   doc?: QuoteDoc;
   teamMembers?: TeamMember[];
   splitSettings?: ProfitSplitSettings[];
+  equipmentItems?: EquipmentItem[];
 }) {
   const router = useRouter();
   const [clientId, setClientId] = useState(doc?.client_id ?? "");
@@ -257,6 +260,7 @@ export function QuoteEditor({
             presets={presets}
             roles={roles}
             overheads={overheads}
+            equipmentItems={equipmentItems}
             onAdd={(item) => setLineItems((items) => [...items, item])}
           />
         </div>
@@ -515,19 +519,23 @@ export function QuoteEditor({
   );
 }
 
+type LineItemMode = "preset" | "manual" | "equipment" | "external_hire" | "studio" | "boost";
+
 function AddLineItemDialog({
   presets,
   roles,
   overheads,
+  equipmentItems,
   onAdd,
 }: {
   presets: Preset[];
   roles: CostRole[];
   overheads: OverheadItem[];
+  equipmentItems: EquipmentItem[];
   onAdd: (item: LineItem) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<"preset" | "manual">(presets.length > 0 ? "preset" : "manual");
+  const [mode, setMode] = useState<LineItemMode>(presets.length > 0 ? "preset" : "manual");
   const [presetId, setPresetId] = useState("");
   const [description, setDescription] = useState("");
   const [qty, setQty] = useState(1);
@@ -535,6 +543,25 @@ function AddLineItemDialog({
   const [overheadIds, setOverheadIds] = useState<string[]>([]);
   const [markup, setMarkup] = useState(0);
   const [manualRate, setManualRate] = useState("");
+  // equipment rental
+  const [equipmentId, setEquipmentId] = useState("");
+  const [equipmentDays, setEquipmentDays] = useState(1);
+  const [equipmentMarkup, setEquipmentMarkup] = useState(20);
+  // external hire
+  const [hireName, setHireName] = useState("");
+  const [hireRate, setHireRate] = useState("");
+  const [hireDays, setHireDays] = useState(1);
+  const [hireMarkup, setHireMarkup] = useState(0);
+  // studio rental
+  const [studioDesc, setStudioDesc] = useState("Studio Rental");
+  const [studioDailyRate, setStudioDailyRate] = useState("");
+  const [studioDays, setStudioDays] = useState(1);
+  const [studioMarkup, setStudioMarkup] = useState(0);
+  // boost
+  const [boostPlatform, setBoostPlatform] = useState("Meta");
+  const [boostBudget, setBoostBudget] = useState("");
+  const [boostMarkup, setBoostMarkup] = useState(0);
+
   const [loading, setLoading] = useState(false);
 
   function selectPreset(id: string) {
@@ -548,12 +575,43 @@ function AddLineItemDialog({
     }
   }
 
+  function withMarkup(base: number, pct: number) {
+    return Math.round(base * (1 + pct / 100) * 100) / 100;
+  }
+
   async function handleAdd() {
     if (mode === "manual") {
       const rate = Number(manualRate);
       onAdd({ description, qty, cost_breakdown: null, rate, amount: Math.round(rate * qty * 100) / 100 });
-      reset();
-      return;
+      reset(); return;
+    }
+    if (mode === "equipment") {
+      const eq = equipmentItems.find((e) => e.id === equipmentId);
+      if (!eq || !eq.daily_rental_cost) return;
+      const rate = withMarkup(eq.daily_rental_cost, equipmentMarkup);
+      const amount = Math.round(rate * equipmentDays * 100) / 100;
+      onAdd({ description: `${eq.name} Rental`, qty: equipmentDays, cost_breakdown: null, rate, amount });
+      reset(); return;
+    }
+    if (mode === "external_hire") {
+      const base = Number(hireRate);
+      const rate = withMarkup(base, hireMarkup);
+      const amount = Math.round(rate * hireDays * 100) / 100;
+      onAdd({ description: hireName || "External Creative Hire", qty: hireDays, cost_breakdown: null, rate, amount });
+      reset(); return;
+    }
+    if (mode === "studio") {
+      const base = Number(studioDailyRate);
+      const rate = withMarkup(base, studioMarkup);
+      const amount = Math.round(rate * studioDays * 100) / 100;
+      onAdd({ description: studioDesc, qty: studioDays, cost_breakdown: null, rate, amount });
+      reset(); return;
+    }
+    if (mode === "boost") {
+      const base = Number(boostBudget);
+      const rate = withMarkup(base, boostMarkup);
+      onAdd({ description: `Ad Boost – ${boostPlatform}`, qty: 1, cost_breakdown: null, rate, amount: rate });
+      reset(); return;
     }
     setLoading(true);
     try {
@@ -574,16 +632,34 @@ function AddLineItemDialog({
     }
   }
 
+  function isAddDisabled() {
+    if (loading) return true;
+    if (mode === "preset") return !description;
+    if (mode === "manual") return !description || !manualRate;
+    if (mode === "equipment") return !equipmentId;
+    if (mode === "external_hire") return !hireName || !hireRate;
+    if (mode === "studio") return !studioDailyRate;
+    if (mode === "boost") return !boostBudget;
+    return false;
+  }
+
   function reset() {
     setOpen(false);
-    setPresetId("");
-    setDescription("");
-    setQty(1);
-    setHours({});
-    setOverheadIds([]);
-    setMarkup(0);
-    setManualRate("");
+    setPresetId(""); setDescription(""); setQty(1); setHours({}); setOverheadIds([]); setMarkup(0); setManualRate("");
+    setEquipmentId(""); setEquipmentDays(1); setEquipmentMarkup(20);
+    setHireName(""); setHireRate(""); setHireDays(1); setHireMarkup(0);
+    setStudioDesc("Studio Rental"); setStudioDailyRate(""); setStudioDays(1); setStudioMarkup(0);
+    setBoostPlatform("Meta"); setBoostBudget(""); setBoostMarkup(0);
   }
+
+  const MODES: { key: LineItemMode; label: string }[] = [
+    { key: "preset", label: "Preset" },
+    { key: "manual", label: "Manual" },
+    { key: "equipment", label: "Equipment" },
+    { key: "external_hire", label: "Ext. Hire" },
+    { key: "studio", label: "Studio" },
+    { key: "boost", label: "Boost" },
+  ];
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -597,38 +673,32 @@ function AddLineItemDialog({
           <DialogTitle>Add line item</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              size="sm"
-              variant={mode === "preset" ? "default" : "outline"}
-              onClick={() => setMode("preset")}
-            >
-              From preset
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant={mode === "manual" ? "default" : "outline"}
-              onClick={() => setMode("manual")}
-            >
-              Manual
-            </Button>
+          {/* Mode tabs */}
+          <div className="flex flex-wrap gap-1.5">
+            {MODES.map((m) => (
+              <Button
+                key={m.key}
+                type="button"
+                size="sm"
+                variant={mode === m.key ? "default" : "outline"}
+                onClick={() => setMode(m.key)}
+                className="text-xs"
+              >
+                {m.label}
+              </Button>
+            ))}
           </div>
 
-          {mode === "preset" ? (
+          {/* Preset mode */}
+          {mode === "preset" && (
             <>
               <div className="space-y-1.5">
                 <Label>Preset</Label>
                 <Select value={presetId} onValueChange={selectPreset}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a preset" />
-                  </SelectTrigger>
+                  <SelectTrigger className="w-full"><SelectValue placeholder="Select a preset" /></SelectTrigger>
                   <SelectContent>
                     {presets.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.category} · {p.name}
-                      </SelectItem>
+                      <SelectItem key={p.id} value={p.id}>{p.category} · {p.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -644,12 +714,7 @@ function AddLineItemDialog({
                     {roles.map((r) => (
                       <div key={r.id} className="flex items-center justify-between gap-3">
                         <span className="text-xs">{r.name}</span>
-                        <Input
-                          type="number"
-                          className="w-24"
-                          value={hours[r.id] ?? ""}
-                          onChange={(e) => setHours((h) => ({ ...h, [r.id]: e.target.value }))}
-                        />
+                        <Input type="number" className="w-24" value={hours[r.id] ?? ""} onChange={(e) => setHours((h) => ({ ...h, [r.id]: e.target.value }))} />
                       </div>
                     ))}
                   </div>
@@ -661,15 +726,7 @@ function AddLineItemDialog({
                   <div className="space-y-2 rounded-lg border border-border p-3">
                     {overheads.map((o) => (
                       <label key={o.id} className="flex items-center gap-2 text-xs">
-                        <input
-                          type="checkbox"
-                          checked={overheadIds.includes(o.id)}
-                          onChange={(e) =>
-                            setOverheadIds((ids) =>
-                              e.target.checked ? [...ids, o.id] : ids.filter((id) => id !== o.id),
-                            )
-                          }
-                        />
+                        <input type="checkbox" checked={overheadIds.includes(o.id)} onChange={(e) => setOverheadIds((ids) => e.target.checked ? [...ids, o.id] : ids.filter((id) => id !== o.id))} />
                         {o.name}
                       </label>
                     ))}
@@ -687,7 +744,10 @@ function AddLineItemDialog({
                 </div>
               </div>
             </>
-          ) : (
+          )}
+
+          {/* Manual mode */}
+          {mode === "manual" && (
             <>
               <div className="space-y-1.5">
                 <Label>Description</Label>
@@ -705,12 +765,144 @@ function AddLineItemDialog({
               </div>
             </>
           )}
+
+          {/* Equipment rental mode */}
+          {mode === "equipment" && (
+            <>
+              {equipmentItems.length === 0 ? (
+                <p className="text-xs text-muted-foreground rounded-lg border border-dashed border-border p-4 text-center">
+                  No equipment in inventory yet. Add items under Admin → Equipment.
+                </p>
+              ) : (
+                <>
+                  <div className="space-y-1.5">
+                    <Label>Equipment</Label>
+                    <Select value={equipmentId} onValueChange={setEquipmentId}>
+                      <SelectTrigger className="w-full"><SelectValue placeholder="Select equipment" /></SelectTrigger>
+                      <SelectContent>
+                        {equipmentItems.map((e) => (
+                          <SelectItem key={e.id} value={e.id}>
+                            {e.name}{e.daily_rental_cost ? ` · ₹${e.daily_rental_cost}/day` : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label>Days</Label>
+                      <Input type="number" min={1} value={equipmentDays} onChange={(e) => setEquipmentDays(Number(e.target.value))} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Markup (%)</Label>
+                      <Input type="number" value={equipmentMarkup} onChange={(e) => setEquipmentMarkup(Number(e.target.value))} />
+                    </div>
+                  </div>
+                  {equipmentId && (() => {
+                    const eq = equipmentItems.find((e) => e.id === equipmentId);
+                    if (!eq?.daily_rental_cost) return null;
+                    const rate = Math.round(eq.daily_rental_cost * (1 + equipmentMarkup / 100) * 100) / 100;
+                    return (
+                      <p className="text-xs text-muted-foreground">
+                        Rate: ₹{rate}/day × {equipmentDays} day{equipmentDays !== 1 ? "s" : ""} = <strong>₹{Math.round(rate * equipmentDays * 100) / 100}</strong>
+                      </p>
+                    );
+                  })()}
+                </>
+              )}
+            </>
+          )}
+
+          {/* External hire mode */}
+          {mode === "external_hire" && (
+            <>
+              <div className="space-y-1.5">
+                <Label>Name / description</Label>
+                <Input placeholder="e.g. Freelance photographer" value={hireName} onChange={(e) => setHireName(e.target.value)} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label>Base rate (₹)</Label>
+                  <Input type="number" value={hireRate} onChange={(e) => setHireRate(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Days / qty</Label>
+                  <Input type="number" min={1} value={hireDays} onChange={(e) => setHireDays(Number(e.target.value))} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Your markup (%)</Label>
+                <Input type="number" value={hireMarkup} onChange={(e) => setHireMarkup(Number(e.target.value))} />
+              </div>
+              {hireRate && (
+                <p className="text-xs text-muted-foreground">
+                  Billed rate: ₹{Math.round(Number(hireRate) * (1 + hireMarkup / 100) * 100) / 100}/day × {hireDays} = <strong>₹{Math.round(Number(hireRate) * (1 + hireMarkup / 100) * hireDays * 100) / 100}</strong>
+                </p>
+              )}
+            </>
+          )}
+
+          {/* Studio rental mode */}
+          {mode === "studio" && (
+            <>
+              <div className="space-y-1.5">
+                <Label>Description</Label>
+                <Input value={studioDesc} onChange={(e) => setStudioDesc(e.target.value)} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label>Rate / day (₹)</Label>
+                  <Input type="number" value={studioDailyRate} onChange={(e) => setStudioDailyRate(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Days</Label>
+                  <Input type="number" min={1} value={studioDays} onChange={(e) => setStudioDays(Number(e.target.value))} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Markup (%)</Label>
+                <Input type="number" value={studioMarkup} onChange={(e) => setStudioMarkup(Number(e.target.value))} />
+              </div>
+              {studioDailyRate && (
+                <p className="text-xs text-muted-foreground">
+                  Total: ₹{Math.round(Number(studioDailyRate) * (1 + studioMarkup / 100) * studioDays * 100) / 100}
+                </p>
+              )}
+            </>
+          )}
+
+          {/* Boost cost mode */}
+          {mode === "boost" && (
+            <>
+              <div className="space-y-1.5">
+                <Label>Platform</Label>
+                <Select value={boostPlatform} onValueChange={setBoostPlatform}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["Meta", "Google", "YouTube", "LinkedIn", "Twitter / X", "Snapchat", "Other"].map((p) => (
+                      <SelectItem key={p} value={p}>{p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Ad budget (₹)</Label>
+                <Input type="number" value={boostBudget} onChange={(e) => setBoostBudget(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Agency markup (%)</Label>
+                <Input type="number" value={boostMarkup} onChange={(e) => setBoostMarkup(Number(e.target.value))} placeholder="0 = pass-through" />
+              </div>
+              {boostBudget && (
+                <p className="text-xs text-muted-foreground">
+                  Billed: ₹{Math.round(Number(boostBudget) * (1 + boostMarkup / 100) * 100) / 100}
+                </p>
+              )}
+            </>
+          )}
         </div>
         <DialogFooter>
-          <Button
-            onClick={handleAdd}
-            disabled={loading || !description || (mode === "manual" ? !manualRate : false)}
-          >
+          <Button onClick={handleAdd} disabled={isAddDisabled()}>
             {loading ? "Pricing…" : "Add"}
           </Button>
         </DialogFooter>
