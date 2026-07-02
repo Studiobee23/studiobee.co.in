@@ -63,10 +63,10 @@ export function ClientsClient({
               <Link
                 key={c.id}
                 href={`/clients/${c.id}`}
-                className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/60"
+                className="flex items-center gap-4 px-5 py-3.5 transition-colors duration-100 hover:bg-muted/50"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{c.name}</p>
+                  <p className="truncate text-[13px] font-semibold leading-snug">{c.name}</p>
                   <p className="mt-0.5 truncate text-xs text-muted-foreground">
                     {c.contact_person || c.email || c.phone || "—"} {c.city ? `· ${c.city}` : ""}
                   </p>

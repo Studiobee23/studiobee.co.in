@@ -38,18 +38,18 @@ export function DocumentList({
             <Link
               key={d.id}
               href={`${basePath}/${d.id}`}
-              className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/60"
+              className="flex items-center gap-4 px-5 py-3.5 transition-colors duration-100 hover:bg-muted/50"
             >
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">
+                <p className="text-[13px] font-semibold leading-snug text-foreground">
                   {d.number} · {d.project_name || "Untitled"}
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">{clientName ?? "No client"}</p>
               </div>
-              <Badge variant={STATUS_VARIANT[d.status] ?? "outline"} className="capitalize">
+              <Badge variant={STATUS_VARIANT[d.status] ?? "outline"} className="capitalize text-[11px]">
                 {d.status}
               </Badge>
-              <p className="w-20 text-right font-heading text-sm font-medium">₹{d.total ?? 0}</p>
+              <p className="w-24 text-right font-heading text-[13px] font-semibold tabular-nums">₹{(d.total ?? 0).toLocaleString("en-IN")}</p>
             </Link>
             );
           })}

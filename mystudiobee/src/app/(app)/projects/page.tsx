@@ -43,10 +43,10 @@ export default async function ProjectsPage() {
             <Link
               key={p.id}
               href={`/projects/${p.id}`}
-              className="flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:bg-muted/40"
+              className="flex items-center gap-4 rounded-xl border border-border bg-card px-5 py-3.5 transition-colors duration-100 hover:bg-muted/40 hover:shadow-card-hover"
             >
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{p.name}</p>
+                <p className="truncate text-[13px] font-semibold leading-snug">{p.name}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {(p.clients as unknown as { name: string } | null)?.name ?? "No client"}
                   {p.category ? ` · ${p.category}` : ` · ${p.type}`}
@@ -54,7 +54,7 @@ export default async function ProjectsPage() {
                 </p>
               </div>
               <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${STATUS_COLORS[p.status] ?? ""}`}
+                className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize ${STATUS_COLORS[p.status] ?? ""}`}
               >
                 {p.status.replace("_", " ")}
               </span>

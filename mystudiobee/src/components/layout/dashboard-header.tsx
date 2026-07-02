@@ -14,7 +14,7 @@ export function DashboardHeader({
       <Separator orientation="vertical" className="!h-4 mr-0.5 bg-border sm:mr-1" />
 
       {title && (
-        <h1 className="min-w-0 shrink truncate font-heading text-xs font-semibold uppercase tracking-[0.08em] text-foreground">
+        <h1 className="min-w-0 shrink truncate font-heading text-sm font-semibold tracking-[-0.01em] text-foreground">
           {title}
         </h1>
       )}
