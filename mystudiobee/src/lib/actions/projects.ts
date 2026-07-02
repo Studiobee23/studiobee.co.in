@@ -81,6 +81,87 @@ export async function uncompleteProjectStage(projectId: string, stage: string) {
   revalidatePath(`/projects/${projectId}`);
 }
 
+export async function updateProjectStatus(
+  id: string,
+  status: "active" | "on_hold" | "completed" | "cancelled"
+) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("projects")
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/projects");
+  revalidatePath(`/projects/${id}`);
+}
+
+export async function createExpense(input: {
+  project_id: string;
+  category: string;
+  description: string;
+  amount: number;
+  gst_amount?: number;
+  vendor?: string;
+  expense_date?: string;
+  receipt_url?: string;
+}) {
+  const profile = await getCurrentProfile();
+  if (!profile) throw new Error("Not authenticated");
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("project_expenses")
+    .insert({ ...input, gst_amount: input.gst_amount ?? 0, created_by: profile.id });
+  if (error) throw new Error(error.message);
+  revalidatePath(`/projects/${input.project_id}`);
+}
+
+export async function deleteExpense(id: string, project_id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("project_expenses").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/projects/${project_id}`);
+}
+
+export async function createChecklistItem(project_id: string, item: string, sort_order: number) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("delivery_checklists")
+    .insert({ project_id, item, sort_order });
+  if (error) throw new Error(error.message);
+  revalidatePath(`/projects/${project_id}`);
+}
+
+export async function toggleChecklistItem(id: string, completed: boolean, project_id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("delivery_checklists")
+    .update({ completed, completed_at: completed ? new Date().toISOString() : null })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/projects/${project_id}`);
+}
+
+export async function deleteChecklistItem(id: string, project_id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("delivery_checklists").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/projects/${project_id}`);
+}
+
+export async function upsertRetainerMonth(input: {
+  project_id: string;
+  month: string;
+  status: "pending" | "in_progress" | "completed" | "invoiced";
+  notes?: string;
+}) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("retainer_months")
+    .upsert({ ...input }, { onConflict: "project_id,month" });
+  if (error) throw new Error(error.message);
+  revalidatePath(`/projects/${input.project_id}`);
+}
+
 export async function createMom(input: {
   project_id?: string;
   client_id?: string;
