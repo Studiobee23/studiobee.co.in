@@ -159,14 +159,14 @@ export async function updateDocumentStatus(id: string, status: DocumentStatus) {
   const profile = await requireBillingRole();
   const supabase = await createClient();
   // Scope by created_by — users can only update documents they own or are assigned to
-  const { error, count } = await supabase
+  const { data, error } = await supabase
     .from("documents")
     .update({ status })
     .eq("id", id)
     .eq("created_by", profile.id)
-    .select("id", { count: "exact", head: true });
+    .select("id");
   if (error) throw new Error(error.message);
-  if (count === 0) throw new Error("Document not found or not authorized");
+  if (!data || data.length === 0) throw new Error("Document not found or not authorized");
   revalidatePath("/quotes");
   revalidatePath("/invoices");
   revalidatePath("/receipts");
