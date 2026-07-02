@@ -17,6 +17,7 @@ import {
   BarChart2,
   PieChart,
   Package,
+  Clock,
 } from "lucide-react";
 import {
   Sidebar,
@@ -40,6 +41,7 @@ const workspaceNav: NavEntry[] = [{ title: "Dashboard", href: "/", icon: LayoutD
 const crmNav: NavEntry[] = [{ title: "Clients", href: "/clients", icon: Users }];
 const projectNav: NavEntry[] = [{ title: "Projects", href: "/projects", icon: FolderOpen }];
 const taskNav: NavEntry[] = [{ title: "Tasks", href: "/tasks", icon: CheckSquare }];
+const clockNav: NavEntry[] = [{ title: "Clock In", href: "/clock", icon: Clock }];
 const billingNav: NavEntry[] = [
   { title: "Quotes", href: "/quotes", icon: FileText },
   { title: "Invoices", href: "/invoices", icon: Receipt },
@@ -51,7 +53,10 @@ const adminNav: NavEntry[] = [
   { title: "Profit Split", href: "/admin/profit-split", icon: PieChart },
   { title: "Equipment", href: "/admin/equipment", icon: Package },
 ];
-const reportNav: NavEntry[] = [{ title: "Reports", href: "/reports", icon: BarChart2 }];
+const reportNav: NavEntry[] = [
+  { title: "Reports", href: "/reports", icon: BarChart2 },
+  { title: "Time Log", href: "/reports/time", icon: Clock },
+];
 
 const GROUP_LABEL_CLASS =
   "mb-0 mt-1 px-3 h-4 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/30 leading-none";
@@ -140,6 +145,7 @@ export function AppSidebar({
         {isBilling && <Group label="CRM" items={crmNav} pathname={pathname} />}
         <Group label="Projects" items={projectNav} pathname={pathname} />
         <Group label="Tasks" items={taskNav} pathname={pathname} />
+        <Group label="Time" items={clockNav} pathname={pathname} />
         {isBilling && <Group label="Billing" items={billingNav} pathname={pathname} />}
         {isOwnerOrAdmin && <Group label="Admin" items={adminNav} pathname={pathname} />}
         {isOwnerOrAdmin && <Group label="Insights" items={reportNav} pathname={pathname} />}
