@@ -62,7 +62,7 @@ export async function GET() {
   // Test tasks+profiles join exactly as page.tsx does
   const { data: tasksJoin, error: tasksJoinError } = await admin
     .from("tasks")
-    .select("*, profiles(display_name, email)")
+    .select("*, profiles!assigned_to(display_name, email)")
     .limit(1);
 
   // Test profiles columns
