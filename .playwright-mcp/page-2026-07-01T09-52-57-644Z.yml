@@ -1,0 +1,161 @@
+- generic [active] [ref=f8e1]:
+  - generic [ref=f8e2]:
+    - generic [ref=f8e5]:
+      - link "StudioBee" [ref=f8e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f8e8]
+      - generic [ref=f8e9]:
+        - list [ref=f8e12]:
+          - listitem [ref=f8e13]:
+            - link "Dashboard" [ref=f8e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f8e15]
+              - generic [ref=f8e20]: Dashboard
+        - generic [ref=f8e21]:
+          - generic [ref=f8e22]: CRM
+          - list [ref=f8e24]:
+            - listitem [ref=f8e25]:
+              - link "Clients" [ref=f8e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f8e27]
+                - generic [ref=f8e32]: Clients
+        - generic [ref=f8e33]:
+          - generic [ref=f8e34]: Projects
+          - list [ref=f8e36]:
+            - listitem [ref=f8e37]:
+              - link "Projects" [ref=f8e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f8e39]
+                - generic [ref=f8e41]: Projects
+        - generic [ref=f8e42]:
+          - generic [ref=f8e43]: Tasks
+          - list [ref=f8e45]:
+            - listitem [ref=f8e46]:
+              - link "Tasks" [ref=f8e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f8e48]
+                - generic [ref=f8e51]: Tasks
+        - generic [ref=f8e52]:
+          - generic [ref=f8e53]: Billing
+          - list [ref=f8e55]:
+            - listitem [ref=f8e56]:
+              - link "Quotes" [ref=f8e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f8e58]
+                - generic [ref=f8e61]: Quotes
+            - listitem [ref=f8e62]:
+              - link "Invoices" [ref=f8e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f8e64]
+                - generic [ref=f8e67]: Invoices
+            - listitem [ref=f8e68]:
+              - link "Receipts" [ref=f8e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f8e70]
+                - generic [ref=f8e73]: Receipts
+        - generic [ref=f8e74]:
+          - generic [ref=f8e75]: Admin
+          - list [ref=f8e77]:
+            - listitem [ref=f8e78]:
+              - link "Team" [ref=f8e79] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f8e80]
+                - generic [ref=f8e92]: Team
+            - listitem [ref=f8e93]:
+              - link "Cost Model" [ref=f8e94] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f8e96]
+                - generic [ref=f8e98]: Cost Model
+            - listitem [ref=f8e99]:
+              - link "Profit Split" [ref=f8e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f8e101]
+                - generic [ref=f8e104]: Profit Split
+            - listitem [ref=f8e105]:
+              - link "Equipment" [ref=f8e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f8e107]
+                - generic [ref=f8e111]: Equipment
+        - generic [ref=f8e112]:
+          - generic [ref=f8e113]: Insights
+          - list [ref=f8e115]:
+            - listitem [ref=f8e116]:
+              - link "Reports" [ref=f8e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f8e118]
+                - generic [ref=f8e119]: Reports
+      - generic [ref=f8e121]:
+        - generic [ref=f8e122]: "N"
+        - generic [ref=f8e123]:
+          - paragraph [ref=f8e124]: Nikhil
+          - paragraph [ref=f8e125]: owner
+        - button "Sign out" [ref=f8e126]:
+          - img [ref=f8e127]
+    - main [ref=f8e130]:
+      - generic [ref=f8e131]:
+        - button "Toggle Sidebar" [ref=f8e132]:
+          - img
+          - generic [ref=f8e133]: Toggle Sidebar
+        - heading "Cost Model" [level=1] [ref=f8e134]
+      - generic [ref=f8e137]:
+        - tablist [ref=f8e138]:
+          - tab "Roles" [selected] [ref=f8e139]
+          - tab "Overheads" [ref=f8e140]
+          - tab "Presets" [ref=f8e141]
+        - tabpanel "Roles" [ref=f8e142]:
+          - generic [ref=f8e143]:
+            - generic [ref=f8e144]:
+              - heading "Cost Roles" [level=3] [ref=f8e145]
+              - button "Add role" [ref=f8e146]:
+                - img
+                - text: Add role
+            - table [ref=f8e148]:
+              - rowgroup [ref=f8e149]:
+                - row "Name Hourly rate Active" [ref=f8e150]:
+                  - columnheader "Name" [ref=f8e151]
+                  - columnheader "Hourly rate" [ref=f8e152]
+                  - columnheader "Active" [ref=f8e153]
+                  - columnheader [ref=f8e154]
+              - rowgroup [ref=f8e155]:
+                - row "Cinematographer ₹328/hr" [ref=f8e156]:
+                  - cell "Cinematographer" [ref=f8e157]
+                  - cell "₹328/hr" [ref=f8e158]
+                  - cell [ref=f8e159]:
+                    - switch [checked] [ref=f8e160]
+                  - cell [ref=f8e161]:
+                    - button [ref=f8e162]:
+                      - img
+                - row "Graphic Designer ₹260/hr" [ref=f8e163]:
+                  - cell "Graphic Designer" [ref=f8e164]
+                  - cell "₹260/hr" [ref=f8e165]
+                  - cell [ref=f8e166]:
+                    - switch [checked] [ref=f8e167]
+                  - cell [ref=f8e168]:
+                    - button [ref=f8e169]:
+                      - img
+                - row "Manager ₹390/hr" [ref=f8e170]:
+                  - cell "Manager" [ref=f8e171]
+                  - cell "₹390/hr" [ref=f8e172]
+                  - cell [ref=f8e173]:
+                    - switch [checked] [ref=f8e174]
+                  - cell [ref=f8e175]:
+                    - button [ref=f8e176]:
+                      - img
+                - row "Website Design and Development ₹313/hr" [ref=f8e177]:
+                  - cell "Website Design and Development" [ref=f8e178]
+                  - cell "₹313/hr" [ref=f8e179]
+                  - cell [ref=f8e180]:
+                    - switch [checked] [ref=f8e181]
+                  - cell [ref=f8e182]:
+                    - button [ref=f8e183]:
+                      - img
+                - row "Website Design and Development ₹313/hr" [ref=f8e184]:
+                  - cell "Website Design and Development" [ref=f8e185]
+                  - cell "₹313/hr" [ref=f8e186]
+                  - cell [ref=f8e187]:
+                    - switch [ref=f8e188]
+                  - cell [ref=f8e189]:
+                    - button [ref=f8e190]:
+                      - img
+  - region "Notifications alt+T"
+  - alert [ref=f8e191]

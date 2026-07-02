@@ -1,0 +1,132 @@
+- generic [active] [ref=f33e1]:
+  - generic [ref=f33e2]:
+    - generic [ref=f33e5]:
+      - link "StudioBee" [ref=f33e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f33e8]
+      - generic [ref=f33e9]:
+        - list [ref=f33e12]:
+          - listitem [ref=f33e13]:
+            - link "Dashboard" [ref=f33e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f33e15]
+              - generic [ref=f33e20]: Dashboard
+        - generic [ref=f33e21]:
+          - generic [ref=f33e22]: CRM
+          - list [ref=f33e24]:
+            - listitem [ref=f33e25]:
+              - link "Clients" [ref=f33e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f33e27]
+                - generic [ref=f33e32]: Clients
+        - generic [ref=f33e33]:
+          - generic [ref=f33e34]: Projects
+          - list [ref=f33e36]:
+            - listitem [ref=f33e37]:
+              - link "Projects" [ref=f33e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f33e40]
+                - generic [ref=f33e42]: Projects
+        - generic [ref=f33e43]:
+          - generic [ref=f33e44]: Tasks
+          - list [ref=f33e46]:
+            - listitem [ref=f33e47]:
+              - link "Tasks" [ref=f33e48] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f33e49]
+                - generic [ref=f33e52]: Tasks
+        - generic [ref=f33e53]:
+          - generic [ref=f33e54]: Billing
+          - list [ref=f33e56]:
+            - listitem [ref=f33e57]:
+              - link "Quotes" [ref=f33e58] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f33e59]
+                - generic [ref=f33e62]: Quotes
+            - listitem [ref=f33e63]:
+              - link "Invoices" [ref=f33e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f33e65]
+                - generic [ref=f33e68]: Invoices
+            - listitem [ref=f33e69]:
+              - link "Receipts" [ref=f33e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f33e71]
+                - generic [ref=f33e74]: Receipts
+        - generic [ref=f33e75]:
+          - generic [ref=f33e76]: Admin
+          - list [ref=f33e78]:
+            - listitem [ref=f33e79]:
+              - link "Team" [ref=f33e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f33e81]
+                - generic [ref=f33e93]: Team
+            - listitem [ref=f33e94]:
+              - link "Cost Model" [ref=f33e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f33e96]
+                - generic [ref=f33e98]: Cost Model
+            - listitem [ref=f33e99]:
+              - link "Profit Split" [ref=f33e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f33e101]
+                - generic [ref=f33e104]: Profit Split
+            - listitem [ref=f33e105]:
+              - link "Equipment" [ref=f33e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f33e107]
+                - generic [ref=f33e111]: Equipment
+        - generic [ref=f33e112]:
+          - generic [ref=f33e113]: Insights
+          - list [ref=f33e115]:
+            - listitem [ref=f33e116]:
+              - link "Reports" [ref=f33e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f33e118]
+                - generic [ref=f33e119]: Reports
+      - generic [ref=f33e121]:
+        - generic [ref=f33e122]: "N"
+        - generic [ref=f33e123]:
+          - paragraph [ref=f33e124]: Nikhil
+          - paragraph [ref=f33e125]: owner
+        - button "Sign out" [ref=f33e126]:
+          - img [ref=f33e127]
+    - main [ref=f33e130]:
+      - generic [ref=f33e142]:
+        - button "Toggle Sidebar" [ref=f33e143]:
+          - img
+          - generic [ref=f33e144]: Toggle Sidebar
+        - heading "New Project" [level=1] [ref=f33e145]
+      - generic [ref=f33e147]:
+        - generic [ref=f33e148]:
+          - text: Project Name *
+          - textbox "e.g. Brand Identity for Acme" [ref=f33e149]
+        - generic [ref=f33e150]:
+          - text: Type
+          - combobox [ref=f33e151]:
+            - generic: Project
+            - img
+        - generic [ref=f33e152]:
+          - text: Client
+          - combobox [ref=f33e153]:
+            - generic: Select client...
+            - img
+        - generic [ref=f33e154]:
+          - text: Category
+          - textbox "e.g. branding, video, web" [ref=f33e155]
+        - generic [ref=f33e156]:
+          - text: Description
+          - textbox [ref=f33e157]
+        - generic [ref=f33e158]:
+          - generic [ref=f33e159]:
+            - text: Est. Hours
+            - spinbutton [ref=f33e160]
+          - generic [ref=f33e161]:
+            - text: Start Date
+            - textbox [ref=f33e162]
+          - generic [ref=f33e163]:
+            - text: End Date
+            - textbox [ref=f33e164]
+        - button "Create Project" [disabled]
+  - region "Notifications alt+T"
+  - alert [ref=f33e141]

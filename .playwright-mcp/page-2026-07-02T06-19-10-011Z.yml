@@ -1,0 +1,139 @@
+- generic [active] [ref=f22e1]:
+  - generic [ref=f22e2]:
+    - generic [ref=f22e5]:
+      - link "StudioBee" [ref=f22e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f22e8]
+      - generic [ref=f22e9]:
+        - list [ref=f22e12]:
+          - listitem [ref=f22e13]:
+            - link "Dashboard" [ref=f22e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f22e15]
+              - generic [ref=f22e20]: Dashboard
+        - generic [ref=f22e21]:
+          - generic [ref=f22e22]: CRM
+          - list [ref=f22e24]:
+            - listitem [ref=f22e25]:
+              - link "Clients" [ref=f22e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f22e27]
+                - generic [ref=f22e32]: Clients
+        - generic [ref=f22e33]:
+          - generic [ref=f22e34]: Projects
+          - list [ref=f22e36]:
+            - listitem [ref=f22e37]:
+              - link "Projects" [ref=f22e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f22e39]
+                - generic [ref=f22e41]: Projects
+        - generic [ref=f22e42]:
+          - generic [ref=f22e43]: Tasks
+          - list [ref=f22e45]:
+            - listitem [ref=f22e46]:
+              - link "Tasks" [ref=f22e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f22e48]
+                - generic [ref=f22e51]: Tasks
+        - generic [ref=f22e52]:
+          - generic [ref=f22e53]: Billing
+          - list [ref=f22e55]:
+            - listitem [ref=f22e56]:
+              - link "Quotes" [ref=f22e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f22e58]
+                - generic [ref=f22e61]: Quotes
+            - listitem [ref=f22e62]:
+              - link "Invoices" [ref=f22e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f22e64]
+                - generic [ref=f22e67]: Invoices
+            - listitem [ref=f22e68]:
+              - link "Receipts" [ref=f22e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f22e70]
+                - generic [ref=f22e73]: Receipts
+        - generic [ref=f22e74]:
+          - generic [ref=f22e75]: Admin
+          - list [ref=f22e77]:
+            - listitem [ref=f22e78]:
+              - link "Team" [ref=f22e79] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f22e80]
+                - generic [ref=f22e92]: Team
+            - listitem [ref=f22e93]:
+              - link "Cost Model" [ref=f22e94] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f22e95]
+                - generic [ref=f22e97]: Cost Model
+            - listitem [ref=f22e98]:
+              - link "Profit Split" [ref=f22e99] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f22e100]
+                - generic [ref=f22e103]: Profit Split
+            - listitem [ref=f22e104]:
+              - link "Equipment" [ref=f22e105] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f22e106]
+                - generic [ref=f22e110]: Equipment
+        - generic [ref=f22e111]:
+          - generic [ref=f22e112]: Insights
+          - list [ref=f22e114]:
+            - listitem [ref=f22e115]:
+              - link "Reports" [ref=f22e116] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f22e118]
+                - generic [ref=f22e119]: Reports
+      - generic [ref=f22e121]:
+        - generic [ref=f22e122]: "N"
+        - generic [ref=f22e123]:
+          - paragraph [ref=f22e124]: Nikhil
+          - paragraph [ref=f22e125]: owner
+        - button "Sign out" [ref=f22e126]:
+          - img [ref=f22e127]
+    - main [ref=f22e130]:
+      - generic [ref=f22e131]:
+        - button "Toggle Sidebar" [ref=f22e132]:
+          - img
+          - generic [ref=f22e133]: Toggle Sidebar
+        - heading "P&L Report" [level=1] [ref=f22e134]
+      - generic [ref=f22e135]:
+        - generic [ref=f22e136]:
+          - generic [ref=f22e137]:
+            - paragraph [ref=f22e138]: Revenue
+            - paragraph [ref=f22e139]: ₹82,700.06
+          - generic [ref=f22e140]:
+            - paragraph [ref=f22e141]: Cost
+            - paragraph [ref=f22e142]: ₹8,404
+          - generic [ref=f22e143]:
+            - paragraph [ref=f22e144]: Profit
+            - paragraph [ref=f22e145]: ₹74,296.06
+        - table [ref=f22e147]:
+          - rowgroup [ref=f22e148]:
+            - row "Document Client / Project Revenue Labor Cost Direct Cost Profit Margin" [ref=f22e149]:
+              - columnheader "Document" [ref=f22e150]
+              - columnheader "Client / Project" [ref=f22e151]
+              - columnheader "Revenue" [ref=f22e152]
+              - columnheader "Labor Cost" [ref=f22e153]
+              - columnheader "Direct Cost" [ref=f22e154]
+              - columnheader "Profit" [ref=f22e155]
+              - columnheader "Margin" [ref=f22e156]
+          - rowgroup [ref=f22e157]:
+            - row "SB-R-002 Pixel Studio ₹70,800 ₹0 ₹0 ₹70,800 100%" [ref=f22e158]:
+              - cell "SB-R-002" [ref=f22e159]
+              - cell "Pixel Studio" [ref=f22e160]
+              - cell "₹70,800" [ref=f22e161]
+              - cell "₹0" [ref=f22e162]
+              - cell "₹0" [ref=f22e163]
+              - cell "₹70,800" [ref=f22e164]
+              - cell "100%" [ref=f22e165]
+            - row "SB-R-001 Acme Productions ₹11,900.06 ₹3,404 ₹5,000 ₹3,496.06 29%" [ref=f22e166]:
+              - cell "SB-R-001" [ref=f22e167]
+              - cell "Acme Productions" [ref=f22e168]
+              - cell "₹11,900.06" [ref=f22e169]
+              - cell "₹3,404" [ref=f22e170]
+              - cell "₹5,000" [ref=f22e171]
+              - cell "₹3,496.06" [ref=f22e172]
+              - cell "29%" [ref=f22e173]
+  - region "Notifications alt+T"
+  - alert [ref=f22e174]

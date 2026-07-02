@@ -1,0 +1,192 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - link:
+              - /url: /
+              - img
+          - generic:
+            - generic:
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /
+                      - img
+                      - generic: Dashboard
+            - generic:
+              - generic: CRM
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /clients
+                      - img
+                      - generic: Clients
+            - generic:
+              - generic: Projects
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /projects
+                      - img
+                      - generic: Projects
+            - generic:
+              - generic: Tasks
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /tasks
+                      - img
+                      - generic: Tasks
+            - generic:
+              - generic: Billing
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /quotes
+                      - img
+                      - generic: Quotes
+                  - listitem:
+                    - link:
+                      - /url: /invoices
+                      - img
+                      - generic: Invoices
+                  - listitem:
+                    - link:
+                      - /url: /receipts
+                      - img
+                      - generic: Receipts
+            - generic:
+              - generic: Admin
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /admin/team
+                      - img
+                      - generic: Team
+                  - listitem:
+                    - link:
+                      - /url: /admin/cost-model
+                      - img
+                      - generic: Cost Model
+                  - listitem:
+                    - link:
+                      - /url: /admin/profit-split
+                      - img
+                      - generic: Profit Split
+                  - listitem:
+                    - link:
+                      - /url: /admin/equipment
+                      - img
+                      - generic: Equipment
+            - generic:
+              - generic: Insights
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /reports
+                      - img
+                      - generic: Reports
+          - generic:
+            - generic:
+              - generic: "N"
+              - generic:
+                - paragraph: Nikhil
+                - paragraph: owner
+              - button:
+                - img
+    - main:
+      - generic:
+        - button:
+          - img
+          - generic: Toggle Sidebar
+        - heading [level=1]: New Quote
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Client *
+                  - combobox [expanded]:
+                    - generic: Select client
+                    - img
+                - generic:
+                  - generic: Project name
+                  - textbox
+                - generic:
+                  - generic: Category
+                  - textbox:
+                    - /placeholder: e.g. branding, video, web
+                - generic:
+                  - generic: Validity (days)
+                  - spinbutton: "15"
+            - generic:
+              - generic:
+                - generic:
+                  - heading [level=3]: Line items
+                - button:
+                  - img
+                  - text: Add line item
+              - paragraph: No line items yet.
+            - generic:
+              - generic:
+                - heading [level=3]: GST & discount
+                - generic:
+                  - generic:
+                    - generic: GST enabled
+                    - switch [checked]
+                  - generic:
+                    - combobox:
+                      - generic: CGST + SGST
+                      - img
+                    - spinbutton: "18"
+                  - generic:
+                    - generic: Discount (₹)
+                    - spinbutton: "0"
+              - generic:
+                - heading [level=3]: Totals
+                - generic:
+                  - generic:
+                    - generic: Subtotal
+                    - generic: ₹0
+                  - generic:
+                    - generic: GST (18%)
+                    - generic: ₹0
+                  - generic:
+                    - generic: Discount
+                    - generic: "-₹0"
+                  - generic:
+                    - generic: Total
+                    - generic: ₹0
+            - generic:
+              - heading [level=3]: Team Assignment
+              - generic:
+                - generic:
+                  - generic: Executor
+                  - combobox:
+                    - generic: Select...
+                    - img
+                - generic:
+                  - generic: Manager
+                  - combobox:
+                    - generic: Select...
+                    - img
+            - generic:
+              - generic: Notes / terms
+              - textbox
+            - generic:
+              - button: Create quote
+  - region "Notifications alt+T"
+  - alert
+  - listbox [ref=f34e205]:
+    - option "Acme Productions" [active] [ref=f34e206]:
+      - generic [ref=f34e207]: Acme Productions

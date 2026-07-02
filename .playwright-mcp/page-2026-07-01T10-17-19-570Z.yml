@@ -1,0 +1,174 @@
+- generic [active]:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - link:
+              - /url: /
+              - img
+          - generic:
+            - generic:
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /
+                      - img
+                      - generic: Dashboard
+            - generic:
+              - generic: CRM
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /clients
+                      - img
+                      - generic: Clients
+            - generic:
+              - generic: Projects
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /projects
+                      - img
+                      - generic: Projects
+            - generic:
+              - generic: Tasks
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /tasks
+                      - img
+                      - generic: Tasks
+            - generic:
+              - generic: Billing
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /quotes
+                      - img
+                      - generic: Quotes
+                  - listitem:
+                    - link:
+                      - /url: /invoices
+                      - img
+                      - generic: Invoices
+                  - listitem:
+                    - link:
+                      - /url: /receipts
+                      - img
+                      - generic: Receipts
+            - generic:
+              - generic: Admin
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /admin/team
+                      - img
+                      - generic: Team
+                  - listitem:
+                    - link:
+                      - /url: /admin/cost-model
+                      - img
+                      - generic: Cost Model
+                  - listitem:
+                    - link:
+                      - /url: /admin/profit-split
+                      - img
+                      - generic: Profit Split
+                  - listitem:
+                    - link:
+                      - /url: /admin/equipment
+                      - img
+                      - generic: Equipment
+            - generic:
+              - generic: Insights
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /reports
+                      - img
+                      - generic: Reports
+          - generic:
+            - generic:
+              - generic: "N"
+              - generic:
+                - paragraph: Nikhil
+                - paragraph: owner
+              - button:
+                - img
+    - main:
+      - generic:
+        - button:
+          - img
+          - generic: Toggle Sidebar
+        - heading [level=1]: Clients
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - img
+                - textbox:
+                  - /placeholder: Search clients…
+              - button:
+                - img
+                - text: Add client
+            - generic:
+              - generic: No clients yet.
+  - region "Notifications alt+T":
+    - list:
+      - listitem:
+        - generic:
+          - img
+        - generic:
+          - generic: An error occurred in the Server Components render. The specific message is omitted in production builds to avoid leaking sensitive details. A digest property is included on this error instance which may provide additional details about the nature of the error.
+  - alert
+  - dialog "Add client" [ref=f26e149]:
+    - heading "Add client" [level=2] [ref=f26e151]
+    - generic [ref=f26e152]:
+      - generic [ref=f26e153]:
+        - generic [ref=f26e154]: Name *
+        - textbox [ref=f26e155]: Acme Productions
+      - generic [ref=f26e156]:
+        - generic [ref=f26e157]: Contact person
+        - textbox [ref=f26e158]: Rahul Sharma
+      - generic [ref=f26e159]:
+        - generic [ref=f26e160]:
+          - generic [ref=f26e161]: Email
+          - textbox [ref=f26e162]: rahul@acmeproductions.in
+        - generic [ref=f26e163]:
+          - generic [ref=f26e164]: Phone
+          - textbox [ref=f26e165]: "9876543210"
+      - generic [ref=f26e166]:
+        - generic [ref=f26e167]: GSTIN
+        - textbox [ref=f26e168]
+      - generic [ref=f26e169]:
+        - generic [ref=f26e170]: Address
+        - textbox [ref=f26e171]
+      - generic [ref=f26e172]:
+        - generic [ref=f26e173]:
+          - generic [ref=f26e174]: City
+          - textbox [ref=f26e175]: Mumbai
+        - generic [ref=f26e176]:
+          - generic [ref=f26e177]: State
+          - textbox [ref=f26e178]: Maharashtra
+      - generic [ref=f26e179]:
+        - generic [ref=f26e180]: Lead source
+        - textbox [ref=f26e181]: Instagram DM
+      - generic [ref=f26e182]:
+        - generic [ref=f26e183]: Tags (comma separated)
+        - textbox [ref=f26e184]: video, corporate
+      - generic [ref=f26e185]:
+        - generic [ref=f26e186]: Notes
+        - textbox [ref=f26e187]
+    - button "Save" [ref=f26e191]
+    - button "Close" [ref=f26e189]:
+      - img
+      - generic [ref=f26e190]: Close

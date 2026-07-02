@@ -1,0 +1,226 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - link:
+              - /url: /
+              - img
+          - generic:
+            - generic:
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /
+                      - img
+                      - generic: Dashboard
+            - generic:
+              - generic: CRM
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /clients
+                      - img
+                      - generic: Clients
+            - generic:
+              - generic: Projects
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /projects
+                      - img
+                      - generic: Projects
+            - generic:
+              - generic: Tasks
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /tasks
+                      - img
+                      - generic: Tasks
+            - generic:
+              - generic: Billing
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /quotes
+                      - img
+                      - generic: Quotes
+                  - listitem:
+                    - link:
+                      - /url: /invoices
+                      - img
+                      - generic: Invoices
+                  - listitem:
+                    - link:
+                      - /url: /receipts
+                      - img
+                      - generic: Receipts
+            - generic:
+              - generic: Admin
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /admin/team
+                      - img
+                      - generic: Team
+                  - listitem:
+                    - link:
+                      - /url: /admin/cost-model
+                      - img
+                      - generic: Cost Model
+                  - listitem:
+                    - link:
+                      - /url: /admin/profit-split
+                      - img
+                      - generic: Profit Split
+                  - listitem:
+                    - link:
+                      - /url: /admin/equipment
+                      - img
+                      - generic: Equipment
+            - generic:
+              - generic: Insights
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /reports
+                      - img
+                      - generic: Reports
+          - generic:
+            - generic:
+              - generic: "N"
+              - generic:
+                - paragraph: Nikhil
+                - paragraph: owner
+              - button:
+                - img
+    - main:
+      - generic:
+        - button:
+          - img
+          - generic: Toggle Sidebar
+        - heading [level=1]: New Quote
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Client *
+                  - combobox:
+                    - generic: Acme Productions
+                    - img
+                - generic:
+                  - generic: Project name
+                  - textbox: Acme Corporate Brand Film
+                - generic:
+                  - generic: Category
+                  - textbox:
+                    - /placeholder: e.g. branding, video, web
+                    - text: video
+                - generic:
+                  - generic: Validity (days)
+                  - spinbutton: "15"
+            - generic:
+              - generic:
+                - generic:
+                  - heading [level=3]: Line items
+                  - button:
+                    - img
+                    - text: Summary
+                - button:
+                  - img
+                  - text: Add line item
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - paragraph: 1-Day Corporate Shoot
+                      - paragraph: Qty 1 × ₹10084.8 = ₹10084.8
+                    - button:
+                      - img
+                    - button:
+                      - img
+            - generic:
+              - generic:
+                - heading [level=3]: GST & discount
+                - generic:
+                  - generic:
+                    - generic: GST enabled
+                    - switch [checked]
+                  - generic:
+                    - combobox:
+                      - generic: CGST + SGST
+                      - img
+                    - spinbutton: "18"
+                  - generic:
+                    - generic: Discount (₹)
+                    - spinbutton: "0"
+              - generic:
+                - heading [level=3]: Totals
+                - generic:
+                  - generic:
+                    - generic: Subtotal
+                    - generic: ₹10084.8
+                  - generic:
+                    - generic: GST (18%)
+                    - generic: ₹1815.26
+                  - generic:
+                    - generic: Discount
+                    - generic: "-₹0"
+                  - generic:
+                    - generic: Total
+                    - generic: ₹11900.06
+            - generic:
+              - heading [level=3]: Team Assignment
+              - generic:
+                - generic:
+                  - generic: Executor
+                  - combobox [expanded]:
+                    - generic: Select...
+                    - img
+                - generic:
+                  - generic: Manager
+                  - combobox:
+                    - generic: Select...
+                    - img
+              - generic:
+                - paragraph: Profit Split · Simple · Pool ₹5,084.8
+                - generic:
+                  - generic:
+                    - paragraph: Company
+                    - paragraph: ₹2,898.34 (57%)
+                  - generic:
+                    - paragraph: Executor
+                    - paragraph: ₹1,576.29 (31%)
+                  - generic:
+                    - paragraph: Manager
+                    - paragraph: ₹610.18 (12%)
+            - generic:
+              - generic: Notes / terms
+              - textbox
+            - generic:
+              - button: Create quote
+  - region "Notifications alt+T"
+  - alert
+  - listbox [ref=f38e277]:
+    - option "None" [active] [selected] [ref=f38e278]:
+      - generic:
+        - generic:
+          - img
+      - generic [ref=f38e279]: None
+    - option "Aakash" [ref=f38e280]:
+      - generic [ref=f38e281]: Aakash
+    - option "Nikhil" [ref=f38e282]:
+      - generic [ref=f38e283]: Nikhil
+    - option "Rajib" [ref=f38e284]:
+      - generic [ref=f38e285]: Rajib

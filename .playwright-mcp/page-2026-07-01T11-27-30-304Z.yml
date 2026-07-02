@@ -1,0 +1,141 @@
+- generic [active] [ref=f40e1]:
+  - generic [ref=f40e2]:
+    - generic [ref=f40e5]:
+      - link "StudioBee" [ref=f40e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f40e8]
+      - generic [ref=f40e9]:
+        - list [ref=f40e12]:
+          - listitem [ref=f40e13]:
+            - link "Dashboard" [ref=f40e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f40e15]
+              - generic [ref=f40e20]: Dashboard
+        - generic [ref=f40e21]:
+          - generic [ref=f40e22]: CRM
+          - list [ref=f40e24]:
+            - listitem [ref=f40e25]:
+              - link "Clients" [ref=f40e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f40e27]
+                - generic [ref=f40e32]: Clients
+        - generic [ref=f40e33]:
+          - generic [ref=f40e34]: Projects
+          - list [ref=f40e36]:
+            - listitem [ref=f40e37]:
+              - link "Projects" [ref=f40e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f40e40]
+                - generic [ref=f40e42]: Projects
+        - generic [ref=f40e43]:
+          - generic [ref=f40e44]: Tasks
+          - list [ref=f40e46]:
+            - listitem [ref=f40e47]:
+              - link "Tasks" [ref=f40e48] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f40e49]
+                - generic [ref=f40e52]: Tasks
+        - generic [ref=f40e53]:
+          - generic [ref=f40e54]: Billing
+          - list [ref=f40e56]:
+            - listitem [ref=f40e57]:
+              - link "Quotes" [ref=f40e58] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f40e59]
+                - generic [ref=f40e62]: Quotes
+            - listitem [ref=f40e63]:
+              - link "Invoices" [ref=f40e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f40e65]
+                - generic [ref=f40e68]: Invoices
+            - listitem [ref=f40e69]:
+              - link "Receipts" [ref=f40e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f40e71]
+                - generic [ref=f40e74]: Receipts
+        - generic [ref=f40e75]:
+          - generic [ref=f40e76]: Admin
+          - list [ref=f40e78]:
+            - listitem [ref=f40e79]:
+              - link "Team" [ref=f40e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f40e81]
+                - generic [ref=f40e93]: Team
+            - listitem [ref=f40e94]:
+              - link "Cost Model" [ref=f40e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f40e96]
+                - generic [ref=f40e98]: Cost Model
+            - listitem [ref=f40e99]:
+              - link "Profit Split" [ref=f40e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f40e101]
+                - generic [ref=f40e104]: Profit Split
+            - listitem [ref=f40e105]:
+              - link "Equipment" [ref=f40e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f40e107]
+                - generic [ref=f40e111]: Equipment
+        - generic [ref=f40e112]:
+          - generic [ref=f40e113]: Insights
+          - list [ref=f40e115]:
+            - listitem [ref=f40e116]:
+              - link "Reports" [ref=f40e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f40e118]
+                - generic [ref=f40e119]: Reports
+      - generic [ref=f40e121]:
+        - generic [ref=f40e122]: "N"
+        - generic [ref=f40e123]:
+          - paragraph [ref=f40e124]: Nikhil
+          - paragraph [ref=f40e125]: owner
+        - button "Sign out" [ref=f40e126]:
+          - img [ref=f40e127]
+    - main [ref=f40e130]:
+      - generic [ref=f40e146]:
+        - button "Toggle Sidebar" [ref=f40e147]:
+          - img
+          - generic [ref=f40e148]: Toggle Sidebar
+        - heading "Acme Corporate Brand Film" [level=1] [ref=f40e149]
+      - generic [ref=f40e150]:
+        - generic [ref=f40e151]:
+          - generic [ref=f40e152]: "Client: Acme Productions"
+          - generic [ref=f40e153]: "Category: video"
+          - generic [ref=f40e154]: "Type: project"
+          - generic [ref=f40e155]:
+            - text: "Est:"
+            - generic [ref=f40e156]: 40h
+        - generic [ref=f40e157]:
+          - paragraph [ref=f40e158]: Project Lifecycle
+          - generic [ref=f40e159]:
+            - button "Needs Analysis" [ref=f40e160]
+            - button "Quote" [ref=f40e161]:
+              - img [ref=f40e162]
+              - text: Quote
+            - button "Quote Revision" [ref=f40e164]
+            - button "Quote Approved" [ref=f40e165]
+            - button "Proforma Sent" [ref=f40e166]
+            - button "Advance Received" [ref=f40e167]
+            - button "In Progress" [ref=f40e168]
+            - button "2nd Payment" [ref=f40e169]
+            - button "Delivery" [ref=f40e170]
+            - button "Completed" [ref=f40e171]
+        - generic [ref=f40e172]:
+          - paragraph [ref=f40e173]: Tasks
+          - generic [ref=f40e174]:
+            - paragraph [ref=f40e176]: Shoot day - main interview setup
+            - generic [ref=f40e177]: pending
+          - generic [ref=f40e178]:
+            - paragraph [ref=f40e180]: Shoot day - main interview setup
+            - generic [ref=f40e181]: pending
+          - generic [ref=f40e182]:
+            - textbox "New task..." [ref=f40e183]
+            - textbox [ref=f40e184]
+            - button "Add" [ref=f40e185]
+        - generic [ref=f40e186]:
+          - generic [ref=f40e187]:
+            - paragraph [ref=f40e188]: Minutes of Meeting
+            - button "+ MOM" [ref=f40e189]
+          - paragraph [ref=f40e190]: No meeting notes yet.
+  - region "Notifications alt+T"
+  - alert [ref=f40e145]

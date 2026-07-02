@@ -1,0 +1,169 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - link:
+              - /url: /
+              - img
+          - generic:
+            - generic:
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /
+                      - img
+                      - generic: Dashboard
+            - generic:
+              - generic: CRM
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /clients
+                      - img
+                      - generic: Clients
+            - generic:
+              - generic: Projects
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /projects
+                      - img
+                      - generic: Projects
+            - generic:
+              - generic: Tasks
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /tasks
+                      - img
+                      - generic: Tasks
+            - generic:
+              - generic: Billing
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /quotes
+                      - img
+                      - generic: Quotes
+                  - listitem:
+                    - link:
+                      - /url: /invoices
+                      - img
+                      - generic: Invoices
+                  - listitem:
+                    - link:
+                      - /url: /receipts
+                      - img
+                      - generic: Receipts
+            - generic:
+              - generic: Admin
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /admin/team
+                      - img
+                      - generic: Team
+                  - listitem:
+                    - link:
+                      - /url: /admin/cost-model
+                      - img
+                      - generic: Cost Model
+                  - listitem:
+                    - link:
+                      - /url: /admin/profit-split
+                      - img
+                      - generic: Profit Split
+                  - listitem:
+                    - link:
+                      - /url: /admin/equipment
+                      - img
+                      - generic: Equipment
+            - generic:
+              - generic: Insights
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /reports
+                      - img
+                      - generic: Reports
+          - generic:
+            - generic:
+              - generic: "N"
+              - generic:
+                - paragraph: Nikhil
+                - paragraph: owner
+              - button:
+                - img
+    - main:
+      - generic:
+        - button:
+          - img
+          - generic: Toggle Sidebar
+        - heading [level=1]: Clients
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - img
+                - textbox:
+                  - /placeholder: Search clients…
+              - button:
+                - img
+                - text: Add client
+            - generic:
+              - generic: No clients yet.
+  - region "Notifications alt+T"
+  - alert
+  - dialog "Add client" [ref=f25e149]:
+    - heading "Add client" [level=2] [ref=f25e151]
+    - generic [ref=f25e152]:
+      - generic [ref=f25e153]:
+        - generic [ref=f25e154]: Name *
+        - textbox [active] [ref=f25e155]
+      - generic [ref=f25e156]:
+        - generic [ref=f25e157]: Contact person
+        - textbox [ref=f25e158]
+      - generic [ref=f25e159]:
+        - generic [ref=f25e160]:
+          - generic [ref=f25e161]: Email
+          - textbox [ref=f25e162]
+        - generic [ref=f25e163]:
+          - generic [ref=f25e164]: Phone
+          - textbox [ref=f25e165]
+      - generic [ref=f25e166]:
+        - generic [ref=f25e167]: GSTIN
+        - textbox [ref=f25e168]
+      - generic [ref=f25e169]:
+        - generic [ref=f25e170]: Address
+        - textbox [ref=f25e171]
+      - generic [ref=f25e172]:
+        - generic [ref=f25e173]:
+          - generic [ref=f25e174]: City
+          - textbox [ref=f25e175]
+        - generic [ref=f25e176]:
+          - generic [ref=f25e177]: State
+          - textbox [ref=f25e178]
+      - generic [ref=f25e179]:
+        - generic [ref=f25e180]: Lead source
+        - textbox [ref=f25e181]
+      - generic [ref=f25e182]:
+        - generic [ref=f25e183]: Tags (comma separated)
+        - textbox [ref=f25e184]
+      - generic [ref=f25e185]:
+        - generic [ref=f25e186]: Notes
+        - textbox [ref=f25e187]
+    - generic [ref=f25e188]:
+      - button "Save" [disabled]
+    - button "Close" [ref=f25e189]:
+      - img
+      - generic [ref=f25e190]: Close

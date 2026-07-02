@@ -1,0 +1,162 @@
+- generic [active] [ref=f44e1]:
+  - generic [ref=f44e2]:
+    - generic [ref=f44e5]:
+      - link "StudioBee" [ref=f44e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f44e8]
+      - generic [ref=f44e9]:
+        - list [ref=f44e12]:
+          - listitem [ref=f44e13]:
+            - link "Dashboard" [ref=f44e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f44e15]
+              - generic [ref=f44e20]: Dashboard
+        - generic [ref=f44e21]:
+          - generic [ref=f44e22]: CRM
+          - list [ref=f44e24]:
+            - listitem [ref=f44e25]:
+              - link "Clients" [ref=f44e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f44e27]
+                - generic [ref=f44e32]: Clients
+        - generic [ref=f44e33]:
+          - generic [ref=f44e34]: Projects
+          - list [ref=f44e36]:
+            - listitem [ref=f44e37]:
+              - link "Projects" [ref=f44e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f44e39]
+                - generic [ref=f44e41]: Projects
+        - generic [ref=f44e42]:
+          - generic [ref=f44e43]: Tasks
+          - list [ref=f44e45]:
+            - listitem [ref=f44e46]:
+              - link "Tasks" [ref=f44e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f44e48]
+                - generic [ref=f44e51]: Tasks
+        - generic [ref=f44e52]:
+          - generic [ref=f44e53]: Billing
+          - list [ref=f44e55]:
+            - listitem [ref=f44e56]:
+              - link "Quotes" [ref=f44e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f44e58]
+                - generic [ref=f44e61]: Quotes
+            - listitem [ref=f44e62]:
+              - link "Invoices" [ref=f44e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f44e64]
+                - generic [ref=f44e67]: Invoices
+            - listitem [ref=f44e68]:
+              - link "Receipts" [ref=f44e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f44e70]
+                - generic [ref=f44e73]: Receipts
+        - generic [ref=f44e74]:
+          - generic [ref=f44e75]: Admin
+          - list [ref=f44e77]:
+            - listitem [ref=f44e78]:
+              - link "Team" [ref=f44e79] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f44e80]
+                - generic [ref=f44e92]: Team
+            - listitem [ref=f44e93]:
+              - link "Cost Model" [ref=f44e94] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f44e95]
+                - generic [ref=f44e97]: Cost Model
+            - listitem [ref=f44e98]:
+              - link "Profit Split" [ref=f44e99] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f44e101]
+                - generic [ref=f44e104]: Profit Split
+            - listitem [ref=f44e105]:
+              - link "Equipment" [ref=f44e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f44e107]
+                - generic [ref=f44e111]: Equipment
+        - generic [ref=f44e112]:
+          - generic [ref=f44e113]: Insights
+          - list [ref=f44e115]:
+            - listitem [ref=f44e116]:
+              - link "Reports" [ref=f44e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f44e118]
+                - generic [ref=f44e119]: Reports
+      - generic [ref=f44e121]:
+        - generic [ref=f44e122]: "N"
+        - generic [ref=f44e123]:
+          - paragraph [ref=f44e124]: Nikhil
+          - paragraph [ref=f44e125]: owner
+        - button "Sign out" [ref=f44e126]:
+          - img [ref=f44e127]
+    - main [ref=f44e130]:
+      - generic [ref=f44e131]:
+        - button "Toggle Sidebar" [ref=f44e132]:
+          - img
+          - generic [ref=f44e133]: Toggle Sidebar
+        - heading "Profit Split Settings" [level=1] [ref=f44e134]
+      - generic [ref=f44e136]:
+        - tablist [ref=f44e137]:
+          - tab "video" [selected] [ref=f44e138]
+          - tab "web" [ref=f44e139]
+          - tab "design" [ref=f44e140]
+          - tab "retainer" [ref=f44e141]
+        - tabpanel "video" [ref=f44e142]:
+          - generic [ref=f44e143]:
+            - generic [ref=f44e144]:
+              - paragraph [ref=f44e145]: Floor (₹)
+              - spinbutton [ref=f44e146]: "15000"
+            - generic [ref=f44e147]:
+              - paragraph [ref=f44e148]: Cost-Plus Threshold (₹)
+              - spinbutton [ref=f44e149]: "50000"
+          - table [ref=f44e152]:
+            - rowgroup [ref=f44e153]:
+              - row "Max Price (₹, blank = ∞) Mode Company % Executor % Manager %" [ref=f44e154]:
+                - columnheader "Max Price (₹, blank = ∞)" [ref=f44e155]
+                - columnheader "Mode" [ref=f44e156]
+                - columnheader "Company %" [ref=f44e157]
+                - columnheader "Executor %" [ref=f44e158]
+                - columnheader "Manager %" [ref=f44e159]
+                - columnheader [ref=f44e160]
+            - rowgroup [ref=f44e161]:
+              - row "50000 57 31 12 Remove" [ref=f44e162]:
+                - cell "50000" [ref=f44e163]:
+                  - spinbutton "∞" [ref=f44e164]: "50000"
+                - cell [ref=f44e165]:
+                  - combobox [ref=f44e166]:
+                    - generic: Simple
+                    - img
+                - cell "57" [ref=f44e167]:
+                  - spinbutton [ref=f44e168]: "57"
+                - cell "31" [ref=f44e169]:
+                  - spinbutton [ref=f44e170]: "31"
+                - cell "12" [ref=f44e171]:
+                  - spinbutton [ref=f44e172]: "12"
+                - cell "Remove" [ref=f44e173]:
+                  - button "Remove" [ref=f44e174]
+              - row "57 31 12 Remove" [ref=f44e175]:
+                - cell [ref=f44e176]:
+                  - spinbutton "∞" [ref=f44e177]
+                - cell [ref=f44e178]:
+                  - combobox [ref=f44e179]:
+                    - generic: Cost-Plus
+                    - img
+                - cell "57" [ref=f44e180]:
+                  - spinbutton [ref=f44e181]: "57"
+                - cell "31" [ref=f44e182]:
+                  - spinbutton [ref=f44e183]: "31"
+                - cell "12" [ref=f44e184]:
+                  - spinbutton [ref=f44e185]: "12"
+                - cell "Remove" [ref=f44e186]:
+                  - button "Remove" [ref=f44e187]
+          - generic [ref=f44e188]:
+            - button "+ Add Tier" [ref=f44e189]
+            - button "Save" [ref=f44e190]
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=f44e192]:
+        - img [ref=f44e194]
+        - generic [ref=f44e198]: Saved
+  - alert [ref=f44e191]

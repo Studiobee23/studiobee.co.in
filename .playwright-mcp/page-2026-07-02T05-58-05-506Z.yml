@@ -1,0 +1,177 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - link:
+              - /url: /
+              - img
+          - generic:
+            - generic:
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /
+                      - img
+                      - generic: Dashboard
+            - generic:
+              - generic: CRM
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /clients
+                      - img
+                      - generic: Clients
+            - generic:
+              - generic: Projects
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /projects
+                      - img
+                      - generic: Projects
+            - generic:
+              - generic: Tasks
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /tasks
+                      - img
+                      - generic: Tasks
+            - generic:
+              - generic: Billing
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /quotes
+                      - img
+                      - generic: Quotes
+                  - listitem:
+                    - link:
+                      - /url: /invoices
+                      - img
+                      - generic: Invoices
+                  - listitem:
+                    - link:
+                      - /url: /receipts
+                      - img
+                      - generic: Receipts
+            - generic:
+              - generic: Admin
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /admin/team
+                      - img
+                      - generic: Team
+                  - listitem:
+                    - link:
+                      - /url: /admin/cost-model
+                      - img
+                      - generic: Cost Model
+                  - listitem:
+                    - link:
+                      - /url: /admin/profit-split
+                      - img
+                      - generic: Profit Split
+                  - listitem:
+                    - link:
+                      - /url: /admin/equipment
+                      - img
+                      - generic: Equipment
+            - generic:
+              - generic: Insights
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /reports
+                      - img
+                      - generic: Reports
+          - generic:
+            - generic:
+              - generic: "N"
+              - generic:
+                - paragraph: Nikhil
+                - paragraph: owner
+              - button:
+                - img
+    - main:
+      - generic:
+        - button:
+          - img
+          - generic: Toggle Sidebar
+        - heading [level=1]: Clients
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - img
+                - textbox:
+                  - /placeholder: Search clients…
+              - button:
+                - img
+                - text: Add client
+            - generic:
+              - generic:
+                - link:
+                  - /url: /clients/0cf74b0c-db7d-4a77-8dec-f19af5d4dd7f
+                  - generic:
+                    - paragraph: Acme Productions
+                    - paragraph: Rahul Sharma · Mumbai
+                  - generic:
+                    - generic: video
+                    - generic: corporate
+  - region "Notifications alt+T"
+  - alert
+  - dialog "Add client" [ref=f5e156]:
+    - heading "Add client" [level=2] [ref=f5e158]
+    - generic [ref=f5e159]:
+      - generic [ref=f5e160]:
+        - generic [ref=f5e161]: Name *
+        - textbox [active] [ref=f5e162]
+      - generic [ref=f5e163]:
+        - generic [ref=f5e164]: Contact person
+        - textbox [ref=f5e165]
+      - generic [ref=f5e166]:
+        - generic [ref=f5e167]:
+          - generic [ref=f5e168]: Email
+          - textbox [ref=f5e169]
+        - generic [ref=f5e170]:
+          - generic [ref=f5e171]: Phone
+          - textbox [ref=f5e172]
+      - generic [ref=f5e173]:
+        - generic [ref=f5e174]: GSTIN
+        - textbox [ref=f5e175]
+      - generic [ref=f5e176]:
+        - generic [ref=f5e177]: Address
+        - textbox [ref=f5e178]
+      - generic [ref=f5e179]:
+        - generic [ref=f5e180]:
+          - generic [ref=f5e181]: City
+          - textbox [ref=f5e182]
+        - generic [ref=f5e183]:
+          - generic [ref=f5e184]: State
+          - textbox [ref=f5e185]
+      - generic [ref=f5e186]:
+        - generic [ref=f5e187]: Lead source
+        - textbox [ref=f5e188]
+      - generic [ref=f5e189]:
+        - generic [ref=f5e190]: Tags (comma separated)
+        - textbox [ref=f5e191]
+      - generic [ref=f5e192]:
+        - generic [ref=f5e193]: Notes
+        - textbox [ref=f5e194]
+    - generic [ref=f5e195]:
+      - button "Save" [disabled]
+    - button "Close" [ref=f5e196]:
+      - img
+      - generic [ref=f5e197]: Close

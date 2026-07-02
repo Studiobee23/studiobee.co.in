@@ -1,0 +1,134 @@
+- generic [active] [ref=f20e1]:
+  - generic [ref=f20e2]:
+    - generic [ref=f20e5]:
+      - link "StudioBee" [ref=f20e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f20e8]
+      - generic [ref=f20e9]:
+        - list [ref=f20e12]:
+          - listitem [ref=f20e13]:
+            - link "Dashboard" [ref=f20e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f20e15]
+              - generic [ref=f20e20]: Dashboard
+        - generic [ref=f20e21]:
+          - generic [ref=f20e22]: CRM
+          - list [ref=f20e24]:
+            - listitem [ref=f20e25]:
+              - link "Clients" [ref=f20e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f20e27]
+                - generic [ref=f20e32]: Clients
+        - generic [ref=f20e33]:
+          - generic [ref=f20e34]: Projects
+          - list [ref=f20e36]:
+            - listitem [ref=f20e37]:
+              - link "Projects" [ref=f20e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f20e39]
+                - generic [ref=f20e41]: Projects
+        - generic [ref=f20e42]:
+          - generic [ref=f20e43]: Tasks
+          - list [ref=f20e45]:
+            - listitem [ref=f20e46]:
+              - link "Tasks" [ref=f20e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f20e48]
+                - generic [ref=f20e51]: Tasks
+        - generic [ref=f20e52]:
+          - generic [ref=f20e53]: Billing
+          - list [ref=f20e55]:
+            - listitem [ref=f20e56]:
+              - link "Quotes" [ref=f20e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f20e58]
+                - generic [ref=f20e61]: Quotes
+            - listitem [ref=f20e62]:
+              - link "Invoices" [ref=f20e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f20e64]
+                - generic [ref=f20e67]: Invoices
+            - listitem [ref=f20e68]:
+              - link "Receipts" [ref=f20e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f20e71]
+                - generic [ref=f20e74]: Receipts
+        - generic [ref=f20e75]:
+          - generic [ref=f20e76]: Admin
+          - list [ref=f20e78]:
+            - listitem [ref=f20e79]:
+              - link "Team" [ref=f20e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f20e81]
+                - generic [ref=f20e93]: Team
+            - listitem [ref=f20e94]:
+              - link "Cost Model" [ref=f20e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f20e96]
+                - generic [ref=f20e98]: Cost Model
+            - listitem [ref=f20e99]:
+              - link "Profit Split" [ref=f20e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f20e101]
+                - generic [ref=f20e104]: Profit Split
+            - listitem [ref=f20e105]:
+              - link "Equipment" [ref=f20e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f20e107]
+                - generic [ref=f20e111]: Equipment
+        - generic [ref=f20e112]:
+          - generic [ref=f20e113]: Insights
+          - list [ref=f20e115]:
+            - listitem [ref=f20e116]:
+              - link "Reports" [ref=f20e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f20e118]
+                - generic [ref=f20e119]: Reports
+      - generic [ref=f20e121]:
+        - generic [ref=f20e122]: "N"
+        - generic [ref=f20e123]:
+          - paragraph [ref=f20e124]: Nikhil
+          - paragraph [ref=f20e125]: owner
+        - button "Sign out" [ref=f20e126]:
+          - img [ref=f20e127]
+    - main [ref=f20e130]:
+      - generic [ref=f20e131]:
+        - button "Toggle Sidebar" [ref=f20e132]:
+          - img
+          - generic [ref=f20e133]: Toggle Sidebar
+        - heading "SB-R-002" [level=1] [ref=f20e134]
+      - generic [ref=f20e137]:
+        - generic [ref=f20e139]:
+          - generic [ref=f20e140]:
+            - paragraph [ref=f20e141]: Untitled
+            - paragraph [ref=f20e142]: Pixel Studio
+          - generic [ref=f20e143]: paid
+        - generic [ref=f20e144]:
+          - heading "Line items" [level=3] [ref=f20e145]
+          - generic [ref=f20e146]:
+            - generic [ref=f20e147]:
+              - generic [ref=f20e148]:
+                - paragraph [ref=f20e149]: Website Design & Development
+                - paragraph [ref=f20e150]: Qty 1 × ₹45000
+              - paragraph [ref=f20e151]: ₹45000
+            - generic [ref=f20e152]:
+              - generic [ref=f20e153]:
+                - paragraph [ref=f20e154]: SEO & Content Strategy
+                - paragraph [ref=f20e155]: Qty 1 × ₹15000
+              - paragraph [ref=f20e156]: ₹15000
+        - generic [ref=f20e158]:
+          - generic [ref=f20e159]:
+            - generic [ref=f20e160]: Subtotal
+            - generic [ref=f20e161]: ₹60000
+          - generic [ref=f20e162]:
+            - generic [ref=f20e163]: GST (18%, CGST+SGST)
+            - generic [ref=f20e164]: ₹10800
+          - generic [ref=f20e165]:
+            - generic [ref=f20e166]: Discount
+            - generic [ref=f20e167]: "-₹0"
+          - generic [ref=f20e168]:
+            - generic [ref=f20e169]: Total
+            - generic [ref=f20e170]: ₹70800
+        - button "Generate PDF" [ref=f20e172]
+  - region "Notifications alt+T"
+  - alert [ref=f20e174]

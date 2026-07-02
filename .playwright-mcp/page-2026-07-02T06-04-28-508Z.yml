@@ -1,0 +1,141 @@
+- generic [active] [ref=f6e1]:
+  - generic [ref=f6e2]:
+    - generic [ref=f6e5]:
+      - link "StudioBee" [ref=f6e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f6e8]
+      - generic [ref=f6e9]:
+        - list [ref=f6e12]:
+          - listitem [ref=f6e13]:
+            - link "Dashboard" [ref=f6e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f6e15]
+              - generic [ref=f6e20]: Dashboard
+        - generic [ref=f6e21]:
+          - generic [ref=f6e22]: CRM
+          - list [ref=f6e24]:
+            - listitem [ref=f6e25]:
+              - link "Clients" [ref=f6e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f6e27]
+                - generic [ref=f6e32]: Clients
+        - generic [ref=f6e33]:
+          - generic [ref=f6e34]: Projects
+          - list [ref=f6e36]:
+            - listitem [ref=f6e37]:
+              - link "Projects" [ref=f6e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f6e40]
+                - generic [ref=f6e42]: Projects
+        - generic [ref=f6e43]:
+          - generic [ref=f6e44]: Tasks
+          - list [ref=f6e46]:
+            - listitem [ref=f6e47]:
+              - link "Tasks" [ref=f6e48] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f6e49]
+                - generic [ref=f6e52]: Tasks
+        - generic [ref=f6e53]:
+          - generic [ref=f6e54]: Billing
+          - list [ref=f6e56]:
+            - listitem [ref=f6e57]:
+              - link "Quotes" [ref=f6e58] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f6e59]
+                - generic [ref=f6e62]: Quotes
+            - listitem [ref=f6e63]:
+              - link "Invoices" [ref=f6e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f6e65]
+                - generic [ref=f6e68]: Invoices
+            - listitem [ref=f6e69]:
+              - link "Receipts" [ref=f6e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f6e71]
+                - generic [ref=f6e74]: Receipts
+        - generic [ref=f6e75]:
+          - generic [ref=f6e76]: Admin
+          - list [ref=f6e78]:
+            - listitem [ref=f6e79]:
+              - link "Team" [ref=f6e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f6e81]
+                - generic [ref=f6e93]: Team
+            - listitem [ref=f6e94]:
+              - link "Cost Model" [ref=f6e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f6e96]
+                - generic [ref=f6e98]: Cost Model
+            - listitem [ref=f6e99]:
+              - link "Profit Split" [ref=f6e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f6e101]
+                - generic [ref=f6e104]: Profit Split
+            - listitem [ref=f6e105]:
+              - link "Equipment" [ref=f6e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f6e107]
+                - generic [ref=f6e111]: Equipment
+        - generic [ref=f6e112]:
+          - generic [ref=f6e113]: Insights
+          - list [ref=f6e115]:
+            - listitem [ref=f6e116]:
+              - link "Reports" [ref=f6e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f6e118]
+                - generic [ref=f6e119]: Reports
+      - generic [ref=f6e121]:
+        - generic [ref=f6e122]: "N"
+        - generic [ref=f6e123]:
+          - paragraph [ref=f6e124]: Nikhil
+          - paragraph [ref=f6e125]: owner
+        - button "Sign out" [ref=f6e126]:
+          - img [ref=f6e127]
+    - main [ref=f6e130]:
+      - generic [ref=f6e161]:
+        - button "Toggle Sidebar" [ref=f6e162]:
+          - img
+          - generic [ref=f6e163]: Toggle Sidebar
+        - heading "Pixel Studio Website Redesign" [level=1] [ref=f6e164]
+      - generic [ref=f6e165]:
+        - generic [ref=f6e166]:
+          - generic [ref=f6e167]: "Client: Pixel Studio"
+          - generic [ref=f6e168]: "Category: web"
+          - generic [ref=f6e169]: "Type: project"
+          - generic [ref=f6e170]:
+            - text: "Est:"
+            - generic [ref=f6e171]: 60h
+        - generic [ref=f6e172]:
+          - paragraph [ref=f6e173]: Project Lifecycle
+          - generic [ref=f6e174]:
+            - button "Needs Analysis" [ref=f6e175]
+            - button "Quote" [ref=f6e176]:
+              - img [ref=f6e206]
+              - text: Quote
+            - button "Quote Revision" [ref=f6e177]
+            - button "Quote Approved" [ref=f6e178]
+            - button "Proforma Sent" [ref=f6e179]
+            - button "Advance Received" [ref=f6e180]
+            - button "In Progress" [ref=f6e181]
+            - button "2nd Payment" [ref=f6e182]
+            - button "Delivery" [ref=f6e183]
+            - button "Completed" [ref=f6e184]
+        - generic [ref=f6e185]:
+          - paragraph [ref=f6e186]: Tasks
+          - generic [ref=f6e197]:
+            - paragraph [ref=f6e199]: Homepage wireframes and layout
+            - button "in progress" [ref=f6e205] [cursor=pointer]
+          - generic [ref=f6e201]:
+            - paragraph [ref=f6e203]: Develop responsive frontend
+            - button "pending" [ref=f6e204] [cursor=pointer]
+          - generic [ref=f6e188]:
+            - textbox "New task..." [ref=f6e189]
+            - textbox [ref=f6e190]
+            - button "Add" [ref=f6e191]
+        - generic [ref=f6e192]:
+          - generic [ref=f6e193]:
+            - paragraph [ref=f6e194]: Minutes of Meeting
+            - button "+ MOM" [ref=f6e195]
+          - paragraph [ref=f6e196]: No meeting notes yet.
+  - region "Notifications alt+T"
+  - alert [ref=f6e154]

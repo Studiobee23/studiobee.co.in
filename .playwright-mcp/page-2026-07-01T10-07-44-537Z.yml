@@ -1,0 +1,110 @@
+- generic [active] [ref=f18e1]:
+  - generic [ref=f18e2]:
+    - generic [ref=f18e5]:
+      - link "StudioBee" [ref=f18e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f18e8]
+      - generic [ref=f18e9]:
+        - list [ref=f18e12]:
+          - listitem [ref=f18e13]:
+            - link "Dashboard" [ref=f18e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f18e15]
+              - generic [ref=f18e20]: Dashboard
+        - generic [ref=f18e21]:
+          - generic [ref=f18e22]: CRM
+          - list [ref=f18e24]:
+            - listitem [ref=f18e25]:
+              - link "Clients" [ref=f18e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f18e28]
+                - generic [ref=f18e33]: Clients
+        - generic [ref=f18e34]:
+          - generic [ref=f18e35]: Projects
+          - list [ref=f18e37]:
+            - listitem [ref=f18e38]:
+              - link "Projects" [ref=f18e39] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f18e40]
+                - generic [ref=f18e42]: Projects
+        - generic [ref=f18e43]:
+          - generic [ref=f18e44]: Tasks
+          - list [ref=f18e46]:
+            - listitem [ref=f18e47]:
+              - link "Tasks" [ref=f18e48] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f18e49]
+                - generic [ref=f18e52]: Tasks
+        - generic [ref=f18e53]:
+          - generic [ref=f18e54]: Billing
+          - list [ref=f18e56]:
+            - listitem [ref=f18e57]:
+              - link "Quotes" [ref=f18e58] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f18e59]
+                - generic [ref=f18e62]: Quotes
+            - listitem [ref=f18e63]:
+              - link "Invoices" [ref=f18e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f18e65]
+                - generic [ref=f18e68]: Invoices
+            - listitem [ref=f18e69]:
+              - link "Receipts" [ref=f18e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f18e71]
+                - generic [ref=f18e74]: Receipts
+        - generic [ref=f18e75]:
+          - generic [ref=f18e76]: Admin
+          - list [ref=f18e78]:
+            - listitem [ref=f18e79]:
+              - link "Team" [ref=f18e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f18e81]
+                - generic [ref=f18e93]: Team
+            - listitem [ref=f18e94]:
+              - link "Cost Model" [ref=f18e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f18e96]
+                - generic [ref=f18e98]: Cost Model
+            - listitem [ref=f18e99]:
+              - link "Profit Split" [ref=f18e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f18e101]
+                - generic [ref=f18e104]: Profit Split
+            - listitem [ref=f18e105]:
+              - link "Equipment" [ref=f18e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f18e107]
+                - generic [ref=f18e111]: Equipment
+        - generic [ref=f18e112]:
+          - generic [ref=f18e113]: Insights
+          - list [ref=f18e115]:
+            - listitem [ref=f18e116]:
+              - link "Reports" [ref=f18e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f18e118]
+                - generic [ref=f18e119]: Reports
+      - generic [ref=f18e121]:
+        - generic [ref=f18e122]: "N"
+        - generic [ref=f18e123]:
+          - paragraph [ref=f18e124]: Nikhil
+          - paragraph [ref=f18e125]: owner
+        - button "Sign out" [ref=f18e126]:
+          - img [ref=f18e127]
+    - main [ref=f18e130]:
+      - generic [ref=f18e131]:
+        - button "Toggle Sidebar" [ref=f18e132]:
+          - img
+          - generic [ref=f18e133]: Toggle Sidebar
+        - heading "Clients" [level=1] [ref=f18e134]
+      - generic [ref=f18e137]:
+        - generic [ref=f18e138]:
+          - generic [ref=f18e139]:
+            - img [ref=f18e140]
+            - textbox "Search clients…" [ref=f18e143]
+          - button "Add client" [ref=f18e144]:
+            - img
+            - text: Add client
+        - generic [ref=f18e146]: No clients yet.
+  - region "Notifications alt+T"
+  - alert [ref=f18e147]

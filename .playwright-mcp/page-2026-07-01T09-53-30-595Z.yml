@@ -1,0 +1,110 @@
+- generic [active] [ref=f11e1]:
+  - generic [ref=f11e2]:
+    - generic [ref=f11e5]:
+      - link "StudioBee" [ref=f11e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f11e8]
+      - generic [ref=f11e9]:
+        - list [ref=f11e12]:
+          - listitem [ref=f11e13]:
+            - link "Dashboard" [ref=f11e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f11e15]
+              - generic [ref=f11e20]: Dashboard
+        - generic [ref=f11e21]:
+          - generic [ref=f11e22]: CRM
+          - list [ref=f11e24]:
+            - listitem [ref=f11e25]:
+              - link "Clients" [ref=f11e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f11e27]
+                - generic [ref=f11e32]: Clients
+        - generic [ref=f11e33]:
+          - generic [ref=f11e34]: Projects
+          - list [ref=f11e36]:
+            - listitem [ref=f11e37]:
+              - link "Projects" [ref=f11e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f11e39]
+                - generic [ref=f11e41]: Projects
+        - generic [ref=f11e42]:
+          - generic [ref=f11e43]: Tasks
+          - list [ref=f11e45]:
+            - listitem [ref=f11e46]:
+              - link "Tasks" [ref=f11e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f11e48]
+                - generic [ref=f11e51]: Tasks
+        - generic [ref=f11e52]:
+          - generic [ref=f11e53]: Billing
+          - list [ref=f11e55]:
+            - listitem [ref=f11e56]:
+              - link "Quotes" [ref=f11e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f11e58]
+                - generic [ref=f11e61]: Quotes
+            - listitem [ref=f11e62]:
+              - link "Invoices" [ref=f11e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f11e64]
+                - generic [ref=f11e67]: Invoices
+            - listitem [ref=f11e68]:
+              - link "Receipts" [ref=f11e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f11e70]
+                - generic [ref=f11e73]: Receipts
+        - generic [ref=f11e74]:
+          - generic [ref=f11e75]: Admin
+          - list [ref=f11e77]:
+            - listitem [ref=f11e78]:
+              - link "Team" [ref=f11e79] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f11e80]
+                - generic [ref=f11e92]: Team
+            - listitem [ref=f11e93]:
+              - link "Cost Model" [ref=f11e94] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f11e95]
+                - generic [ref=f11e97]: Cost Model
+            - listitem [ref=f11e98]:
+              - link "Profit Split" [ref=f11e99] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f11e100]
+                - generic [ref=f11e103]: Profit Split
+            - listitem [ref=f11e104]:
+              - link "Equipment" [ref=f11e105] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f11e106]
+                - generic [ref=f11e110]: Equipment
+        - generic [ref=f11e111]:
+          - generic [ref=f11e112]: Insights
+          - list [ref=f11e114]:
+            - listitem [ref=f11e115]:
+              - link "Reports" [ref=f11e116] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f11e118]
+                - generic [ref=f11e119]: Reports
+      - generic [ref=f11e121]:
+        - generic [ref=f11e122]: "N"
+        - generic [ref=f11e123]:
+          - paragraph [ref=f11e124]: Nikhil
+          - paragraph [ref=f11e125]: owner
+        - button "Sign out" [ref=f11e126]:
+          - img [ref=f11e127]
+    - main [ref=f11e130]:
+      - generic [ref=f11e131]:
+        - button "Toggle Sidebar" [ref=f11e132]:
+          - img
+          - generic [ref=f11e133]: Toggle Sidebar
+        - heading "Reports" [level=1] [ref=f11e134]
+      - generic [ref=f11e136]:
+        - link "P&L Report Revenue, costs, and profit per invoice or receipt." [ref=f11e137] [cursor=pointer]:
+          - /url: /reports/pnl
+          - paragraph [ref=f11e138]: P&L Report
+          - paragraph [ref=f11e139]: Revenue, costs, and profit per invoice or receipt.
+        - link "Hours Report Estimated vs consumed hours per project." [ref=f11e140] [cursor=pointer]:
+          - /url: /reports/hours
+          - paragraph [ref=f11e141]: Hours Report
+          - paragraph [ref=f11e142]: Estimated vs consumed hours per project.
+  - region "Notifications alt+T"
+  - alert [ref=f11e143]

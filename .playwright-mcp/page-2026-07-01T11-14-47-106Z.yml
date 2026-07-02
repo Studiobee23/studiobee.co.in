@@ -1,0 +1,201 @@
+- generic [ref=f38e1]:
+  - generic [ref=f38e2]:
+    - generic [ref=f38e5]:
+      - link "StudioBee" [ref=f38e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f38e8]
+      - generic [ref=f38e9]:
+        - list [ref=f38e12]:
+          - listitem [ref=f38e13]:
+            - link "Dashboard" [ref=f38e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f38e15]
+              - generic [ref=f38e20]: Dashboard
+        - generic [ref=f38e21]:
+          - generic [ref=f38e22]: CRM
+          - list [ref=f38e24]:
+            - listitem [ref=f38e25]:
+              - link "Clients" [ref=f38e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f38e27]
+                - generic [ref=f38e32]: Clients
+        - generic [ref=f38e33]:
+          - generic [ref=f38e34]: Projects
+          - list [ref=f38e36]:
+            - listitem [ref=f38e37]:
+              - link "Projects" [ref=f38e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f38e39]
+                - generic [ref=f38e41]: Projects
+        - generic [ref=f38e42]:
+          - generic [ref=f38e43]: Tasks
+          - list [ref=f38e45]:
+            - listitem [ref=f38e46]:
+              - link "Tasks" [ref=f38e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f38e48]
+                - generic [ref=f38e51]: Tasks
+        - generic [ref=f38e52]:
+          - generic [ref=f38e53]: Billing
+          - list [ref=f38e55]:
+            - listitem [ref=f38e56]:
+              - link "Quotes" [ref=f38e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f38e59]
+                - generic [ref=f38e62]: Quotes
+            - listitem [ref=f38e63]:
+              - link "Invoices" [ref=f38e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f38e65]
+                - generic [ref=f38e68]: Invoices
+            - listitem [ref=f38e69]:
+              - link "Receipts" [ref=f38e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f38e71]
+                - generic [ref=f38e74]: Receipts
+        - generic [ref=f38e75]:
+          - generic [ref=f38e76]: Admin
+          - list [ref=f38e78]:
+            - listitem [ref=f38e79]:
+              - link "Team" [ref=f38e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f38e81]
+                - generic [ref=f38e93]: Team
+            - listitem [ref=f38e94]:
+              - link "Cost Model" [ref=f38e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f38e96]
+                - generic [ref=f38e98]: Cost Model
+            - listitem [ref=f38e99]:
+              - link "Profit Split" [ref=f38e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f38e101]
+                - generic [ref=f38e104]: Profit Split
+            - listitem [ref=f38e105]:
+              - link "Equipment" [ref=f38e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f38e107]
+                - generic [ref=f38e111]: Equipment
+        - generic [ref=f38e112]:
+          - generic [ref=f38e113]: Insights
+          - list [ref=f38e115]:
+            - listitem [ref=f38e116]:
+              - link "Reports" [ref=f38e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f38e118]
+                - generic [ref=f38e119]: Reports
+      - generic [ref=f38e121]:
+        - generic [ref=f38e122]: "N"
+        - generic [ref=f38e123]:
+          - paragraph [ref=f38e124]: Nikhil
+          - paragraph [ref=f38e125]: owner
+        - button "Sign out" [ref=f38e126]:
+          - img [ref=f38e127]
+    - main [ref=f38e130]:
+      - generic [ref=f38e302]:
+        - button "Toggle Sidebar" [ref=f38e303]:
+          - img
+          - generic [ref=f38e304]: Toggle Sidebar
+        - heading "SB-Q-004" [level=1] [ref=f38e305]
+      - generic [ref=f38e308]:
+        - generic [ref=f38e310]:
+          - generic [ref=f38e311]:
+            - generic [ref=f38e312]: Client *
+            - combobox [ref=f38e313]:
+              - generic: Acme Productions
+              - img
+          - generic [ref=f38e314]:
+            - generic [ref=f38e315]: Project name
+            - textbox [ref=f38e316]: Acme Corporate Brand Film
+          - generic [ref=f38e317]:
+            - generic [ref=f38e318]: Category
+            - textbox "e.g. branding, video, web" [ref=f38e319]: video
+          - generic [ref=f38e320]:
+            - generic [ref=f38e321]: Validity (days)
+            - spinbutton [ref=f38e322]: "15"
+        - generic [ref=f38e323]:
+          - generic [ref=f38e324]:
+            - generic [ref=f38e325]:
+              - heading "Line items" [level=3] [ref=f38e326]
+              - button "Summary" [ref=f38e327]:
+                - img [ref=f38e328]
+                - text: Summary
+            - button "Add line item" [ref=f38e329]:
+              - img
+              - text: Add line item
+          - generic [ref=f38e332]:
+            - generic [ref=f38e333]:
+              - paragraph [ref=f38e334]: 1-Day Corporate Shoot
+              - paragraph [ref=f38e335]: Qty 1 × ₹10084.8 = ₹10084.8
+            - button "Toggle cost breakdown" [ref=f38e336]:
+              - img [ref=f38e337]
+            - button [ref=f38e340]:
+              - img
+        - generic [ref=f38e341]:
+          - generic [ref=f38e342]:
+            - heading "GST & discount" [level=3] [ref=f38e343]
+            - generic [ref=f38e344]:
+              - generic [ref=f38e345]:
+                - generic [ref=f38e346]: GST enabled
+                - switch [checked] [ref=f38e347]
+              - generic [ref=f38e348]:
+                - combobox [ref=f38e349]:
+                  - generic: CGST + SGST
+                  - img
+                - spinbutton [ref=f38e350]: "18"
+              - generic [ref=f38e351]:
+                - generic [ref=f38e352]: Discount (₹)
+                - spinbutton [ref=f38e353]: "0"
+          - generic [ref=f38e354]:
+            - heading "Totals" [level=3] [ref=f38e355]
+            - generic [ref=f38e356]:
+              - generic [ref=f38e357]:
+                - generic [ref=f38e358]: Subtotal
+                - generic [ref=f38e359]: ₹10084.8
+              - generic [ref=f38e360]:
+                - generic [ref=f38e361]: GST (18%)
+                - generic [ref=f38e362]: ₹1815.26
+              - generic [ref=f38e363]:
+                - generic [ref=f38e364]: Discount
+                - generic [ref=f38e365]: "-₹0"
+              - generic [ref=f38e366]:
+                - generic [ref=f38e367]: Total
+                - generic [ref=f38e368]: ₹11900.06
+        - generic [ref=f38e369]:
+          - heading "Team Assignment" [level=3] [ref=f38e370]
+          - generic [ref=f38e371]:
+            - generic [ref=f38e372]:
+              - generic [ref=f38e373]: Executor
+              - combobox [ref=f38e374]:
+                - generic: Aakash
+                - img
+            - generic [ref=f38e375]:
+              - generic [ref=f38e376]: Manager
+              - combobox [ref=f38e377]:
+                - generic: Nikhil
+                - img
+          - generic [ref=f38e378]:
+            - paragraph [ref=f38e379]: Profit Split · Simple · Pool ₹5,084.8
+            - generic [ref=f38e380]:
+              - generic [ref=f38e381]:
+                - paragraph [ref=f38e382]: Company
+                - paragraph [ref=f38e383]: ₹2,898.34 (57%)
+              - generic [ref=f38e384]:
+                - paragraph [ref=f38e385]: Executor
+                - paragraph [ref=f38e386]: ₹1,576.29 (31%)
+              - generic [ref=f38e387]:
+                - paragraph [ref=f38e388]: Manager
+                - paragraph [ref=f38e389]: ₹610.18 (12%)
+        - generic [ref=f38e390]:
+          - generic [ref=f38e391]: Notes / terms
+          - textbox [ref=f38e392]
+        - generic [ref=f38e393]:
+          - button "Save changes" [ref=f38e394]
+          - button "Generate PDF" [ref=f38e395]
+          - button "Convert to invoice" [active] [ref=f38e396]
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=f38e397]:
+        - img [ref=f38e399]
+        - generic [ref=f38e403]: Converted to invoice
+  - alert [ref=f38e200]

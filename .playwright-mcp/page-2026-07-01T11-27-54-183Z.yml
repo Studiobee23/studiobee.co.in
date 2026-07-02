@@ -1,0 +1,115 @@
+- generic [active] [ref=f41e1]:
+  - generic [ref=f41e2]:
+    - generic [ref=f41e5]:
+      - link "StudioBee" [ref=f41e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f41e8]
+      - generic [ref=f41e9]:
+        - list [ref=f41e12]:
+          - listitem [ref=f41e13]:
+            - link "Dashboard" [ref=f41e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f41e15]
+              - generic [ref=f41e20]: Dashboard
+        - generic [ref=f41e21]:
+          - generic [ref=f41e22]: CRM
+          - list [ref=f41e24]:
+            - listitem [ref=f41e25]:
+              - link "Clients" [ref=f41e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f41e27]
+                - generic [ref=f41e32]: Clients
+        - generic [ref=f41e33]:
+          - generic [ref=f41e34]: Projects
+          - list [ref=f41e36]:
+            - listitem [ref=f41e37]:
+              - link "Projects" [ref=f41e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f41e39]
+                - generic [ref=f41e41]: Projects
+        - generic [ref=f41e42]:
+          - generic [ref=f41e43]: Tasks
+          - list [ref=f41e45]:
+            - listitem [ref=f41e46]:
+              - link "Tasks" [ref=f41e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f41e48]
+                - generic [ref=f41e51]: Tasks
+        - generic [ref=f41e52]:
+          - generic [ref=f41e53]: Billing
+          - list [ref=f41e55]:
+            - listitem [ref=f41e56]:
+              - link "Quotes" [ref=f41e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f41e58]
+                - generic [ref=f41e61]: Quotes
+            - listitem [ref=f41e62]:
+              - link "Invoices" [ref=f41e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f41e64]
+                - generic [ref=f41e67]: Invoices
+            - listitem [ref=f41e68]:
+              - link "Receipts" [ref=f41e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f41e70]
+                - generic [ref=f41e73]: Receipts
+        - generic [ref=f41e74]:
+          - generic [ref=f41e75]: Admin
+          - list [ref=f41e77]:
+            - listitem [ref=f41e78]:
+              - link "Team" [ref=f41e79] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f41e80]
+                - generic [ref=f41e92]: Team
+            - listitem [ref=f41e93]:
+              - link "Cost Model" [ref=f41e94] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f41e95]
+                - generic [ref=f41e97]: Cost Model
+            - listitem [ref=f41e98]:
+              - link "Profit Split" [ref=f41e99] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f41e100]
+                - generic [ref=f41e103]: Profit Split
+            - listitem [ref=f41e104]:
+              - link "Equipment" [ref=f41e105] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f41e107]
+                - generic [ref=f41e111]: Equipment
+        - generic [ref=f41e112]:
+          - generic [ref=f41e113]: Insights
+          - list [ref=f41e115]:
+            - listitem [ref=f41e116]:
+              - link "Reports" [ref=f41e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f41e118]
+                - generic [ref=f41e119]: Reports
+      - generic [ref=f41e121]:
+        - generic [ref=f41e122]: "N"
+        - generic [ref=f41e123]:
+          - paragraph [ref=f41e124]: Nikhil
+          - paragraph [ref=f41e125]: owner
+        - button "Sign out" [ref=f41e126]:
+          - img [ref=f41e127]
+    - main [ref=f41e130]:
+      - generic [ref=f41e131]:
+        - button "Toggle Sidebar" [ref=f41e132]:
+          - img
+          - generic [ref=f41e133]: Toggle Sidebar
+        - heading "Equipment Inventory" [level=1] [ref=f41e134]
+        - button "+ Add Equipment" [ref=f41e136]
+      - table [ref=f41e140]:
+        - rowgroup [ref=f41e141]:
+          - row "Name Purchase Cost GST Daily Rental Purchase Date Active" [ref=f41e142]:
+            - columnheader "Name" [ref=f41e143]
+            - columnheader "Purchase Cost" [ref=f41e144]
+            - columnheader "GST" [ref=f41e145]
+            - columnheader "Daily Rental" [ref=f41e146]
+            - columnheader "Purchase Date" [ref=f41e147]
+            - columnheader "Active" [ref=f41e148]
+            - columnheader [ref=f41e149]
+        - rowgroup [ref=f41e150]:
+          - row "No equipment yet." [ref=f41e151]:
+            - cell "No equipment yet." [ref=f41e152]
+  - region "Notifications alt+T"
+  - alert [ref=f41e153]

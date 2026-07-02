@@ -1,0 +1,152 @@
+- generic [active] [ref=f27e1]:
+  - generic [ref=f27e2]:
+    - generic [ref=f27e5]:
+      - link "StudioBee" [ref=f27e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f27e8]
+      - generic [ref=f27e9]:
+        - list [ref=f27e12]:
+          - listitem [ref=f27e13]:
+            - link "Dashboard" [ref=f27e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f27e15]
+              - generic [ref=f27e20]: Dashboard
+        - generic [ref=f27e21]:
+          - generic [ref=f27e22]: CRM
+          - list [ref=f27e24]:
+            - listitem [ref=f27e25]:
+              - link "Clients" [ref=f27e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f27e27]
+                - generic [ref=f27e32]: Clients
+        - generic [ref=f27e33]:
+          - generic [ref=f27e34]: Projects
+          - list [ref=f27e36]:
+            - listitem [ref=f27e37]:
+              - link "Projects" [ref=f27e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f27e39]
+                - generic [ref=f27e41]: Projects
+        - generic [ref=f27e42]:
+          - generic [ref=f27e43]: Tasks
+          - list [ref=f27e45]:
+            - listitem [ref=f27e46]:
+              - link "Tasks" [ref=f27e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f27e49]
+                - generic [ref=f27e52]: Tasks
+        - generic [ref=f27e53]:
+          - generic [ref=f27e54]: Billing
+          - list [ref=f27e56]:
+            - listitem [ref=f27e57]:
+              - link "Quotes" [ref=f27e58] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f27e59]
+                - generic [ref=f27e62]: Quotes
+            - listitem [ref=f27e63]:
+              - link "Invoices" [ref=f27e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f27e65]
+                - generic [ref=f27e68]: Invoices
+            - listitem [ref=f27e69]:
+              - link "Receipts" [ref=f27e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f27e71]
+                - generic [ref=f27e74]: Receipts
+        - generic [ref=f27e75]:
+          - generic [ref=f27e76]: Admin
+          - list [ref=f27e78]:
+            - listitem [ref=f27e79]:
+              - link "Team" [ref=f27e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f27e81]
+                - generic [ref=f27e93]: Team
+            - listitem [ref=f27e94]:
+              - link "Cost Model" [ref=f27e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f27e96]
+                - generic [ref=f27e98]: Cost Model
+            - listitem [ref=f27e99]:
+              - link "Profit Split" [ref=f27e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f27e101]
+                - generic [ref=f27e104]: Profit Split
+            - listitem [ref=f27e105]:
+              - link "Equipment" [ref=f27e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f27e107]
+                - generic [ref=f27e111]: Equipment
+        - generic [ref=f27e112]:
+          - generic [ref=f27e113]: Insights
+          - list [ref=f27e115]:
+            - listitem [ref=f27e116]:
+              - link "Reports" [ref=f27e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f27e118]
+                - generic [ref=f27e119]: Reports
+      - generic [ref=f27e121]:
+        - generic [ref=f27e122]: "N"
+        - generic [ref=f27e123]:
+          - paragraph [ref=f27e124]: Nikhil
+          - paragraph [ref=f27e125]: owner
+        - button "Sign out" [ref=f27e126]:
+          - img [ref=f27e127]
+    - main [ref=f27e130]:
+      - generic [ref=f27e131]:
+        - button "Toggle Sidebar" [ref=f27e132]:
+          - img
+          - generic [ref=f27e133]: Toggle Sidebar
+        - heading "Tasks" [level=1] [ref=f27e134]
+      - generic [ref=f27e135]:
+        - generic [ref=f27e136]:
+          - generic [ref=f27e137]:
+            - paragraph [ref=f27e138]: "2"
+            - paragraph [ref=f27e139]: Pending
+          - generic [ref=f27e140]:
+            - paragraph [ref=f27e141]: "1"
+            - paragraph [ref=f27e142]: In Progress
+          - generic [ref=f27e143]:
+            - paragraph [ref=f27e144]: "0"
+            - paragraph [ref=f27e145]: Delayed
+          - generic [ref=f27e146]:
+            - paragraph [ref=f27e147]: "1"
+            - paragraph [ref=f27e148]: Completed
+        - generic [ref=f27e149]:
+          - generic [ref=f27e150]:
+            - generic [ref=f27e151]:
+              - paragraph [ref=f27e152]: Shoot day - main interview setup
+              - paragraph [ref=f27e153]:
+                - link "Acme Corporate Brand Film" [ref=f27e154] [cursor=pointer]:
+                  - /url: /projects/Acme Corporate Brand Film
+            - combobox [ref=f27e155]:
+              - generic: Pending
+              - img
+          - generic [ref=f27e156]:
+            - generic [ref=f27e157]:
+              - paragraph [ref=f27e158]: Shoot day - main interview setup
+              - paragraph [ref=f27e159]:
+                - link "Acme Corporate Brand Film" [ref=f27e160] [cursor=pointer]:
+                  - /url: /projects/Acme Corporate Brand Film
+            - combobox [ref=f27e161]:
+              - generic: In Progress
+              - img
+          - generic [ref=f27e162]:
+            - generic [ref=f27e163]:
+              - paragraph [ref=f27e164]: Develop responsive frontend
+              - paragraph [ref=f27e165]:
+                - link "Pixel Studio Website Redesign" [ref=f27e166] [cursor=pointer]:
+                  - /url: /projects/Pixel Studio Website Redesign
+            - combobox [ref=f27e167]:
+              - generic: Pending
+              - img
+          - generic [ref=f27e168]:
+            - generic [ref=f27e169]:
+              - paragraph [ref=f27e170]: Homepage wireframes and layout
+              - paragraph [ref=f27e171]:
+                - link "Pixel Studio Website Redesign" [ref=f27e172] [cursor=pointer]:
+                  - /url: /projects/Pixel Studio Website Redesign
+            - combobox [ref=f27e173]:
+              - generic: Completed
+              - img
+  - region "Notifications alt+T"
+  - alert [ref=f27e174]

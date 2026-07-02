@@ -1,0 +1,118 @@
+- generic [active] [ref=f43e1]:
+  - generic [ref=f43e2]:
+    - generic [ref=f43e5]:
+      - link "StudioBee" [ref=f43e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f43e8]
+      - generic [ref=f43e9]:
+        - list [ref=f43e12]:
+          - listitem [ref=f43e13]:
+            - link "Dashboard" [ref=f43e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f43e15]
+              - generic [ref=f43e20]: Dashboard
+        - generic [ref=f43e21]:
+          - generic [ref=f43e22]: CRM
+          - list [ref=f43e24]:
+            - listitem [ref=f43e25]:
+              - link "Clients" [ref=f43e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f43e27]
+                - generic [ref=f43e32]: Clients
+        - generic [ref=f43e33]:
+          - generic [ref=f43e34]: Projects
+          - list [ref=f43e36]:
+            - listitem [ref=f43e37]:
+              - link "Projects" [ref=f43e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f43e39]
+                - generic [ref=f43e41]: Projects
+        - generic [ref=f43e42]:
+          - generic [ref=f43e43]: Tasks
+          - list [ref=f43e45]:
+            - listitem [ref=f43e46]:
+              - link "Tasks" [ref=f43e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f43e48]
+                - generic [ref=f43e51]: Tasks
+        - generic [ref=f43e52]:
+          - generic [ref=f43e53]: Billing
+          - list [ref=f43e55]:
+            - listitem [ref=f43e56]:
+              - link "Quotes" [ref=f43e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f43e58]
+                - generic [ref=f43e61]: Quotes
+            - listitem [ref=f43e62]:
+              - link "Invoices" [ref=f43e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f43e64]
+                - generic [ref=f43e67]: Invoices
+            - listitem [ref=f43e68]:
+              - link "Receipts" [ref=f43e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f43e70]
+                - generic [ref=f43e73]: Receipts
+        - generic [ref=f43e74]:
+          - generic [ref=f43e75]: Admin
+          - list [ref=f43e77]:
+            - listitem [ref=f43e78]:
+              - link "Team" [ref=f43e79] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f43e80]
+                - generic [ref=f43e92]: Team
+            - listitem [ref=f43e93]:
+              - link "Cost Model" [ref=f43e94] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f43e95]
+                - generic [ref=f43e97]: Cost Model
+            - listitem [ref=f43e98]:
+              - link "Profit Split" [ref=f43e99] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f43e100]
+                - generic [ref=f43e103]: Profit Split
+            - listitem [ref=f43e104]:
+              - link "Equipment" [ref=f43e105] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f43e106]
+                - generic [ref=f43e110]: Equipment
+        - generic [ref=f43e111]:
+          - generic [ref=f43e112]: Insights
+          - list [ref=f43e114]:
+            - listitem [ref=f43e115]:
+              - link "Reports" [ref=f43e116] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f43e118]
+                - generic [ref=f43e119]: Reports
+      - generic [ref=f43e121]:
+        - generic [ref=f43e122]: "N"
+        - generic [ref=f43e123]:
+          - paragraph [ref=f43e124]: Nikhil
+          - paragraph [ref=f43e125]: owner
+        - button "Sign out" [ref=f43e126]:
+          - img [ref=f43e127]
+    - main [ref=f43e130]:
+      - generic [ref=f43e131]:
+        - button "Toggle Sidebar" [ref=f43e132]:
+          - img
+          - generic [ref=f43e133]: Toggle Sidebar
+        - heading "Hours Report" [level=1] [ref=f43e134]
+      - table [ref=f43e137]:
+        - rowgroup [ref=f43e138]:
+          - row "Project Client Est. Hours Consumed Hours Remaining Status" [ref=f43e139]:
+            - columnheader "Project" [ref=f43e140]
+            - columnheader "Client" [ref=f43e141]
+            - columnheader "Est. Hours" [ref=f43e142]
+            - columnheader "Consumed Hours" [ref=f43e143]
+            - columnheader "Remaining" [ref=f43e144]
+            - columnheader "Status" [ref=f43e145]
+        - rowgroup [ref=f43e146]:
+          - row "Acme Corporate Brand Film Acme Productions 40h — 40h active" [ref=f43e147]:
+            - cell "Acme Corporate Brand Film" [ref=f43e148]
+            - cell "Acme Productions" [ref=f43e149]
+            - cell "40h" [ref=f43e150]
+            - cell "—" [ref=f43e151]
+            - cell "40h" [ref=f43e152]
+            - cell "active" [ref=f43e153]
+  - region "Notifications alt+T"
+  - alert [ref=f43e154]

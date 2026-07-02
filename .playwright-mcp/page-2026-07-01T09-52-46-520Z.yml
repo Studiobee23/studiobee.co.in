@@ -1,0 +1,142 @@
+- generic [active] [ref=f7e1]:
+  - generic [ref=f7e2]:
+    - generic [ref=f7e5]:
+      - link "StudioBee" [ref=f7e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f7e8]
+      - generic [ref=f7e9]:
+        - list [ref=f7e12]:
+          - listitem [ref=f7e13]:
+            - link "Dashboard" [ref=f7e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f7e15]
+              - generic [ref=f7e20]: Dashboard
+        - generic [ref=f7e21]:
+          - generic [ref=f7e22]: CRM
+          - list [ref=f7e24]:
+            - listitem [ref=f7e25]:
+              - link "Clients" [ref=f7e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f7e27]
+                - generic [ref=f7e32]: Clients
+        - generic [ref=f7e33]:
+          - generic [ref=f7e34]: Projects
+          - list [ref=f7e36]:
+            - listitem [ref=f7e37]:
+              - link "Projects" [ref=f7e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f7e39]
+                - generic [ref=f7e41]: Projects
+        - generic [ref=f7e42]:
+          - generic [ref=f7e43]: Tasks
+          - list [ref=f7e45]:
+            - listitem [ref=f7e46]:
+              - link "Tasks" [ref=f7e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f7e48]
+                - generic [ref=f7e51]: Tasks
+        - generic [ref=f7e52]:
+          - generic [ref=f7e53]: Billing
+          - list [ref=f7e55]:
+            - listitem [ref=f7e56]:
+              - link "Quotes" [ref=f7e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f7e58]
+                - generic [ref=f7e61]: Quotes
+            - listitem [ref=f7e62]:
+              - link "Invoices" [ref=f7e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f7e64]
+                - generic [ref=f7e67]: Invoices
+            - listitem [ref=f7e68]:
+              - link "Receipts" [ref=f7e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f7e70]
+                - generic [ref=f7e73]: Receipts
+        - generic [ref=f7e74]:
+          - generic [ref=f7e75]: Admin
+          - list [ref=f7e77]:
+            - listitem [ref=f7e78]:
+              - link "Team" [ref=f7e79] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f7e81]
+                - generic [ref=f7e93]: Team
+            - listitem [ref=f7e94]:
+              - link "Cost Model" [ref=f7e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f7e96]
+                - generic [ref=f7e98]: Cost Model
+            - listitem [ref=f7e99]:
+              - link "Profit Split" [ref=f7e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f7e101]
+                - generic [ref=f7e104]: Profit Split
+            - listitem [ref=f7e105]:
+              - link "Equipment" [ref=f7e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f7e107]
+                - generic [ref=f7e111]: Equipment
+        - generic [ref=f7e112]:
+          - generic [ref=f7e113]: Insights
+          - list [ref=f7e115]:
+            - listitem [ref=f7e116]:
+              - link "Reports" [ref=f7e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f7e118]
+                - generic [ref=f7e119]: Reports
+      - generic [ref=f7e121]:
+        - generic [ref=f7e122]: "N"
+        - generic [ref=f7e123]:
+          - paragraph [ref=f7e124]: Nikhil
+          - paragraph [ref=f7e125]: owner
+        - button "Sign out" [ref=f7e126]:
+          - img [ref=f7e127]
+    - main [ref=f7e130]:
+      - generic [ref=f7e131]:
+        - button "Toggle Sidebar" [ref=f7e132]:
+          - img
+          - generic [ref=f7e133]: Toggle Sidebar
+        - heading "Team" [level=1] [ref=f7e134]
+      - generic [ref=f7e137]:
+        - generic [ref=f7e138]:
+          - heading "Employees" [level=3] [ref=f7e139]
+          - button "Invite employee" [ref=f7e140]:
+            - img
+            - text: Invite employee
+        - table [ref=f7e142]:
+          - rowgroup [ref=f7e143]:
+            - row "Name Email Role Active" [ref=f7e144]:
+              - columnheader "Name" [ref=f7e145]
+              - columnheader "Email" [ref=f7e146]
+              - columnheader "Role" [ref=f7e147]
+              - columnheader "Active" [ref=f7e148]
+          - rowgroup [ref=f7e149]:
+            - row "Nikhil arora.nikhil@studiobee.co.in" [ref=f7e150]:
+              - cell "Nikhil" [ref=f7e151]
+              - cell "arora.nikhil@studiobee.co.in" [ref=f7e152]
+              - cell [ref=f7e153]:
+                - combobox [disabled] [ref=f7e154]:
+                  - generic: owner
+                  - img
+              - cell [ref=f7e155]:
+                - switch [checked] [disabled] [ref=f7e156]
+            - row "Rajib laishram.rajib@studiobee.co.in" [ref=f7e157]:
+              - cell "Rajib" [ref=f7e158]
+              - cell "laishram.rajib@studiobee.co.in" [ref=f7e159]
+              - cell [ref=f7e160]:
+                - combobox [ref=f7e161]:
+                  - generic: owner
+                  - img
+              - cell [ref=f7e162]:
+                - switch [checked] [ref=f7e163]
+            - row "Aakash pal.aakash@studiobee.co.in" [ref=f7e164]:
+              - cell "Aakash" [ref=f7e165]
+              - cell "pal.aakash@studiobee.co.in" [ref=f7e166]
+              - cell [ref=f7e167]:
+                - combobox [ref=f7e168]:
+                  - generic: owner
+                  - img
+              - cell [ref=f7e169]:
+                - switch [checked] [ref=f7e170]
+  - region "Notifications alt+T"
+  - alert [ref=f7e171]

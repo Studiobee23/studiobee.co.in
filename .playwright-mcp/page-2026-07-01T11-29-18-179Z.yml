@@ -1,0 +1,125 @@
+- generic [active] [ref=f42e1]:
+  - generic [ref=f42e2]:
+    - generic [ref=f42e5]:
+      - link "StudioBee" [ref=f42e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f42e8]
+      - generic [ref=f42e9]:
+        - list [ref=f42e12]:
+          - listitem [ref=f42e13]:
+            - link "Dashboard" [ref=f42e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f42e15]
+              - generic [ref=f42e20]: Dashboard
+        - generic [ref=f42e21]:
+          - generic [ref=f42e22]: CRM
+          - list [ref=f42e24]:
+            - listitem [ref=f42e25]:
+              - link "Clients" [ref=f42e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f42e27]
+                - generic [ref=f42e32]: Clients
+        - generic [ref=f42e33]:
+          - generic [ref=f42e34]: Projects
+          - list [ref=f42e36]:
+            - listitem [ref=f42e37]:
+              - link "Projects" [ref=f42e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f42e39]
+                - generic [ref=f42e41]: Projects
+        - generic [ref=f42e42]:
+          - generic [ref=f42e43]: Tasks
+          - list [ref=f42e45]:
+            - listitem [ref=f42e46]:
+              - link "Tasks" [ref=f42e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f42e48]
+                - generic [ref=f42e51]: Tasks
+        - generic [ref=f42e52]:
+          - generic [ref=f42e53]: Billing
+          - list [ref=f42e55]:
+            - listitem [ref=f42e56]:
+              - link "Quotes" [ref=f42e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f42e58]
+                - generic [ref=f42e61]: Quotes
+            - listitem [ref=f42e62]:
+              - link "Invoices" [ref=f42e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f42e64]
+                - generic [ref=f42e67]: Invoices
+            - listitem [ref=f42e68]:
+              - link "Receipts" [ref=f42e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f42e70]
+                - generic [ref=f42e73]: Receipts
+        - generic [ref=f42e74]:
+          - generic [ref=f42e75]: Admin
+          - list [ref=f42e77]:
+            - listitem [ref=f42e78]:
+              - link "Team" [ref=f42e79] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f42e80]
+                - generic [ref=f42e92]: Team
+            - listitem [ref=f42e93]:
+              - link "Cost Model" [ref=f42e94] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f42e95]
+                - generic [ref=f42e97]: Cost Model
+            - listitem [ref=f42e98]:
+              - link "Profit Split" [ref=f42e99] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f42e100]
+                - generic [ref=f42e103]: Profit Split
+            - listitem [ref=f42e104]:
+              - link "Equipment" [ref=f42e105] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f42e106]
+                - generic [ref=f42e110]: Equipment
+        - generic [ref=f42e111]:
+          - generic [ref=f42e112]: Insights
+          - list [ref=f42e114]:
+            - listitem [ref=f42e115]:
+              - link "Reports" [ref=f42e116] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f42e118]
+                - generic [ref=f42e119]: Reports
+      - generic [ref=f42e121]:
+        - generic [ref=f42e122]: "N"
+        - generic [ref=f42e123]:
+          - paragraph [ref=f42e124]: Nikhil
+          - paragraph [ref=f42e125]: owner
+        - button "Sign out" [ref=f42e126]:
+          - img [ref=f42e127]
+    - main [ref=f42e130]:
+      - generic [ref=f42e144]:
+        - button "Toggle Sidebar" [ref=f42e145]:
+          - img
+          - generic [ref=f42e146]: Toggle Sidebar
+        - heading "P&L Report" [level=1] [ref=f42e147]
+      - generic [ref=f42e148]:
+        - generic [ref=f42e149]:
+          - generic [ref=f42e150]:
+            - paragraph [ref=f42e151]: Revenue
+            - paragraph [ref=f42e152]: ₹0
+          - generic [ref=f42e153]:
+            - paragraph [ref=f42e154]: Cost
+            - paragraph [ref=f42e155]: ₹0
+          - generic [ref=f42e156]:
+            - paragraph [ref=f42e157]: Profit
+            - paragraph [ref=f42e158]: ₹0
+        - table [ref=f42e160]:
+          - rowgroup [ref=f42e161]:
+            - row "Document Client / Project Revenue Labor Cost Direct Cost Profit Margin" [ref=f42e162]:
+              - columnheader "Document" [ref=f42e163]
+              - columnheader "Client / Project" [ref=f42e164]
+              - columnheader "Revenue" [ref=f42e165]
+              - columnheader "Labor Cost" [ref=f42e166]
+              - columnheader "Direct Cost" [ref=f42e167]
+              - columnheader "Profit" [ref=f42e168]
+              - columnheader "Margin" [ref=f42e169]
+          - rowgroup [ref=f42e170]:
+            - row "No paid invoices or receipts yet." [ref=f42e171]:
+              - cell "No paid invoices or receipts yet." [ref=f42e172]
+  - region "Notifications alt+T"
+  - alert [ref=f42e143]

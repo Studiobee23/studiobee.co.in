@@ -1,0 +1,122 @@
+- generic [ref=f32e1]:
+  - generic [ref=f32e2]:
+    - generic [ref=f32e5]:
+      - link "StudioBee" [ref=f32e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f32e8]
+      - generic [ref=f32e9]:
+        - list [ref=f32e12]:
+          - listitem [ref=f32e13]:
+            - link "Dashboard" [ref=f32e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f32e15]
+              - generic [ref=f32e20]: Dashboard
+        - generic [ref=f32e21]:
+          - generic [ref=f32e22]: CRM
+          - list [ref=f32e24]:
+            - listitem [ref=f32e25]:
+              - link "Clients" [ref=f32e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f32e27]
+                - generic [ref=f32e32]: Clients
+        - generic [ref=f32e33]:
+          - generic [ref=f32e34]: Projects
+          - list [ref=f32e36]:
+            - listitem [ref=f32e37]:
+              - link "Projects" [ref=f32e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f32e39]
+                - generic [ref=f32e41]: Projects
+        - generic [ref=f32e42]:
+          - generic [ref=f32e43]: Tasks
+          - list [ref=f32e45]:
+            - listitem [ref=f32e46]:
+              - link "Tasks" [ref=f32e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f32e48]
+                - generic [ref=f32e51]: Tasks
+        - generic [ref=f32e52]:
+          - generic [ref=f32e53]: Billing
+          - list [ref=f32e55]:
+            - listitem [ref=f32e56]:
+              - link "Quotes" [ref=f32e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f32e58]
+                - generic [ref=f32e61]: Quotes
+            - listitem [ref=f32e62]:
+              - link "Invoices" [ref=f32e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f32e64]
+                - generic [ref=f32e67]: Invoices
+            - listitem [ref=f32e68]:
+              - link "Receipts" [ref=f32e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f32e70]
+                - generic [ref=f32e73]: Receipts
+        - generic [ref=f32e74]:
+          - generic [ref=f32e75]: Admin
+          - list [ref=f32e77]:
+            - listitem [ref=f32e78]:
+              - link "Team" [ref=f32e79] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f32e80]
+                - generic [ref=f32e92]: Team
+            - listitem [ref=f32e93]:
+              - link "Cost Model" [ref=f32e94] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f32e96]
+                - generic [ref=f32e98]: Cost Model
+            - listitem [ref=f32e99]:
+              - link "Profit Split" [ref=f32e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f32e101]
+                - generic [ref=f32e104]: Profit Split
+            - listitem [ref=f32e105]:
+              - link "Equipment" [ref=f32e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f32e107]
+                - generic [ref=f32e111]: Equipment
+        - generic [ref=f32e112]:
+          - generic [ref=f32e113]: Insights
+          - list [ref=f32e115]:
+            - listitem [ref=f32e116]:
+              - link "Reports" [ref=f32e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f32e118]
+                - generic [ref=f32e119]: Reports
+      - generic [ref=f32e121]:
+        - generic [ref=f32e122]: "N"
+        - generic [ref=f32e123]:
+          - paragraph [ref=f32e124]: Nikhil
+          - paragraph [ref=f32e125]: owner
+        - button "Sign out" [ref=f32e126]:
+          - img [ref=f32e127]
+    - main [ref=f32e130]:
+      - generic [ref=f32e131]:
+        - button "Toggle Sidebar" [ref=f32e132]:
+          - img
+          - generic [ref=f32e133]: Toggle Sidebar
+        - heading "Cost Model" [level=1] [ref=f32e134]
+      - generic [ref=f32e137]:
+        - tablist [ref=f32e138]:
+          - tab "Roles" [ref=f32e139]
+          - tab "Overheads" [active] [selected] [ref=f32e140]
+          - tab "Presets" [ref=f32e141]
+        - tabpanel "Overheads" [ref=f32e197]:
+          - generic [ref=f32e198]:
+            - generic [ref=f32e199]:
+              - heading "Overhead Items" [level=3] [ref=f32e200]
+              - button "Add overhead" [ref=f32e201]:
+                - img
+                - text: Add overhead
+            - table [ref=f32e203]:
+              - rowgroup [ref=f32e204]:
+                - row "Name Cost Type Active" [ref=f32e205]:
+                  - columnheader "Name" [ref=f32e206]
+                  - columnheader "Cost" [ref=f32e207]
+                  - columnheader "Type" [ref=f32e208]
+                  - columnheader "Active" [ref=f32e209]
+                  - columnheader [ref=f32e210]
+              - rowgroup
+  - region "Notifications alt+T"
+  - alert [ref=f32e196]

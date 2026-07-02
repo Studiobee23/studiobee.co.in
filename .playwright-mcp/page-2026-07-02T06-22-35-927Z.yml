@@ -1,0 +1,156 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - link:
+              - /url: /
+              - img
+          - generic:
+            - generic:
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /
+                      - img
+                      - generic: Dashboard
+            - generic:
+              - generic: CRM
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /clients
+                      - img
+                      - generic: Clients
+            - generic:
+              - generic: Projects
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /projects
+                      - img
+                      - generic: Projects
+            - generic:
+              - generic: Tasks
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /tasks
+                      - img
+                      - generic: Tasks
+            - generic:
+              - generic: Billing
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /quotes
+                      - img
+                      - generic: Quotes
+                  - listitem:
+                    - link:
+                      - /url: /invoices
+                      - img
+                      - generic: Invoices
+                  - listitem:
+                    - link:
+                      - /url: /receipts
+                      - img
+                      - generic: Receipts
+            - generic:
+              - generic: Admin
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /admin/team
+                      - img
+                      - generic: Team
+                  - listitem:
+                    - link:
+                      - /url: /admin/cost-model
+                      - img
+                      - generic: Cost Model
+                  - listitem:
+                    - link:
+                      - /url: /admin/profit-split
+                      - img
+                      - generic: Profit Split
+                  - listitem:
+                    - link:
+                      - /url: /admin/equipment
+                      - img
+                      - generic: Equipment
+            - generic:
+              - generic: Insights
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /reports
+                      - img
+                      - generic: Reports
+          - generic:
+            - generic:
+              - generic: "N"
+              - generic:
+                - paragraph: Nikhil
+                - paragraph: owner
+              - button:
+                - img
+    - main:
+      - generic:
+        - button:
+          - img
+          - generic: Toggle Sidebar
+        - heading [level=1]: New Project
+      - generic:
+        - generic:
+          - generic:
+            - text: Project Name *
+            - textbox:
+              - /placeholder: e.g. Brand Identity for Acme
+              - text: Bright Spark Social Media Campaign
+          - generic:
+            - text: Type
+            - combobox:
+              - generic: Project
+              - img
+          - generic:
+            - text: Client
+            - combobox [expanded]:
+              - generic: Select client...
+              - img
+          - generic:
+            - text: Category
+            - textbox:
+              - /placeholder: e.g. branding, video, web
+              - text: social media
+          - generic:
+            - text: Description
+            - textbox
+          - generic:
+            - generic:
+              - text: Est. Hours
+              - spinbutton: "30"
+            - generic:
+              - text: Start Date
+              - textbox
+            - generic:
+              - text: End Date
+              - textbox
+          - button: Create Project
+  - region "Notifications alt+T"
+  - alert
+  - listbox [ref=f29e156]:
+    - option "Acme Productions" [active] [ref=f29e157]:
+      - generic [ref=f29e158]: Acme Productions
+    - option "Bright Spark Media" [ref=f29e159]:
+      - generic [ref=f29e160]: Bright Spark Media
+    - option "Pixel Studio" [ref=f29e161]:
+      - generic [ref=f29e162]: Pixel Studio

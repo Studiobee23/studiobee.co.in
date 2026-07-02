@@ -1,0 +1,116 @@
+- generic [active] [ref=f23e1]:
+  - generic [ref=f23e2]:
+    - generic [ref=f23e5]:
+      - link "StudioBee" [ref=f23e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f23e8]
+      - generic [ref=f23e9]:
+        - list [ref=f23e12]:
+          - listitem [ref=f23e13]:
+            - link "Dashboard" [ref=f23e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f23e15]
+              - generic [ref=f23e20]: Dashboard
+        - generic [ref=f23e21]:
+          - generic [ref=f23e22]: CRM
+          - list [ref=f23e24]:
+            - listitem [ref=f23e25]:
+              - link "Clients" [ref=f23e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f23e27]
+                - generic [ref=f23e32]: Clients
+        - generic [ref=f23e33]:
+          - generic [ref=f23e34]: Projects
+          - list [ref=f23e36]:
+            - listitem [ref=f23e37]:
+              - link "Projects" [ref=f23e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f23e39]
+                - generic [ref=f23e41]: Projects
+        - generic [ref=f23e42]:
+          - generic [ref=f23e43]: Tasks
+          - list [ref=f23e45]:
+            - listitem [ref=f23e46]:
+              - link "Tasks" [ref=f23e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f23e49]
+                - generic [ref=f23e52]: Tasks
+        - generic [ref=f23e53]:
+          - generic [ref=f23e54]: Billing
+          - list [ref=f23e56]:
+            - listitem [ref=f23e57]:
+              - link "Quotes" [ref=f23e58] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f23e59]
+                - generic [ref=f23e62]: Quotes
+            - listitem [ref=f23e63]:
+              - link "Invoices" [ref=f23e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f23e65]
+                - generic [ref=f23e68]: Invoices
+            - listitem [ref=f23e69]:
+              - link "Receipts" [ref=f23e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f23e71]
+                - generic [ref=f23e74]: Receipts
+        - generic [ref=f23e75]:
+          - generic [ref=f23e76]: Admin
+          - list [ref=f23e78]:
+            - listitem [ref=f23e79]:
+              - link "Team" [ref=f23e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f23e81]
+                - generic [ref=f23e93]: Team
+            - listitem [ref=f23e94]:
+              - link "Cost Model" [ref=f23e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f23e96]
+                - generic [ref=f23e98]: Cost Model
+            - listitem [ref=f23e99]:
+              - link "Profit Split" [ref=f23e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f23e101]
+                - generic [ref=f23e104]: Profit Split
+            - listitem [ref=f23e105]:
+              - link "Equipment" [ref=f23e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f23e107]
+                - generic [ref=f23e111]: Equipment
+        - generic [ref=f23e112]:
+          - generic [ref=f23e113]: Insights
+          - list [ref=f23e115]:
+            - listitem [ref=f23e116]:
+              - link "Reports" [ref=f23e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f23e118]
+                - generic [ref=f23e119]: Reports
+      - generic [ref=f23e121]:
+        - generic [ref=f23e122]: "N"
+        - generic [ref=f23e123]:
+          - paragraph [ref=f23e124]: Nikhil
+          - paragraph [ref=f23e125]: owner
+        - button "Sign out" [ref=f23e126]:
+          - img [ref=f23e127]
+    - main [ref=f23e130]:
+      - generic [ref=f23e131]:
+        - button "Toggle Sidebar" [ref=f23e132]:
+          - img
+          - generic [ref=f23e133]: Toggle Sidebar
+        - heading "Tasks" [level=1] [ref=f23e134]
+      - generic [ref=f23e135]:
+        - generic [ref=f23e136]:
+          - generic [ref=f23e137]:
+            - paragraph [ref=f23e138]: "0"
+            - paragraph [ref=f23e139]: Pending
+          - generic [ref=f23e140]:
+            - paragraph [ref=f23e141]: "0"
+            - paragraph [ref=f23e142]: In Progress
+          - generic [ref=f23e143]:
+            - paragraph [ref=f23e144]: "0"
+            - paragraph [ref=f23e145]: Delayed
+          - generic [ref=f23e146]:
+            - paragraph [ref=f23e147]: "0"
+            - paragraph [ref=f23e148]: Completed
+        - generic [ref=f23e150]: No tasks yet. Add tasks from within a project.
+  - region "Notifications alt+T"
+  - alert [ref=f23e151]

@@ -1,0 +1,155 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - link:
+              - /url: /
+              - img
+          - generic:
+            - generic:
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /
+                      - img
+                      - generic: Dashboard
+            - generic:
+              - generic: CRM
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /clients
+                      - img
+                      - generic: Clients
+            - generic:
+              - generic: Projects
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /projects
+                      - img
+                      - generic: Projects
+            - generic:
+              - generic: Tasks
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /tasks
+                      - img
+                      - generic: Tasks
+            - generic:
+              - generic: Billing
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /quotes
+                      - img
+                      - generic: Quotes
+                  - listitem:
+                    - link:
+                      - /url: /invoices
+                      - img
+                      - generic: Invoices
+                  - listitem:
+                    - link:
+                      - /url: /receipts
+                      - img
+                      - generic: Receipts
+            - generic:
+              - generic: Admin
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /admin/team
+                      - img
+                      - generic: Team
+                  - listitem:
+                    - link:
+                      - /url: /admin/cost-model
+                      - img
+                      - generic: Cost Model
+                  - listitem:
+                    - link:
+                      - /url: /admin/profit-split
+                      - img
+                      - generic: Profit Split
+                  - listitem:
+                    - link:
+                      - /url: /admin/equipment
+                      - img
+                      - generic: Equipment
+            - generic:
+              - generic: Insights
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /reports
+                      - img
+                      - generic: Reports
+          - generic:
+            - generic:
+              - generic: "N"
+              - generic:
+                - paragraph: Nikhil
+                - paragraph: owner
+              - button:
+                - img
+    - main:
+      - generic:
+        - button:
+          - img
+          - generic: Toggle Sidebar
+        - heading [level=1]: Cost Model
+      - generic:
+        - generic:
+          - generic:
+            - tablist:
+              - tab: Roles
+              - tab [selected]: Overheads
+              - tab: Presets
+            - tabpanel:
+              - generic:
+                - generic:
+                  - heading [level=3]: Overhead Items
+                  - button [expanded]:
+                    - img
+                    - text: Add overhead
+                - generic:
+                  - table:
+                    - rowgroup:
+                      - row:
+                        - columnheader: Name
+                        - columnheader: Cost
+                        - columnheader: Type
+                        - columnheader: Active
+                        - columnheader
+  - region "Notifications alt+T"
+  - alert
+  - dialog "Add overhead" [ref=f32e212]:
+    - heading "Add overhead" [level=2] [ref=f32e214]
+    - generic [ref=f32e215]:
+      - generic [ref=f32e216]:
+        - generic [ref=f32e217]: Name
+        - textbox "Camera rental" [active] [ref=f32e218]
+      - generic [ref=f32e219]:
+        - generic [ref=f32e220]: Cost (₹)
+        - spinbutton [ref=f32e221]
+      - generic [ref=f32e222]:
+        - generic [ref=f32e223]: Type
+        - combobox [ref=f32e224]:
+          - generic: Per-project
+          - img
+    - generic [ref=f32e225]:
+      - button "Save" [disabled]
+    - button "Close" [ref=f32e226]:
+      - img
+      - generic [ref=f32e227]: Close

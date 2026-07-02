@@ -1,0 +1,194 @@
+- generic [ref=f38e1]:
+  - generic [ref=f38e2]:
+    - generic [ref=f38e5]:
+      - link "StudioBee" [ref=f38e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f38e8]
+      - generic [ref=f38e9]:
+        - list [ref=f38e12]:
+          - listitem [ref=f38e13]:
+            - link "Dashboard" [ref=f38e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f38e15]
+              - generic [ref=f38e20]: Dashboard
+        - generic [ref=f38e21]:
+          - generic [ref=f38e22]: CRM
+          - list [ref=f38e24]:
+            - listitem [ref=f38e25]:
+              - link "Clients" [ref=f38e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f38e27]
+                - generic [ref=f38e32]: Clients
+        - generic [ref=f38e33]:
+          - generic [ref=f38e34]: Projects
+          - list [ref=f38e36]:
+            - listitem [ref=f38e37]:
+              - link "Projects" [ref=f38e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f38e39]
+                - generic [ref=f38e41]: Projects
+        - generic [ref=f38e42]:
+          - generic [ref=f38e43]: Tasks
+          - list [ref=f38e45]:
+            - listitem [ref=f38e46]:
+              - link "Tasks" [ref=f38e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f38e48]
+                - generic [ref=f38e51]: Tasks
+        - generic [ref=f38e52]:
+          - generic [ref=f38e53]: Billing
+          - list [ref=f38e55]:
+            - listitem [ref=f38e56]:
+              - link "Quotes" [ref=f38e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f38e59]
+                - generic [ref=f38e62]: Quotes
+            - listitem [ref=f38e63]:
+              - link "Invoices" [ref=f38e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f38e65]
+                - generic [ref=f38e68]: Invoices
+            - listitem [ref=f38e69]:
+              - link "Receipts" [ref=f38e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f38e71]
+                - generic [ref=f38e74]: Receipts
+        - generic [ref=f38e75]:
+          - generic [ref=f38e76]: Admin
+          - list [ref=f38e78]:
+            - listitem [ref=f38e79]:
+              - link "Team" [ref=f38e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f38e81]
+                - generic [ref=f38e93]: Team
+            - listitem [ref=f38e94]:
+              - link "Cost Model" [ref=f38e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f38e96]
+                - generic [ref=f38e98]: Cost Model
+            - listitem [ref=f38e99]:
+              - link "Profit Split" [ref=f38e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f38e101]
+                - generic [ref=f38e104]: Profit Split
+            - listitem [ref=f38e105]:
+              - link "Equipment" [ref=f38e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f38e107]
+                - generic [ref=f38e111]: Equipment
+        - generic [ref=f38e112]:
+          - generic [ref=f38e113]: Insights
+          - list [ref=f38e115]:
+            - listitem [ref=f38e116]:
+              - link "Reports" [ref=f38e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f38e118]
+                - generic [ref=f38e119]: Reports
+      - generic [ref=f38e121]:
+        - generic [ref=f38e122]: "N"
+        - generic [ref=f38e123]:
+          - paragraph [ref=f38e124]: Nikhil
+          - paragraph [ref=f38e125]: owner
+        - button "Sign out" [ref=f38e126]:
+          - img [ref=f38e127]
+    - main [ref=f38e130]:
+      - generic [ref=f38e131]:
+        - button "Toggle Sidebar" [ref=f38e132]:
+          - img
+          - generic [ref=f38e133]: Toggle Sidebar
+        - heading "New Quote" [level=1] [ref=f38e134]
+      - generic [ref=f38e137]:
+        - generic [ref=f38e139]:
+          - generic [ref=f38e140]:
+            - generic [ref=f38e141]: Client *
+            - combobox [ref=f38e142]:
+              - generic: Acme Productions
+              - img
+          - generic [ref=f38e143]:
+            - generic [ref=f38e144]: Project name
+            - textbox [ref=f38e145]: Acme Corporate Brand Film
+          - generic [ref=f38e146]:
+            - generic [ref=f38e147]: Category
+            - textbox "e.g. branding, video, web" [ref=f38e148]: video
+          - generic [ref=f38e149]:
+            - generic [ref=f38e150]: Validity (days)
+            - spinbutton [ref=f38e151]: "15"
+        - generic [ref=f38e152]:
+          - generic [ref=f38e153]:
+            - generic [ref=f38e154]:
+              - heading "Line items" [level=3] [ref=f38e155]
+              - button "Summary" [ref=f38e252]:
+                - img [ref=f38e253]
+                - text: Summary
+            - button "Add line item" [ref=f38e156]:
+              - img
+              - text: Add line item
+          - generic [ref=f38e256]:
+            - generic [ref=f38e257]:
+              - paragraph [ref=f38e258]: 1-Day Corporate Shoot
+              - paragraph [ref=f38e259]: Qty 1 × ₹10084.8 = ₹10084.8
+            - button "Toggle cost breakdown" [ref=f38e260]:
+              - img [ref=f38e261]
+            - button [ref=f38e264]:
+              - img
+        - generic [ref=f38e158]:
+          - generic [ref=f38e159]:
+            - heading "GST & discount" [level=3] [ref=f38e160]
+            - generic [ref=f38e161]:
+              - generic [ref=f38e162]:
+                - generic [ref=f38e163]: GST enabled
+                - switch [checked] [ref=f38e164]
+              - generic [ref=f38e165]:
+                - combobox [ref=f38e166]:
+                  - generic: CGST + SGST
+                  - img
+                - spinbutton [ref=f38e167]: "18"
+              - generic [ref=f38e168]:
+                - generic [ref=f38e169]: Discount (₹)
+                - spinbutton [ref=f38e170]: "0"
+          - generic [ref=f38e171]:
+            - heading "Totals" [level=3] [ref=f38e172]
+            - generic [ref=f38e173]:
+              - generic [ref=f38e174]:
+                - generic [ref=f38e175]: Subtotal
+                - generic [ref=f38e176]: ₹10084.8
+              - generic [ref=f38e177]:
+                - generic [ref=f38e178]: GST (18%)
+                - generic [ref=f38e179]: ₹1815.26
+              - generic [ref=f38e180]:
+                - generic [ref=f38e181]: Discount
+                - generic [ref=f38e182]: "-₹0"
+              - generic [ref=f38e183]:
+                - generic [ref=f38e184]: Total
+                - generic [ref=f38e185]: ₹11900.06
+        - generic [ref=f38e186]:
+          - heading "Team Assignment" [level=3] [ref=f38e187]
+          - generic [ref=f38e188]:
+            - generic [ref=f38e189]:
+              - generic [ref=f38e190]: Executor
+              - combobox [ref=f38e191]:
+                - generic: Aakash
+                - img
+            - generic [ref=f38e192]:
+              - generic [ref=f38e193]: Manager
+              - combobox [active] [ref=f38e194]:
+                - generic: Nikhil
+                - img
+          - generic [ref=f38e265]:
+            - paragraph [ref=f38e266]: Profit Split · Simple · Pool ₹5,084.8
+            - generic [ref=f38e267]:
+              - generic [ref=f38e268]:
+                - paragraph [ref=f38e269]: Company
+                - paragraph [ref=f38e270]: ₹2,898.34 (57%)
+              - generic [ref=f38e271]:
+                - paragraph [ref=f38e272]: Executor
+                - paragraph [ref=f38e273]: ₹1,576.29 (31%)
+              - generic [ref=f38e274]:
+                - paragraph [ref=f38e275]: Manager
+                - paragraph [ref=f38e276]: ₹610.18 (12%)
+        - generic [ref=f38e195]:
+          - generic [ref=f38e196]: Notes / terms
+          - textbox [ref=f38e197]
+        - button "Create quote" [ref=f38e199]
+  - region "Notifications alt+T"
+  - alert [ref=f38e200]

@@ -1,0 +1,118 @@
+- generic [active] [ref=f24e1]:
+  - generic [ref=f24e2]:
+    - generic [ref=f24e5]:
+      - link "StudioBee" [ref=f24e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f24e8]
+      - generic [ref=f24e9]:
+        - list [ref=f24e12]:
+          - listitem [ref=f24e13]:
+            - link "Dashboard" [ref=f24e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f24e15]
+              - generic [ref=f24e20]: Dashboard
+        - generic [ref=f24e21]:
+          - generic [ref=f24e22]: CRM
+          - list [ref=f24e24]:
+            - listitem [ref=f24e25]:
+              - link "Clients" [ref=f24e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f24e27]
+                - generic [ref=f24e32]: Clients
+        - generic [ref=f24e33]:
+          - generic [ref=f24e34]: Projects
+          - list [ref=f24e36]:
+            - listitem [ref=f24e37]:
+              - link "Projects" [ref=f24e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f24e40]
+                - generic [ref=f24e42]: Projects
+        - generic [ref=f24e43]:
+          - generic [ref=f24e44]: Tasks
+          - list [ref=f24e46]:
+            - listitem [ref=f24e47]:
+              - link "Tasks" [ref=f24e48] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f24e49]
+                - generic [ref=f24e52]: Tasks
+        - generic [ref=f24e53]:
+          - generic [ref=f24e54]: Billing
+          - list [ref=f24e56]:
+            - listitem [ref=f24e57]:
+              - link "Quotes" [ref=f24e58] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f24e59]
+                - generic [ref=f24e62]: Quotes
+            - listitem [ref=f24e63]:
+              - link "Invoices" [ref=f24e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f24e65]
+                - generic [ref=f24e68]: Invoices
+            - listitem [ref=f24e69]:
+              - link "Receipts" [ref=f24e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f24e71]
+                - generic [ref=f24e74]: Receipts
+        - generic [ref=f24e75]:
+          - generic [ref=f24e76]: Admin
+          - list [ref=f24e78]:
+            - listitem [ref=f24e79]:
+              - link "Team" [ref=f24e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f24e81]
+                - generic [ref=f24e93]: Team
+            - listitem [ref=f24e94]:
+              - link "Cost Model" [ref=f24e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f24e96]
+                - generic [ref=f24e98]: Cost Model
+            - listitem [ref=f24e99]:
+              - link "Profit Split" [ref=f24e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f24e101]
+                - generic [ref=f24e104]: Profit Split
+            - listitem [ref=f24e105]:
+              - link "Equipment" [ref=f24e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f24e107]
+                - generic [ref=f24e111]: Equipment
+        - generic [ref=f24e112]:
+          - generic [ref=f24e113]: Insights
+          - list [ref=f24e115]:
+            - listitem [ref=f24e116]:
+              - link "Reports" [ref=f24e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f24e118]
+                - generic [ref=f24e119]: Reports
+      - generic [ref=f24e121]:
+        - generic [ref=f24e122]: "N"
+        - generic [ref=f24e123]:
+          - paragraph [ref=f24e124]: Nikhil
+          - paragraph [ref=f24e125]: owner
+        - button "Sign out" [ref=f24e126]:
+          - img [ref=f24e127]
+    - main [ref=f24e130]:
+      - generic [ref=f24e131]:
+        - button "Toggle Sidebar" [ref=f24e132]:
+          - img
+          - generic [ref=f24e133]: Toggle Sidebar
+        - heading "Projects" [level=1] [ref=f24e134]
+        - link "New Project" [ref=f24e136] [cursor=pointer]:
+          - /url: /projects/new
+          - img [ref=f24e137]
+          - text: New Project
+      - generic [ref=f24e139]:
+        - link "Pixel Studio Website Redesign Pixel Studio · web · 60h est. active" [ref=f24e140] [cursor=pointer]:
+          - /url: /projects/63d6fc64-abed-4ec0-896e-99f95695b6e9
+          - generic [ref=f24e141]:
+            - paragraph [ref=f24e142]: Pixel Studio Website Redesign
+            - paragraph [ref=f24e143]: Pixel Studio · web · 60h est.
+          - generic [ref=f24e144]: active
+        - link "Acme Corporate Brand Film Acme Productions · video · 40h est. active" [ref=f24e145] [cursor=pointer]:
+          - /url: /projects/9569dc29-3274-47a7-b6fc-1ca25e79d503
+          - generic [ref=f24e146]:
+            - paragraph [ref=f24e147]: Acme Corporate Brand Film
+            - paragraph [ref=f24e148]: Acme Productions · video · 40h est.
+          - generic [ref=f24e149]: active
+  - region "Notifications alt+T"
+  - alert [ref=f24e150]

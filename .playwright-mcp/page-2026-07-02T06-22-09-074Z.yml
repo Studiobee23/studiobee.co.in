@@ -1,0 +1,139 @@
+- generic [active] [ref=f28e1]:
+  - generic [ref=f28e2]:
+    - generic [ref=f28e5]:
+      - link "StudioBee" [ref=f28e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f28e8]
+      - generic [ref=f28e9]:
+        - list [ref=f28e12]:
+          - listitem [ref=f28e13]:
+            - link "Dashboard" [ref=f28e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f28e15]
+              - generic [ref=f28e20]: Dashboard
+        - generic [ref=f28e21]:
+          - generic [ref=f28e22]: CRM
+          - list [ref=f28e24]:
+            - listitem [ref=f28e25]:
+              - link "Clients" [ref=f28e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f28e28]
+                - generic [ref=f28e33]: Clients
+        - generic [ref=f28e34]:
+          - generic [ref=f28e35]: Projects
+          - list [ref=f28e37]:
+            - listitem [ref=f28e38]:
+              - link "Projects" [ref=f28e39] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f28e40]
+                - generic [ref=f28e42]: Projects
+        - generic [ref=f28e43]:
+          - generic [ref=f28e44]: Tasks
+          - list [ref=f28e46]:
+            - listitem [ref=f28e47]:
+              - link "Tasks" [ref=f28e48] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f28e49]
+                - generic [ref=f28e52]: Tasks
+        - generic [ref=f28e53]:
+          - generic [ref=f28e54]: Billing
+          - list [ref=f28e56]:
+            - listitem [ref=f28e57]:
+              - link "Quotes" [ref=f28e58] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f28e59]
+                - generic [ref=f28e62]: Quotes
+            - listitem [ref=f28e63]:
+              - link "Invoices" [ref=f28e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f28e65]
+                - generic [ref=f28e68]: Invoices
+            - listitem [ref=f28e69]:
+              - link "Receipts" [ref=f28e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f28e71]
+                - generic [ref=f28e74]: Receipts
+        - generic [ref=f28e75]:
+          - generic [ref=f28e76]: Admin
+          - list [ref=f28e78]:
+            - listitem [ref=f28e79]:
+              - link "Team" [ref=f28e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f28e81]
+                - generic [ref=f28e93]: Team
+            - listitem [ref=f28e94]:
+              - link "Cost Model" [ref=f28e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f28e96]
+                - generic [ref=f28e98]: Cost Model
+            - listitem [ref=f28e99]:
+              - link "Profit Split" [ref=f28e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f28e101]
+                - generic [ref=f28e104]: Profit Split
+            - listitem [ref=f28e105]:
+              - link "Equipment" [ref=f28e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f28e107]
+                - generic [ref=f28e111]: Equipment
+        - generic [ref=f28e112]:
+          - generic [ref=f28e113]: Insights
+          - list [ref=f28e115]:
+            - listitem [ref=f28e116]:
+              - link "Reports" [ref=f28e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f28e118]
+                - generic [ref=f28e119]: Reports
+      - generic [ref=f28e121]:
+        - generic [ref=f28e122]: "N"
+        - generic [ref=f28e123]:
+          - paragraph [ref=f28e124]: Nikhil
+          - paragraph [ref=f28e125]: owner
+        - button "Sign out" [ref=f28e126]:
+          - img [ref=f28e127]
+    - main [ref=f28e130]:
+      - generic [ref=f28e203]:
+        - button "Toggle Sidebar" [ref=f28e204]:
+          - img
+          - generic [ref=f28e205]: Toggle Sidebar
+        - heading "Bright Spark Media" [level=1] [ref=f28e206]
+        - link "← All clients" [ref=f28e208] [cursor=pointer]:
+          - /url: /clients
+      - generic [ref=f28e211]:
+        - generic [ref=f28e212]:
+          - generic [ref=f28e213]:
+            - heading "Client details" [level=3] [ref=f28e214]
+            - button "Edit" [ref=f28e215]:
+              - img [ref=f28e216]
+              - text: Edit
+          - generic [ref=f28e219]:
+            - generic [ref=f28e220]:
+              - paragraph [ref=f28e221]: Contact person
+              - paragraph [ref=f28e222]: Arjun Kapoor
+            - generic [ref=f28e223]:
+              - paragraph [ref=f28e224]: Email
+              - paragraph [ref=f28e225]: arjun@brightspark.in
+            - generic [ref=f28e226]:
+              - paragraph [ref=f28e227]: Phone
+              - paragraph [ref=f28e228]: +91 9876543210
+            - generic [ref=f28e229]:
+              - paragraph [ref=f28e230]: GSTIN
+              - paragraph [ref=f28e231]: —
+            - generic [ref=f28e232]:
+              - paragraph [ref=f28e233]: City
+              - paragraph [ref=f28e234]: Hyderabad
+            - generic [ref=f28e235]:
+              - paragraph [ref=f28e236]: State
+              - paragraph [ref=f28e237]: Telangana
+            - generic [ref=f28e238]:
+              - paragraph [ref=f28e239]: Lead source
+              - paragraph [ref=f28e240]: referral
+        - generic [ref=f28e241]:
+          - heading "Quotes, invoices & receipts" [level=3] [ref=f28e242]
+          - paragraph [ref=f28e243]: Nothing yet for this client.
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=f28e244]:
+        - img [ref=f28e246]
+        - generic [ref=f28e250]: Client added
+  - alert [ref=f28e158]

@@ -1,0 +1,172 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - link:
+              - /url: /
+              - img
+          - generic:
+            - generic:
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /
+                      - img
+                      - generic: Dashboard
+            - generic:
+              - generic: CRM
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /clients
+                      - img
+                      - generic: Clients
+            - generic:
+              - generic: Projects
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /projects
+                      - img
+                      - generic: Projects
+            - generic:
+              - generic: Tasks
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /tasks
+                      - img
+                      - generic: Tasks
+            - generic:
+              - generic: Billing
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /quotes
+                      - img
+                      - generic: Quotes
+                  - listitem:
+                    - link:
+                      - /url: /invoices
+                      - img
+                      - generic: Invoices
+                  - listitem:
+                    - link:
+                      - /url: /receipts
+                      - img
+                      - generic: Receipts
+            - generic:
+              - generic: Admin
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /admin/team
+                      - img
+                      - generic: Team
+                  - listitem:
+                    - link:
+                      - /url: /admin/cost-model
+                      - img
+                      - generic: Cost Model
+                  - listitem:
+                    - link:
+                      - /url: /admin/profit-split
+                      - img
+                      - generic: Profit Split
+                  - listitem:
+                    - link:
+                      - /url: /admin/equipment
+                      - img
+                      - generic: Equipment
+            - generic:
+              - generic: Insights
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /reports
+                      - img
+                      - generic: Reports
+          - generic:
+            - generic:
+              - generic: "N"
+              - generic:
+                - paragraph: Nikhil
+                - paragraph: owner
+              - button:
+                - img
+    - main:
+      - generic:
+        - button:
+          - img
+          - generic: Toggle Sidebar
+        - heading [level=1]: Cost Model
+      - generic:
+        - generic:
+          - generic:
+            - tablist:
+              - tab: Roles
+              - tab: Overheads
+              - tab [selected]: Presets
+            - tabpanel:
+              - generic:
+                - generic:
+                  - heading [level=3]: Service Presets
+                  - button [expanded]:
+                    - img
+                    - text: Add preset
+                - generic:
+                  - table:
+                    - rowgroup:
+                      - row:
+                        - columnheader: Category
+                        - columnheader: Name
+                        - columnheader: Markup
+                        - columnheader
+  - region "Notifications alt+T"
+  - alert
+  - dialog "Add preset" [ref=f32e260]:
+    - heading "Add preset" [level=2] [ref=f32e262]
+    - generic [ref=f32e263]:
+      - generic [ref=f32e264]:
+        - generic [ref=f32e265]:
+          - generic [ref=f32e266]: Category
+          - textbox "cinematography" [ref=f32e267]: video
+        - generic [ref=f32e268]:
+          - generic [ref=f32e269]: Name
+          - textbox "1-Day Shoot + Edit" [ref=f32e270]: 1-Day Corporate Shoot
+      - generic [ref=f32e271]:
+        - generic [ref=f32e272]: Role hours
+        - generic [ref=f32e273]:
+          - generic [ref=f32e274]:
+            - generic [ref=f32e275]: Cinematographer
+            - spinbutton "hrs" [ref=f32e276]: "8"
+          - generic [ref=f32e277]:
+            - generic [ref=f32e278]: Graphic Designer
+            - spinbutton "hrs" [ref=f32e279]
+          - generic [ref=f32e280]:
+            - generic [ref=f32e281]: Manager
+            - spinbutton "hrs" [ref=f32e282]: "2"
+          - generic [ref=f32e283]:
+            - generic [ref=f32e284]: Website Design and Development
+            - spinbutton "hrs" [ref=f32e285]
+      - generic [ref=f32e286]:
+        - generic [ref=f32e287]: Default overheads
+        - generic [ref=f32e289]:
+          - checkbox "Camera Rental (₹5000)" [checked] [active] [ref=f32e290]
+          - text: Camera Rental (₹5000)
+      - generic [ref=f32e291]:
+        - generic [ref=f32e292]: Default markup (%)
+        - spinbutton [ref=f32e293]: "0"
+    - button "Save" [ref=f32e297]
+    - button "Close" [ref=f32e295]:
+      - img
+      - generic [ref=f32e296]: Close

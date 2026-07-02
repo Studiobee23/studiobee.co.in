@@ -1,0 +1,135 @@
+- generic [active] [ref=f30e1]:
+  - generic [ref=f30e2]:
+    - generic [ref=f30e5]:
+      - link "StudioBee" [ref=f30e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f30e8]
+      - generic [ref=f30e9]:
+        - list [ref=f30e12]:
+          - listitem [ref=f30e13]:
+            - link "Dashboard" [ref=f30e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f30e15]
+              - generic [ref=f30e20]: Dashboard
+        - generic [ref=f30e21]:
+          - generic [ref=f30e22]: CRM
+          - list [ref=f30e24]:
+            - listitem [ref=f30e25]:
+              - link "Clients" [ref=f30e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f30e27]
+                - generic [ref=f30e32]: Clients
+        - generic [ref=f30e33]:
+          - generic [ref=f30e34]: Projects
+          - list [ref=f30e36]:
+            - listitem [ref=f30e37]:
+              - link "Projects" [ref=f30e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f30e39]
+                - generic [ref=f30e41]: Projects
+        - generic [ref=f30e42]:
+          - generic [ref=f30e43]: Tasks
+          - list [ref=f30e45]:
+            - listitem [ref=f30e46]:
+              - link "Tasks" [ref=f30e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f30e48]
+                - generic [ref=f30e51]: Tasks
+        - generic [ref=f30e52]:
+          - generic [ref=f30e53]: Billing
+          - list [ref=f30e55]:
+            - listitem [ref=f30e56]:
+              - link "Quotes" [ref=f30e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f30e59]
+                - generic [ref=f30e62]: Quotes
+            - listitem [ref=f30e63]:
+              - link "Invoices" [ref=f30e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f30e65]
+                - generic [ref=f30e68]: Invoices
+            - listitem [ref=f30e69]:
+              - link "Receipts" [ref=f30e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f30e71]
+                - generic [ref=f30e74]: Receipts
+        - generic [ref=f30e75]:
+          - generic [ref=f30e76]: Admin
+          - list [ref=f30e78]:
+            - listitem [ref=f30e79]:
+              - link "Team" [ref=f30e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f30e81]
+                - generic [ref=f30e93]: Team
+            - listitem [ref=f30e94]:
+              - link "Cost Model" [ref=f30e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f30e96]
+                - generic [ref=f30e98]: Cost Model
+            - listitem [ref=f30e99]:
+              - link "Profit Split" [ref=f30e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f30e101]
+                - generic [ref=f30e104]: Profit Split
+            - listitem [ref=f30e105]:
+              - link "Equipment" [ref=f30e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f30e107]
+                - generic [ref=f30e111]: Equipment
+        - generic [ref=f30e112]:
+          - generic [ref=f30e113]: Insights
+          - list [ref=f30e115]:
+            - listitem [ref=f30e116]:
+              - link "Reports" [ref=f30e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f30e118]
+                - generic [ref=f30e119]: Reports
+      - generic [ref=f30e121]:
+        - generic [ref=f30e122]: "N"
+        - generic [ref=f30e123]:
+          - paragraph [ref=f30e124]: Nikhil
+          - paragraph [ref=f30e125]: owner
+        - button "Sign out" [ref=f30e126]:
+          - img [ref=f30e127]
+    - main [ref=f30e130]:
+      - generic [ref=f30e356]:
+        - button "Toggle Sidebar" [ref=f30e357]:
+          - img
+          - generic [ref=f30e358]: Toggle Sidebar
+        - heading "SB-I-003" [level=1] [ref=f30e359]
+      - generic [ref=f30e362]:
+        - generic [ref=f30e364]:
+          - generic [ref=f30e365]:
+            - paragraph [ref=f30e366]: Bright Spark Social Media Campaign
+            - paragraph [ref=f30e367]: Bright Spark Media
+          - generic [ref=f30e368]: draft
+        - generic [ref=f30e369]:
+          - heading "Line items" [level=3] [ref=f30e370]
+          - generic [ref=f30e372]:
+            - generic [ref=f30e373]:
+              - paragraph [ref=f30e374]: Social Media Content Creation (3 months)
+              - paragraph [ref=f30e375]: Qty 1 × ₹25000
+            - paragraph [ref=f30e376]: ₹25000
+        - generic [ref=f30e378]:
+          - generic [ref=f30e379]:
+            - generic [ref=f30e380]: Subtotal
+            - generic [ref=f30e381]: ₹25000
+          - generic [ref=f30e382]:
+            - generic [ref=f30e383]: GST (18%, CGST+SGST)
+            - generic [ref=f30e384]: ₹4500
+          - generic [ref=f30e385]:
+            - generic [ref=f30e386]: Discount
+            - generic [ref=f30e387]: "-₹0"
+          - generic [ref=f30e388]:
+            - generic [ref=f30e389]: Total
+            - generic [ref=f30e390]: ₹29500
+        - generic [ref=f30e391]:
+          - button "Generate PDF" [ref=f30e392]
+          - button "Convert to receipt" [ref=f30e393]
+          - button "Mark as Paid" [ref=f30e394]
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=f30e395]:
+        - img [ref=f30e397]
+        - generic [ref=f30e401]: Converted to invoice
+  - alert [ref=f30e200]

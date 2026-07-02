@@ -1,0 +1,161 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - link:
+              - /url: /
+              - img
+          - generic:
+            - generic:
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /
+                      - img
+                      - generic: Dashboard
+            - generic:
+              - generic: CRM
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /clients
+                      - img
+                      - generic: Clients
+            - generic:
+              - generic: Projects
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /projects
+                      - img
+                      - generic: Projects
+            - generic:
+              - generic: Tasks
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /tasks
+                      - img
+                      - generic: Tasks
+            - generic:
+              - generic: Billing
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /quotes
+                      - img
+                      - generic: Quotes
+                  - listitem:
+                    - link:
+                      - /url: /invoices
+                      - img
+                      - generic: Invoices
+                  - listitem:
+                    - link:
+                      - /url: /receipts
+                      - img
+                      - generic: Receipts
+            - generic:
+              - generic: Admin
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /admin/team
+                      - img
+                      - generic: Team
+                  - listitem:
+                    - link:
+                      - /url: /admin/cost-model
+                      - img
+                      - generic: Cost Model
+                  - listitem:
+                    - link:
+                      - /url: /admin/profit-split
+                      - img
+                      - generic: Profit Split
+                  - listitem:
+                    - link:
+                      - /url: /admin/equipment
+                      - img
+                      - generic: Equipment
+            - generic:
+              - generic: Insights
+              - generic:
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /reports
+                      - img
+                      - generic: Reports
+          - generic:
+            - generic:
+              - generic: "N"
+              - generic:
+                - paragraph: Nikhil
+                - paragraph: owner
+              - button:
+                - img
+    - main:
+      - generic:
+        - button:
+          - img
+          - generic: Toggle Sidebar
+        - heading [level=1]: Equipment Inventory
+        - generic:
+          - button: + Add Equipment
+      - generic:
+        - generic:
+          - generic:
+            - table:
+              - rowgroup:
+                - row:
+                  - columnheader: Name
+                  - columnheader: Purchase Cost
+                  - columnheader: GST
+                  - columnheader: Daily Rental
+                  - columnheader: Purchase Date
+                  - columnheader: Active
+                  - columnheader
+              - rowgroup:
+                - row:
+                  - cell: No equipment yet.
+  - region "Notifications alt+T"
+  - alert
+  - dialog "Add Equipment" [ref=f41e155]:
+    - heading "Add Equipment" [level=2] [ref=f41e157]
+    - generic [ref=f41e158]:
+      - generic [ref=f41e159]:
+        - text: Name *
+        - textbox [active] [ref=f41e160]
+      - generic [ref=f41e161]:
+        - text: Description
+        - textbox [ref=f41e162]
+      - generic [ref=f41e163]:
+        - generic [ref=f41e164]:
+          - text: Purchase Cost (₹)
+          - spinbutton [ref=f41e165]
+        - generic [ref=f41e166]:
+          - text: GST Amount (₹)
+          - spinbutton [ref=f41e167]
+      - generic [ref=f41e168]:
+        - generic [ref=f41e169]:
+          - text: Daily Rental (₹)
+          - spinbutton [ref=f41e170]
+        - generic [ref=f41e171]:
+          - text: Purchase Date
+          - textbox [ref=f41e172]
+      - generic [ref=f41e173]:
+        - text: Receipt URL
+        - textbox "https://..." [ref=f41e174]
+      - button "Add" [disabled]
+    - button "Close" [ref=f41e175]:
+      - img
+      - generic [ref=f41e176]: Close

@@ -1,0 +1,135 @@
+- generic [active] [ref=f45e1]:
+  - generic [ref=f45e207]:
+    - generic [ref=f45e210]:
+      - link "StudioBee" [ref=f45e212] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f45e213]
+      - generic [ref=f45e214]:
+        - list [ref=f45e217]:
+          - listitem [ref=f45e218]:
+            - link "Dashboard" [ref=f45e219] [cursor=pointer]:
+              - /url: /
+              - img [ref=f45e221]
+              - generic [ref=f45e226]: Dashboard
+        - generic [ref=f45e227]:
+          - generic [ref=f45e228]: CRM
+          - list [ref=f45e230]:
+            - listitem [ref=f45e231]:
+              - link "Clients" [ref=f45e232] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f45e233]
+                - generic [ref=f45e238]: Clients
+        - generic [ref=f45e239]:
+          - generic [ref=f45e240]: Projects
+          - list [ref=f45e242]:
+            - listitem [ref=f45e243]:
+              - link "Projects" [ref=f45e244] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f45e245]
+                - generic [ref=f45e247]: Projects
+        - generic [ref=f45e248]:
+          - generic [ref=f45e249]: Tasks
+          - list [ref=f45e251]:
+            - listitem [ref=f45e252]:
+              - link "Tasks" [ref=f45e253] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f45e254]
+                - generic [ref=f45e257]: Tasks
+        - generic [ref=f45e258]:
+          - generic [ref=f45e259]: Billing
+          - list [ref=f45e261]:
+            - listitem [ref=f45e262]:
+              - link "Quotes" [ref=f45e263] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f45e264]
+                - generic [ref=f45e267]: Quotes
+            - listitem [ref=f45e268]:
+              - link "Invoices" [ref=f45e269] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f45e270]
+                - generic [ref=f45e273]: Invoices
+            - listitem [ref=f45e274]:
+              - link "Receipts" [ref=f45e275] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f45e276]
+                - generic [ref=f45e279]: Receipts
+        - generic [ref=f45e280]:
+          - generic [ref=f45e281]: Admin
+          - list [ref=f45e283]:
+            - listitem [ref=f45e284]:
+              - link "Team" [ref=f45e285] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f45e286]
+                - generic [ref=f45e298]: Team
+            - listitem [ref=f45e299]:
+              - link "Cost Model" [ref=f45e300] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f45e301]
+                - generic [ref=f45e303]: Cost Model
+            - listitem [ref=f45e304]:
+              - link "Profit Split" [ref=f45e305] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f45e306]
+                - generic [ref=f45e309]: Profit Split
+            - listitem [ref=f45e310]:
+              - link "Equipment" [ref=f45e311] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f45e312]
+                - generic [ref=f45e316]: Equipment
+        - generic [ref=f45e317]:
+          - generic [ref=f45e318]: Insights
+          - list [ref=f45e320]:
+            - listitem [ref=f45e321]:
+              - link "Reports" [ref=f45e322] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f45e323]
+                - generic [ref=f45e324]: Reports
+      - generic [ref=f45e326]:
+        - generic [ref=f45e327]: "N"
+        - generic [ref=f45e328]:
+          - paragraph [ref=f45e329]: Nikhil
+          - paragraph [ref=f45e330]: owner
+        - button "Sign out" [ref=f45e331]:
+          - img [ref=f45e332]
+    - main [ref=f45e335]:
+      - generic [ref=f45e336]:
+        - button "Toggle Sidebar" [ref=f45e337]:
+          - img
+          - generic [ref=f45e338]: Toggle Sidebar
+        - heading "Dashboard" [level=1] [ref=f45e339]
+      - generic [ref=f45e341]:
+        - generic [ref=f45e342]:
+          - heading "Welcome back, Nikhil" [level=2] [ref=f45e343]
+          - generic [ref=f45e344]:
+            - link "Client" [ref=f45e345] [cursor=pointer]:
+              - /url: /clients?new=1
+              - img [ref=f45e346]
+              - text: Client
+            - link "Quote" [ref=f45e347] [cursor=pointer]:
+              - /url: /quotes/new
+              - img [ref=f45e348]
+              - text: Quote
+        - generic [ref=f45e349]:
+          - generic [ref=f45e350]:
+            - generic [ref=f45e351]:
+              - heading "Recent Clients" [level=3] [ref=f45e352]
+              - link "View all" [ref=f45e353] [cursor=pointer]:
+                - /url: /clients
+            - link "Acme Productions Mumbai" [ref=f45e355] [cursor=pointer]:
+              - /url: /clients/0cf74b0c-db7d-4a77-8dec-f19af5d4dd7f
+              - generic [ref=f45e356]:
+                - paragraph [ref=f45e357]: Acme Productions
+                - paragraph [ref=f45e358]: Mumbai
+          - generic [ref=f45e359]:
+            - generic [ref=f45e360]:
+              - heading "Recent Quotes" [level=3] [ref=f45e361]
+              - link "View all" [ref=f45e362] [cursor=pointer]:
+                - /url: /quotes
+            - link "SB-Q-004 · Acme Corporate Brand Film draft ₹11900.06" [ref=f45e364] [cursor=pointer]:
+              - /url: /quotes/bd0185fc-720d-4c1f-b407-92cb63663261
+              - generic [ref=f45e365]:
+                - paragraph [ref=f45e366]: SB-Q-004 · Acme Corporate Brand Film
+                - paragraph [ref=f45e367]: draft
+              - paragraph [ref=f45e368]: ₹11900.06
+  - region "Notifications alt+T"
+  - alert [ref=f45e191]

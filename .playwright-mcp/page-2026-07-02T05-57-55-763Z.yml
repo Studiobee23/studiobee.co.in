@@ -1,0 +1,117 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e2]:
+    - generic [ref=f5e5]:
+      - link "StudioBee" [ref=f5e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f5e8]
+      - generic [ref=f5e9]:
+        - list [ref=f5e12]:
+          - listitem [ref=f5e13]:
+            - link "Dashboard" [ref=f5e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f5e15]
+              - generic [ref=f5e20]: Dashboard
+        - generic [ref=f5e21]:
+          - generic [ref=f5e22]: CRM
+          - list [ref=f5e24]:
+            - listitem [ref=f5e25]:
+              - link "Clients" [ref=f5e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f5e28]
+                - generic [ref=f5e33]: Clients
+        - generic [ref=f5e34]:
+          - generic [ref=f5e35]: Projects
+          - list [ref=f5e37]:
+            - listitem [ref=f5e38]:
+              - link "Projects" [ref=f5e39] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f5e40]
+                - generic [ref=f5e42]: Projects
+        - generic [ref=f5e43]:
+          - generic [ref=f5e44]: Tasks
+          - list [ref=f5e46]:
+            - listitem [ref=f5e47]:
+              - link "Tasks" [ref=f5e48] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f5e49]
+                - generic [ref=f5e52]: Tasks
+        - generic [ref=f5e53]:
+          - generic [ref=f5e54]: Billing
+          - list [ref=f5e56]:
+            - listitem [ref=f5e57]:
+              - link "Quotes" [ref=f5e58] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f5e59]
+                - generic [ref=f5e62]: Quotes
+            - listitem [ref=f5e63]:
+              - link "Invoices" [ref=f5e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f5e65]
+                - generic [ref=f5e68]: Invoices
+            - listitem [ref=f5e69]:
+              - link "Receipts" [ref=f5e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f5e71]
+                - generic [ref=f5e74]: Receipts
+        - generic [ref=f5e75]:
+          - generic [ref=f5e76]: Admin
+          - list [ref=f5e78]:
+            - listitem [ref=f5e79]:
+              - link "Team" [ref=f5e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f5e81]
+                - generic [ref=f5e93]: Team
+            - listitem [ref=f5e94]:
+              - link "Cost Model" [ref=f5e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f5e96]
+                - generic [ref=f5e98]: Cost Model
+            - listitem [ref=f5e99]:
+              - link "Profit Split" [ref=f5e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f5e101]
+                - generic [ref=f5e104]: Profit Split
+            - listitem [ref=f5e105]:
+              - link "Equipment" [ref=f5e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f5e107]
+                - generic [ref=f5e111]: Equipment
+        - generic [ref=f5e112]:
+          - generic [ref=f5e113]: Insights
+          - list [ref=f5e115]:
+            - listitem [ref=f5e116]:
+              - link "Reports" [ref=f5e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f5e118]
+                - generic [ref=f5e119]: Reports
+      - generic [ref=f5e121]:
+        - generic [ref=f5e122]: "N"
+        - generic [ref=f5e123]:
+          - paragraph [ref=f5e124]: Nikhil
+          - paragraph [ref=f5e125]: owner
+        - button "Sign out" [ref=f5e126]:
+          - img [ref=f5e127]
+    - main [ref=f5e130]:
+      - generic [ref=f5e131]:
+        - button "Toggle Sidebar" [ref=f5e132]:
+          - img
+          - generic [ref=f5e133]: Toggle Sidebar
+        - heading "Clients" [level=1] [ref=f5e134]
+      - generic [ref=f5e137]:
+        - generic [ref=f5e138]:
+          - generic [ref=f5e139]:
+            - img [ref=f5e140]
+            - textbox "Search clients…" [ref=f5e143]
+          - button "Add client" [ref=f5e144]:
+            - img
+            - text: Add client
+        - link "Acme Productions Rahul Sharma · Mumbai video corporate" [ref=f5e147] [cursor=pointer]:
+          - /url: /clients/0cf74b0c-db7d-4a77-8dec-f19af5d4dd7f
+          - generic [ref=f5e148]:
+            - paragraph [ref=f5e149]: Acme Productions
+            - paragraph [ref=f5e150]: Rahul Sharma · Mumbai
+          - generic [ref=f5e151]:
+            - generic [ref=f5e152]: video
+            - generic [ref=f5e153]: corporate
+  - region "Notifications alt+T"
+  - alert [ref=f5e154]

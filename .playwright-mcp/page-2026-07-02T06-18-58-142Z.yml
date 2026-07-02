@@ -1,0 +1,132 @@
+- generic [active] [ref=f21e1]:
+  - generic [ref=f21e2]:
+    - generic [ref=f21e5]:
+      - link "StudioBee" [ref=f21e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f21e8]
+      - generic [ref=f21e9]:
+        - list [ref=f21e12]:
+          - listitem [ref=f21e13]:
+            - link "Dashboard" [ref=f21e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f21e15]
+              - generic [ref=f21e20]: Dashboard
+        - generic [ref=f21e21]:
+          - generic [ref=f21e22]: CRM
+          - list [ref=f21e24]:
+            - listitem [ref=f21e25]:
+              - link "Clients" [ref=f21e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f21e27]
+                - generic [ref=f21e32]: Clients
+        - generic [ref=f21e33]:
+          - generic [ref=f21e34]: Projects
+          - list [ref=f21e36]:
+            - listitem [ref=f21e37]:
+              - link "Projects" [ref=f21e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f21e39]
+                - generic [ref=f21e41]: Projects
+        - generic [ref=f21e42]:
+          - generic [ref=f21e43]: Tasks
+          - list [ref=f21e45]:
+            - listitem [ref=f21e46]:
+              - link "Tasks" [ref=f21e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f21e48]
+                - generic [ref=f21e51]: Tasks
+        - generic [ref=f21e52]:
+          - generic [ref=f21e53]: Billing
+          - list [ref=f21e55]:
+            - listitem [ref=f21e56]:
+              - link "Quotes" [ref=f21e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f21e58]
+                - generic [ref=f21e61]: Quotes
+            - listitem [ref=f21e62]:
+              - link "Invoices" [ref=f21e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f21e64]
+                - generic [ref=f21e67]: Invoices
+            - listitem [ref=f21e68]:
+              - link "Receipts" [ref=f21e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f21e71]
+                - generic [ref=f21e74]: Receipts
+        - generic [ref=f21e75]:
+          - generic [ref=f21e76]: Admin
+          - list [ref=f21e78]:
+            - listitem [ref=f21e79]:
+              - link "Team" [ref=f21e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f21e81]
+                - generic [ref=f21e93]: Team
+            - listitem [ref=f21e94]:
+              - link "Cost Model" [ref=f21e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f21e96]
+                - generic [ref=f21e98]: Cost Model
+            - listitem [ref=f21e99]:
+              - link "Profit Split" [ref=f21e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f21e101]
+                - generic [ref=f21e104]: Profit Split
+            - listitem [ref=f21e105]:
+              - link "Equipment" [ref=f21e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f21e107]
+                - generic [ref=f21e111]: Equipment
+        - generic [ref=f21e112]:
+          - generic [ref=f21e113]: Insights
+          - list [ref=f21e115]:
+            - listitem [ref=f21e116]:
+              - link "Reports" [ref=f21e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f21e118]
+                - generic [ref=f21e119]: Reports
+      - generic [ref=f21e121]:
+        - generic [ref=f21e122]: "N"
+        - generic [ref=f21e123]:
+          - paragraph [ref=f21e124]: Nikhil
+          - paragraph [ref=f21e125]: owner
+        - button "Sign out" [ref=f21e126]:
+          - img [ref=f21e127]
+    - main [ref=f21e130]:
+      - generic [ref=f21e131]:
+        - button "Toggle Sidebar" [ref=f21e132]:
+          - img
+          - generic [ref=f21e133]: Toggle Sidebar
+        - heading "SB-R-001" [level=1] [ref=f21e134]
+      - generic [ref=f21e137]:
+        - generic [ref=f21e139]:
+          - generic [ref=f21e140]:
+            - paragraph [ref=f21e141]: Acme Corporate Brand Film
+            - paragraph [ref=f21e142]: Acme Productions
+          - generic [ref=f21e143]: paid
+        - generic [ref=f21e144]:
+          - heading "Line items" [level=3] [ref=f21e145]
+          - generic [ref=f21e147]:
+            - generic [ref=f21e148]:
+              - paragraph [ref=f21e149]: 1-Day Corporate Shoot
+              - paragraph [ref=f21e150]: Qty 1 × ₹10084.8
+            - paragraph [ref=f21e151]: ₹10084.8
+        - generic [ref=f21e153]:
+          - generic [ref=f21e154]:
+            - generic [ref=f21e155]: Subtotal
+            - generic [ref=f21e156]: ₹10084.8
+          - generic [ref=f21e157]:
+            - generic [ref=f21e158]: GST (18%, CGST+SGST)
+            - generic [ref=f21e159]: ₹1815.26
+          - generic [ref=f21e160]:
+            - generic [ref=f21e161]: Discount
+            - generic [ref=f21e162]: "-₹0"
+          - generic [ref=f21e163]:
+            - generic [ref=f21e164]: Total
+            - generic [ref=f21e165]: ₹11900.06
+        - button "Generate PDF" [ref=f21e167]
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=f21e170]:
+        - img [ref=f21e172]
+        - generic [ref=f21e176]: Marked as paid
+  - alert [ref=f21e169]

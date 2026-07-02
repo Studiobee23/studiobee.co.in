@@ -1,0 +1,113 @@
+- generic [active] [ref=f13e1]:
+  - generic [ref=f13e2]:
+    - generic [ref=f13e5]:
+      - link "StudioBee" [ref=f13e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f13e8]
+      - generic [ref=f13e9]:
+        - list [ref=f13e12]:
+          - listitem [ref=f13e13]:
+            - link "Dashboard" [ref=f13e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f13e15]
+              - generic [ref=f13e20]: Dashboard
+        - generic [ref=f13e21]:
+          - generic [ref=f13e22]: CRM
+          - list [ref=f13e24]:
+            - listitem [ref=f13e25]:
+              - link "Clients" [ref=f13e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f13e27]
+                - generic [ref=f13e32]: Clients
+        - generic [ref=f13e33]:
+          - generic [ref=f13e34]: Projects
+          - list [ref=f13e36]:
+            - listitem [ref=f13e37]:
+              - link "Projects" [ref=f13e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f13e39]
+                - generic [ref=f13e41]: Projects
+        - generic [ref=f13e42]:
+          - generic [ref=f13e43]: Tasks
+          - list [ref=f13e45]:
+            - listitem [ref=f13e46]:
+              - link "Tasks" [ref=f13e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f13e48]
+                - generic [ref=f13e51]: Tasks
+        - generic [ref=f13e52]:
+          - generic [ref=f13e53]: Billing
+          - list [ref=f13e55]:
+            - listitem [ref=f13e56]:
+              - link "Quotes" [ref=f13e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f13e58]
+                - generic [ref=f13e61]: Quotes
+            - listitem [ref=f13e62]:
+              - link "Invoices" [ref=f13e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f13e64]
+                - generic [ref=f13e67]: Invoices
+            - listitem [ref=f13e68]:
+              - link "Receipts" [ref=f13e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f13e70]
+                - generic [ref=f13e73]: Receipts
+        - generic [ref=f13e74]:
+          - generic [ref=f13e75]: Admin
+          - list [ref=f13e77]:
+            - listitem [ref=f13e78]:
+              - link "Team" [ref=f13e79] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f13e80]
+                - generic [ref=f13e92]: Team
+            - listitem [ref=f13e93]:
+              - link "Cost Model" [ref=f13e94] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f13e95]
+                - generic [ref=f13e97]: Cost Model
+            - listitem [ref=f13e98]:
+              - link "Profit Split" [ref=f13e99] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f13e100]
+                - generic [ref=f13e103]: Profit Split
+            - listitem [ref=f13e104]:
+              - link "Equipment" [ref=f13e105] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f13e106]
+                - generic [ref=f13e110]: Equipment
+        - generic [ref=f13e111]:
+          - generic [ref=f13e112]: Insights
+          - list [ref=f13e114]:
+            - listitem [ref=f13e115]:
+              - link "Reports" [ref=f13e116] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f13e118]
+                - generic [ref=f13e119]: Reports
+      - generic [ref=f13e121]:
+        - generic [ref=f13e122]: "N"
+        - generic [ref=f13e123]:
+          - paragraph [ref=f13e124]: Nikhil
+          - paragraph [ref=f13e125]: owner
+        - button "Sign out" [ref=f13e126]:
+          - img [ref=f13e127]
+    - main [ref=f13e130]:
+      - generic [ref=f13e131]:
+        - button "Toggle Sidebar" [ref=f13e132]:
+          - img
+          - generic [ref=f13e133]: Toggle Sidebar
+        - heading "Hours Report" [level=1] [ref=f13e134]
+      - table [ref=f13e137]:
+        - rowgroup [ref=f13e138]:
+          - row "Project Client Est. Hours Consumed Hours Remaining Status" [ref=f13e139]:
+            - columnheader "Project" [ref=f13e140]
+            - columnheader "Client" [ref=f13e141]
+            - columnheader "Est. Hours" [ref=f13e142]
+            - columnheader "Consumed Hours" [ref=f13e143]
+            - columnheader "Remaining" [ref=f13e144]
+            - columnheader "Status" [ref=f13e145]
+        - rowgroup [ref=f13e146]:
+          - row "No projects yet." [ref=f13e147]:
+            - cell "No projects yet." [ref=f13e148]
+  - region "Notifications alt+T"
+  - alert [ref=f13e149]

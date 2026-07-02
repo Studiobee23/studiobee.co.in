@@ -1,0 +1,15 @@
+- generic [active] [ref=f45e1]:
+  - generic [ref=f45e193]:
+    - img "StudioBee" [ref=f45e194]
+    - paragraph [ref=f45e195]: Sign in with your StudioBee account.
+    - generic [ref=f45e196]:
+      - generic [ref=f45e197]:
+        - generic [ref=f45e198]: Email
+        - textbox "Email" [ref=f45e199]: nikhilmail2009@gmail.com
+      - generic [ref=f45e200]:
+        - generic [ref=f45e201]: Password
+        - textbox "Password" [ref=f45e202]: nikhilmail2009
+      - paragraph [ref=f45e205]: Invalid login credentials
+      - button "Sign in" [ref=f45e203]
+  - region "Notifications alt+T"
+  - alert [ref=f45e191]

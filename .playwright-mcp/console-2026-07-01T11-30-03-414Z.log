@@ -1,0 +1,3 @@
+[   44689ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ijhzwnkkadpalkzhassk.supabase.co/auth/v1/token?grant_type=password:0
+[   96656ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ijhzwnkkadpalkzhassk.supabase.co/auth/v1/token?grant_type=password:0
+[  127630ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ijhzwnkkadpalkzhassk.supabase.co/auth/v1/token?grant_type=password:0

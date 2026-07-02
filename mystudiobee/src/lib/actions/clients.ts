@@ -49,7 +49,7 @@ export async function upsertClient(input: ClientInput) {
     ? await supabase.from("clients").update(payload).eq("id", input.id).select("id").single()
     : await supabase
         .from("clients")
-        .insert({ ...payload, created_by: profile.id })
+        .insert({ ...payload, created_by: profile?.id ?? null })
         .select("id")
         .single();
 

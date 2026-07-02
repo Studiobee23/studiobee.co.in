@@ -1,0 +1,135 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e5]:
+      - link "StudioBee" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=e8]
+      - generic [ref=e9]:
+        - list [ref=e12]:
+          - listitem [ref=e13]:
+            - link "Dashboard" [ref=e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=e16]
+              - generic [ref=e21]: Dashboard
+        - generic [ref=e22]:
+          - generic [ref=e23]: CRM
+          - list [ref=e25]:
+            - listitem [ref=e26]:
+              - link "Clients" [ref=e27] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=e28]
+                - generic [ref=e33]: Clients
+        - generic [ref=e34]:
+          - generic [ref=e35]: Projects
+          - list [ref=e37]:
+            - listitem [ref=e38]:
+              - link "Projects" [ref=e39] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=e40]
+                - generic [ref=e42]: Projects
+        - generic [ref=e43]:
+          - generic [ref=e44]: Tasks
+          - list [ref=e46]:
+            - listitem [ref=e47]:
+              - link "Tasks" [ref=e48] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=e49]
+                - generic [ref=e52]: Tasks
+        - generic [ref=e53]:
+          - generic [ref=e54]: Billing
+          - list [ref=e56]:
+            - listitem [ref=e57]:
+              - link "Quotes" [ref=e58] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=e59]
+                - generic [ref=e62]: Quotes
+            - listitem [ref=e63]:
+              - link "Invoices" [ref=e64] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=e65]
+                - generic [ref=e68]: Invoices
+            - listitem [ref=e69]:
+              - link "Receipts" [ref=e70] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=e71]
+                - generic [ref=e74]: Receipts
+        - generic [ref=e75]:
+          - generic [ref=e76]: Admin
+          - list [ref=e78]:
+            - listitem [ref=e79]:
+              - link "Team" [ref=e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=e81]
+                - generic [ref=e93]: Team
+            - listitem [ref=e94]:
+              - link "Cost Model" [ref=e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=e96]
+                - generic [ref=e98]: Cost Model
+            - listitem [ref=e99]:
+              - link "Profit Split" [ref=e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=e101]
+                - generic [ref=e104]: Profit Split
+            - listitem [ref=e105]:
+              - link "Equipment" [ref=e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=e107]
+                - generic [ref=e111]: Equipment
+        - generic [ref=e112]:
+          - generic [ref=e113]: Insights
+          - list [ref=e115]:
+            - listitem [ref=e116]:
+              - link "Reports" [ref=e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=e118]
+                - generic [ref=e119]: Reports
+      - generic [ref=e121]:
+        - generic [ref=e122]: "N"
+        - generic [ref=e123]:
+          - paragraph [ref=e124]: Nikhil
+          - paragraph [ref=e125]: owner
+        - button "Sign out" [ref=e126]:
+          - img [ref=e127]
+    - main [ref=e130]:
+      - generic [ref=e131]:
+        - button "Toggle Sidebar" [ref=e132]:
+          - img
+          - generic [ref=e133]: Toggle Sidebar
+        - heading "Dashboard" [level=1] [ref=e134]
+      - generic [ref=e136]:
+        - generic [ref=e137]:
+          - heading "Welcome back, Nikhil" [level=2] [ref=e138]
+          - generic [ref=e139]:
+            - link "Client" [ref=e140] [cursor=pointer]:
+              - /url: /clients?new=1
+              - img [ref=e141]
+              - text: Client
+            - link "Quote" [ref=e142] [cursor=pointer]:
+              - /url: /quotes/new
+              - img [ref=e143]
+              - text: Quote
+        - generic [ref=e144]:
+          - generic [ref=e145]:
+            - generic [ref=e146]:
+              - heading "Recent Clients" [level=3] [ref=e147]
+              - link "View all" [ref=e148] [cursor=pointer]:
+                - /url: /clients
+            - link "Acme Productions Mumbai" [ref=e150] [cursor=pointer]:
+              - /url: /clients/0cf74b0c-db7d-4a77-8dec-f19af5d4dd7f
+              - generic [ref=e151]:
+                - paragraph [ref=e152]: Acme Productions
+                - paragraph [ref=e153]: Mumbai
+          - generic [ref=e154]:
+            - generic [ref=e155]:
+              - heading "Recent Quotes" [level=3] [ref=e156]
+              - link "View all" [ref=e157] [cursor=pointer]:
+                - /url: /quotes
+            - link "SB-Q-004 · Acme Corporate Brand Film draft ₹11900.06" [ref=e159] [cursor=pointer]:
+              - /url: /quotes/bd0185fc-720d-4c1f-b407-92cb63663261
+              - generic [ref=e160]:
+                - paragraph [ref=e161]: SB-Q-004 · Acme Corporate Brand Film
+                - paragraph [ref=e162]: draft
+              - paragraph [ref=e163]: ₹11900.06
+  - region "Notifications alt+T"
+  - alert [ref=e164]

@@ -1,0 +1,140 @@
+- generic [active] [ref=f14e1]:
+  - generic [ref=f14e2]:
+    - generic [ref=f14e5]:
+      - link "StudioBee" [ref=f14e7] [cursor=pointer]:
+        - /url: /
+        - img "StudioBee" [ref=f14e8]
+      - generic [ref=f14e9]:
+        - list [ref=f14e12]:
+          - listitem [ref=f14e13]:
+            - link "Dashboard" [ref=f14e14] [cursor=pointer]:
+              - /url: /
+              - img [ref=f14e15]
+              - generic [ref=f14e20]: Dashboard
+        - generic [ref=f14e21]:
+          - generic [ref=f14e22]: CRM
+          - list [ref=f14e24]:
+            - listitem [ref=f14e25]:
+              - link "Clients" [ref=f14e26] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f14e27]
+                - generic [ref=f14e32]: Clients
+        - generic [ref=f14e33]:
+          - generic [ref=f14e34]: Projects
+          - list [ref=f14e36]:
+            - listitem [ref=f14e37]:
+              - link "Projects" [ref=f14e38] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=f14e39]
+                - generic [ref=f14e41]: Projects
+        - generic [ref=f14e42]:
+          - generic [ref=f14e43]: Tasks
+          - list [ref=f14e45]:
+            - listitem [ref=f14e46]:
+              - link "Tasks" [ref=f14e47] [cursor=pointer]:
+                - /url: /tasks
+                - img [ref=f14e48]
+                - generic [ref=f14e51]: Tasks
+        - generic [ref=f14e52]:
+          - generic [ref=f14e53]: Billing
+          - list [ref=f14e55]:
+            - listitem [ref=f14e56]:
+              - link "Quotes" [ref=f14e57] [cursor=pointer]:
+                - /url: /quotes
+                - img [ref=f14e58]
+                - generic [ref=f14e61]: Quotes
+            - listitem [ref=f14e62]:
+              - link "Invoices" [ref=f14e63] [cursor=pointer]:
+                - /url: /invoices
+                - img [ref=f14e64]
+                - generic [ref=f14e67]: Invoices
+            - listitem [ref=f14e68]:
+              - link "Receipts" [ref=f14e69] [cursor=pointer]:
+                - /url: /receipts
+                - img [ref=f14e71]
+                - generic [ref=f14e74]: Receipts
+        - generic [ref=f14e75]:
+          - generic [ref=f14e76]: Admin
+          - list [ref=f14e78]:
+            - listitem [ref=f14e79]:
+              - link "Team" [ref=f14e80] [cursor=pointer]:
+                - /url: /admin/team
+                - img [ref=f14e81]
+                - generic [ref=f14e93]: Team
+            - listitem [ref=f14e94]:
+              - link "Cost Model" [ref=f14e95] [cursor=pointer]:
+                - /url: /admin/cost-model
+                - img [ref=f14e96]
+                - generic [ref=f14e98]: Cost Model
+            - listitem [ref=f14e99]:
+              - link "Profit Split" [ref=f14e100] [cursor=pointer]:
+                - /url: /admin/profit-split
+                - img [ref=f14e101]
+                - generic [ref=f14e104]: Profit Split
+            - listitem [ref=f14e105]:
+              - link "Equipment" [ref=f14e106] [cursor=pointer]:
+                - /url: /admin/equipment
+                - img [ref=f14e107]
+                - generic [ref=f14e111]: Equipment
+        - generic [ref=f14e112]:
+          - generic [ref=f14e113]: Insights
+          - list [ref=f14e115]:
+            - listitem [ref=f14e116]:
+              - link "Reports" [ref=f14e117] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=f14e118]
+                - generic [ref=f14e119]: Reports
+      - generic [ref=f14e121]:
+        - generic [ref=f14e122]: "N"
+        - generic [ref=f14e123]:
+          - paragraph [ref=f14e124]: Nikhil
+          - paragraph [ref=f14e125]: owner
+        - button "Sign out" [ref=f14e126]:
+          - img [ref=f14e127]
+    - main [ref=f14e130]:
+      - generic [ref=f14e131]:
+        - button "Toggle Sidebar" [ref=f14e132]:
+          - img
+          - generic [ref=f14e133]: Toggle Sidebar
+        - heading "SB-R-002" [level=1] [ref=f14e134]
+      - generic [ref=f14e137]:
+        - generic [ref=f14e139]:
+          - generic [ref=f14e140]:
+            - paragraph [ref=f14e141]: Untitled
+            - paragraph [ref=f14e142]: Pixel Studio
+          - generic [ref=f14e143]: draft
+        - generic [ref=f14e144]:
+          - heading "Line items" [level=3] [ref=f14e145]
+          - generic [ref=f14e146]:
+            - generic [ref=f14e147]:
+              - generic [ref=f14e148]:
+                - paragraph [ref=f14e149]: Website Design & Development
+                - paragraph [ref=f14e150]: Qty 1 × ₹45000
+              - paragraph [ref=f14e151]: ₹45000
+            - generic [ref=f14e152]:
+              - generic [ref=f14e153]:
+                - paragraph [ref=f14e154]: SEO & Content Strategy
+                - paragraph [ref=f14e155]: Qty 1 × ₹15000
+              - paragraph [ref=f14e156]: ₹15000
+        - generic [ref=f14e158]:
+          - generic [ref=f14e159]:
+            - generic [ref=f14e160]: Subtotal
+            - generic [ref=f14e161]: ₹60000
+          - generic [ref=f14e162]:
+            - generic [ref=f14e163]: GST (18%, CGST+SGST)
+            - generic [ref=f14e164]: ₹10800
+          - generic [ref=f14e165]:
+            - generic [ref=f14e166]: Discount
+            - generic [ref=f14e167]: "-₹0"
+          - generic [ref=f14e168]:
+            - generic [ref=f14e169]: Total
+            - generic [ref=f14e170]: ₹70800
+        - generic [ref=f14e171]:
+          - button "Generate PDF" [ref=f14e172]
+          - button "Mark as Paid" [ref=f14e173]
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=f14e175]:
+        - img [ref=f14e177]
+        - generic [ref=f14e182]: An error occurred in the Server Components render. The specific message is omitted in production builds to avoid leaking sensitive details. A digest property is included on this error instance which may provide additional details about the nature of the error.
+  - alert [ref=f14e174]
