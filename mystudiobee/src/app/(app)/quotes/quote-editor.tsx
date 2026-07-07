@@ -80,6 +80,11 @@ const STATUS_OPTIONS: Record<"quote" | "invoice" | "receipt", string[]> = {
 
 const NEXT_DOC_TYPE: Record<string, string> = { quote: "invoice", invoice: "receipt" };
 
+// Matches the profit_split_settings categories exactly — category here is a lookup
+// key (computeProfitSplit does `settings.category === category`), so it can't be free
+// text without silently breaking the profit-split match on a typo.
+const CATEGORIES = ["video", "web", "design", "retainer"] as const;
+
 export function QuoteEditor({
   clients,
   presets,
@@ -263,7 +268,18 @@ export function QuoteEditor({
           </div>
           <div className="space-y-1.5">
             <Label>Category</Label>
-            <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g. branding, video, web" />
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORIES.map((c) => (
+                  <SelectItem key={c} value={c} className="capitalize">
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           {docType === "quote" && (
             <div className="space-y-1.5">
