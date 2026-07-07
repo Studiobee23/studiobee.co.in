@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { convertDocument, updateDocumentStatus } from "@/lib/actions/documents";
+import { convertDocument, updateDocumentStatus, deleteDocument } from "@/lib/actions/documents";
 import type { LineItem } from "@/lib/costing/types";
 
 type Client = {
@@ -32,6 +32,7 @@ export type DocView = {
   gst_rate: number;
   gst_amount: number;
   discount: number;
+  discount_type?: "flat" | "percent";
   total: number;
   notes: string;
   clients: Client;
@@ -43,6 +44,9 @@ const NEXT_PATH: Record<string, string> = { quote: "invoices", invoice: "receipt
 export function DocumentView({ doc }: { doc: DocView }) {
   const router = useRouter();
   const canConvert = doc.type === "quote" || doc.type === "invoice";
+  const discountAmount = doc.discount_type === "percent"
+    ? Math.round(doc.subtotal * (doc.discount / 100) * 100) / 100
+    : doc.discount;
   const canMarkPaid = (doc.type === "invoice" || doc.type === "receipt") && doc.status !== "paid";
   const [generating, setGenerating] = useState(false);
   const [markingPaid, setMarkingPaid] = useState(false);
@@ -57,6 +61,17 @@ export function DocumentView({ doc }: { doc: DocView }) {
       toast.error(e instanceof Error ? e.message : "Failed to update status");
     } finally {
       setMarkingPaid(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!window.confirm(`Delete this ${doc.type}? This cannot be undone.`)) return;
+    try {
+      await deleteDocument(doc.id);
+      toast.success(`${doc.type[0].toUpperCase()}${doc.type.slice(1)} deleted`);
+      router.push(`/${doc.type}s`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete");
     }
   }
 
@@ -134,8 +149,10 @@ export function DocumentView({ doc }: { doc: DocView }) {
             </div>
           )}
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Discount</span>
-            <span>-₹{doc.discount}</span>
+            <span className="text-muted-foreground">
+              Discount{doc.discount_type === "percent" ? ` (${doc.discount}%)` : ""}
+            </span>
+            <span>-₹{discountAmount}</span>
           </div>
           <div className="flex justify-between border-t border-border pt-1.5 font-heading font-semibold">
             <span>Total</span>
@@ -167,6 +184,9 @@ export function DocumentView({ doc }: { doc: DocView }) {
             {markingPaid ? "Saving…" : "Mark as Paid"}
           </Button>
         )}
+        <Button variant="ghost" className="ml-auto text-destructive hover:text-destructive" onClick={handleDelete}>
+          Delete
+        </Button>
       </div>
     </div>
   );

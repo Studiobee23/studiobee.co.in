@@ -15,9 +15,9 @@ async function launchBrowser() {
   if (process.env.VERCEL) {
     const chromium = (await import("@sparticuz/chromium")).default;
     return puppeteer.launch({
-      args: chromium.args,
+      args: await puppeteer.defaultArgs({ args: chromium.args, headless: "shell" }),
       executablePath: await chromium.executablePath(),
-      headless: true,
+      headless: "shell",
     });
   }
   return puppeteer.launch({
@@ -84,6 +84,12 @@ export async function POST(req: NextRequest) {
       .from("documents")
       .createSignedUrl(`pdfs/${filename}`, 604800);
     if (signError) return NextResponse.json({ error: signError.message }, { status: 500 });
+
+    // Generating the PDF means it's going out to the client — bump a draft quote to
+    // "sent" so it doesn't sit in "draft" forever with no status transition ever firing.
+    if (doc.type === "quote" && doc.status === "draft") {
+      await supabase.from("documents").update({ status: "sent" }).eq("id", doc.id);
+    }
 
     return NextResponse.json({ url: signed.signedUrl, filename });
   } catch (e) {

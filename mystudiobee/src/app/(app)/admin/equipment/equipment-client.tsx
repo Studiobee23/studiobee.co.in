@@ -32,6 +32,7 @@ type EquipmentItem = {
   gst_amount: number | null;
   receipt_url: string | null;
   daily_rental_cost: number | null;
+  weekly_rental_cost: number | null;
   active: boolean;
 };
 
@@ -44,6 +45,7 @@ const EMPTY_FORM = {
   gst_amount: "",
   receipt_url: "",
   daily_rental_cost: "",
+  weekly_rental_cost: "",
 };
 
 export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
@@ -67,6 +69,7 @@ export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
       gst_amount: item.gst_amount?.toString() ?? "",
       receipt_url: item.receipt_url ?? "",
       daily_rental_cost: item.daily_rental_cost?.toString() ?? "",
+      weekly_rental_cost: item.weekly_rental_cost?.toString() ?? "",
     });
     setOpen(true);
   }
@@ -88,6 +91,7 @@ export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
           gst_amount: form.gst_amount ? parseFloat(form.gst_amount) : undefined,
           receipt_url: form.receipt_url || undefined,
           daily_rental_cost: form.daily_rental_cost ? parseFloat(form.daily_rental_cost) : undefined,
+          weekly_rental_cost: form.weekly_rental_cost ? parseFloat(form.weekly_rental_cost) : undefined,
         });
         toast.success(form.id ? "Updated" : "Added");
         setOpen(false);
@@ -125,6 +129,7 @@ export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
                 <TableHead>Purchase Cost</TableHead>
                 <TableHead>GST</TableHead>
                 <TableHead>Daily Rental</TableHead>
+                <TableHead>Weekly Rental</TableHead>
                 <TableHead>Purchase Date</TableHead>
                 <TableHead>Active</TableHead>
                 <TableHead></TableHead>
@@ -133,7 +138,7 @@ export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
             <TableBody>
               {!items.length && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                     No equipment yet.
                   </TableCell>
                 </TableRow>
@@ -154,6 +159,11 @@ export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
                   <TableCell>
                     {item.daily_rental_cost != null && item.daily_rental_cost > 0
                       ? `₹${item.daily_rental_cost.toLocaleString("en-IN")}/day`
+                      : "—"}
+                  </TableCell>
+                  <TableCell>
+                    {item.weekly_rental_cost != null && item.weekly_rental_cost > 0
+                      ? `₹${item.weekly_rental_cost.toLocaleString("en-IN")}/wk`
                       : "—"}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
@@ -208,9 +218,13 @@ export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
                 <Input type="number" value={form.daily_rental_cost} onChange={(e) => set("daily_rental_cost", e.target.value)} />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-medium">Purchase Date</label>
-                <Input type="date" value={form.purchase_date} onChange={(e) => set("purchase_date", e.target.value)} />
+                <label className="text-xs font-medium">Weekly Rental (₹)</label>
+                <Input type="number" value={form.weekly_rental_cost} onChange={(e) => set("weekly_rental_cost", e.target.value)} placeholder="Optional discount rate" />
               </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium">Purchase Date</label>
+              <Input type="date" value={form.purchase_date} onChange={(e) => set("purchase_date", e.target.value)} />
             </div>
             <div className="space-y-1">
               <label className="text-xs font-medium">Receipt URL</label>

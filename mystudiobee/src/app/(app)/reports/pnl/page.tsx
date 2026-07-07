@@ -1,24 +1,42 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/profile";
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { sumLaborCost, sumDirectCost } from "@/lib/profit-split/engine";
 
-export default async function PnlReportPage() {
+export default async function PnlReportPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ year?: string }>;
+}) {
   const profile = await getCurrentProfile();
   if (!profile || (profile.role !== "owner" && profile.role !== "admin")) {
     redirect("/");
   }
 
   const supabase = await createClient();
-  const { data: docs } = await supabase
+  const { data: allDocs } = await supabase
     .from("documents")
-    .select("id, type, number, project_name, project_id, status, total, subtotal, line_items, clients(name)")
+    .select("id, type, number, project_name, project_id, status, total, subtotal, line_items, created_at, clients(name)")
     .in("type", ["invoice", "receipt"])
     .in("status", ["paid", "accepted"])
     .order("created_at", { ascending: false });
 
-  const projectIds = [...new Set((docs ?? []).map((d) => d.project_id).filter(Boolean))];
+  const years = Array.from(
+    new Set((allDocs ?? []).map((d) => new Date(d.created_at).getFullYear()))
+  ).sort((a, b) => b - a);
+  const currentYear = new Date().getFullYear();
+  if (!years.includes(currentYear)) years.unshift(currentYear);
+
+  const { year: yearParam } = await searchParams;
+  const selectedYear = yearParam && yearParam !== "all" ? Number(yearParam) : null;
+
+  const docs = selectedYear
+    ? (allDocs ?? []).filter((d) => new Date(d.created_at).getFullYear() === selectedYear)
+    : (allDocs ?? []);
+
+  const projectIds = [...new Set(docs.map((d) => d.project_id).filter(Boolean))];
 
   const { data: expenseRows } = projectIds.length
     ? await supabase
@@ -35,11 +53,11 @@ export default async function PnlReportPage() {
 
   // Apportion project expenses evenly across paid docs per project
   const docsPerProject: Record<string, number> = {};
-  for (const d of docs ?? []) {
+  for (const d of docs) {
     if (d.project_id) docsPerProject[d.project_id] = (docsPerProject[d.project_id] ?? 0) + 1;
   }
 
-  const rows = (docs ?? []).map((d) => {
+  const rows = docs.map((d) => {
     const items = (d.line_items ?? []) as Array<{ cost_breakdown: unknown }>;
     const labor = sumLaborCost(items);
     const direct = sumDirectCost(items);
@@ -63,27 +81,68 @@ export default async function PnlReportPage() {
     { revenue: 0, cost: 0, expenses: 0, profit: 0 }
   );
 
+  // Monthly overheads (rent, salaries, subscriptions, etc.) apply company-wide, not
+  // per-document — deduct them separately so "Net Profit" reflects true profitability,
+  // not just gross margin on billed work.
+  const { data: monthlyOverheads } = await supabase
+    .from("overhead_items")
+    .select("id, name, cost")
+    .eq("type", "monthly")
+    .eq("active", true);
+
+  const monthsInPeriod = selectedYear
+    ? selectedYear === currentYear
+      ? new Date().getMonth() + 1
+      : 12
+    : 12; // "All time" shows a single year's worth as a rough baseline
+  const monthlyOverheadTotal = (monthlyOverheads ?? []).reduce((s, o) => s + o.cost, 0);
+  const overheadTotal = monthlyOverheadTotal * monthsInPeriod;
+  const netProfitAfterOverhead = totals.profit - overheadTotal;
+
   return (
     <>
-      <DashboardHeader title="P&L Report" />
+      <DashboardHeader title="P&L Report" backHref="/reports">
+        <div className="flex gap-1">
+          {["all", ...years.map(String)].map((y) => (
+            <Link
+              key={y}
+              href={y === "all" ? "/reports/pnl" : `/reports/pnl?year=${y}`}
+              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
+                (yearParam ?? "all") === y
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              {y === "all" ? "All time" : y}
+            </Link>
+          ))}
+        </div>
+      </DashboardHeader>
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
           {[
             { label: "Revenue", value: totals.revenue },
             { label: "Production Cost", value: totals.cost - totals.expenses },
             { label: "Project Expenses", value: totals.expenses },
-            { label: "Net Profit", value: totals.profit },
+            { label: `Overheads (${monthsInPeriod}mo)`, value: overheadTotal },
+            { label: "Net Profit", value: netProfitAfterOverhead },
           ].map((s) => (
             <div key={s.label} className="rounded-xl border border-border bg-card p-4">
               <p className="text-xs text-muted-foreground">{s.label}</p>
               <p className={`font-heading text-xl font-semibold ${s.label === "Net Profit" && s.value < 0 ? "text-red-600" : ""}`}>
-                ₹{s.value.toLocaleString("en-IN")}
+                ₹{Math.round(s.value).toLocaleString("en-IN")}
               </p>
             </div>
           ))}
         </div>
+        {monthlyOverheadTotal > 0 && (
+          <p className="text-xs text-muted-foreground">
+            Based on ₹{monthlyOverheadTotal.toLocaleString("en-IN")}/month in active overheads
+            ({(monthlyOverheads ?? []).map((o) => o.name).join(", ")}) × {monthsInPeriod} month{monthsInPeriod !== 1 ? "s" : ""}.
+          </p>
+        )}
 
-        <div className="rounded-xl border border-border overflow-hidden">
+        <div className="rounded-xl border border-border overflow-hidden overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>
@@ -98,7 +157,7 @@ export default async function PnlReportPage() {
               {!rows.length && (
                 <tr>
                   <td colSpan={8} className="px-4 py-8 text-center text-sm text-muted-foreground">
-                    No paid invoices or receipts yet.
+                    No paid invoices or receipts {selectedYear ? `in ${selectedYear}` : "yet"}.
                   </td>
                 </tr>
               )}

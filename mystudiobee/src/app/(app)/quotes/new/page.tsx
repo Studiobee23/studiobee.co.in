@@ -15,7 +15,7 @@ export default async function NewQuotePage() {
   const [{ data: clients }, { data: presets }, { data: equipmentItems }] = await Promise.all([
     supabase.from("clients").select("id, name").order("name"),
     supabase.from("service_presets").select("*").order("category"),
-    supabase.from("equipment").select("id, name, daily_rental_cost").eq("active", true).order("name"),
+    supabase.from("equipment").select("id, name, daily_rental_cost, weekly_rental_cost").eq("active", true).order("name"),
   ]);
 
   let roles: { id: string; name: string; hourly_rate: number }[] = [];
@@ -47,7 +47,7 @@ export default async function NewQuotePage() {
 
   return (
     <>
-      <DashboardHeader title="New Quote" />
+      <DashboardHeader title="New Quote" backHref="/quotes" />
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="animate-in-page mx-auto max-w-3xl">
           <QuoteEditor

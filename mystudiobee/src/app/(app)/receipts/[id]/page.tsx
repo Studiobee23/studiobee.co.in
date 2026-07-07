@@ -14,7 +14,7 @@ export default async function ReceiptDetailPage({ params }: { params: Promise<{ 
 
   return (
     <>
-      <DashboardHeader title={doc.number} />
+      <DashboardHeader title={doc.number} backHref="/receipts" />
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="animate-in-page mx-auto max-w-3xl">
           <DocumentView doc={doc} />

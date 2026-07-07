@@ -10,18 +10,22 @@ export default async function ClockPage() {
 
   const supabase = await createClient();
 
-  // Active (open) entry for this user
-  const { data: activeEntry } = await supabase
+  // Active (open) entry for this user — order+limit instead of .maybeSingle()
+  // so a stale duplicate open row (pre-existing the unique index) can't make
+  // this silently error out and hide the fact that the user is clocked in.
+  const { data: activeEntries } = await supabase
     .from("time_entries")
-    .select("id, clocked_in_at, project_id, notes, projects(name)")
+    .select("id, clocked_in_at, project_id, notes, location_label, projects(name)")
     .eq("employee_id", profile.id)
     .is("clocked_out_at", null)
-    .maybeSingle();
+    .order("clocked_in_at", { ascending: false })
+    .limit(1);
+  const activeEntry = activeEntries?.[0] ?? null;
 
   // Last 10 completed entries
   const { data: recentEntries } = await supabase
     .from("time_entries")
-    .select("id, clocked_in_at, clocked_out_at, notes, project_id, projects(name)")
+    .select("id, clocked_in_at, clocked_out_at, notes, project_id, location_label, projects(name)")
     .eq("employee_id", profile.id)
     .not("clocked_out_at", "is", null)
     .order("clocked_in_at", { ascending: false })

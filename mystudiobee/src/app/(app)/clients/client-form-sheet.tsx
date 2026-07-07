@@ -7,9 +7,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { upsertClient, type ClientInput } from "@/lib/actions/clients";
 
 export type ClientRecord = ClientInput & { id?: string };
+
+const LEAD_SOURCES = [
+  "Referral",
+  "Website",
+  "Instagram",
+  "LinkedIn",
+  "Cold Outreach",
+  "Repeat Client",
+  "Walk-in",
+  "Other",
+];
 
 export function ClientFormSheet({
   open,
@@ -24,9 +42,12 @@ export function ClientFormSheet({
 }) {
   const [form, setForm] = useState<ClientRecord>({ name: "" });
   const [loading, setLoading] = useState(false);
+  const [customLeadSource, setCustomLeadSource] = useState(false);
 
   useEffect(() => {
-    setForm(client ?? { name: "" });
+    const next = client ?? { name: "" };
+    setForm(next);
+    setCustomLeadSource(!!next.lead_source && !LEAD_SOURCES.includes(next.lead_source));
   }, [client, open]);
 
   function set<K extends keyof ClientRecord>(key: K, value: ClientRecord[K]) {
@@ -84,7 +105,37 @@ export function ClientFormSheet({
             </Field>
           </div>
           <Field label="Lead source">
-            <Input value={form.lead_source ?? ""} onChange={(e) => set("lead_source", e.target.value)} />
+            <Select
+              value={customLeadSource ? "Other" : form.lead_source || ""}
+              onValueChange={(v) => {
+                if (v === "Other") {
+                  setCustomLeadSource(true);
+                  set("lead_source", "");
+                } else {
+                  setCustomLeadSource(false);
+                  set("lead_source", v);
+                }
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="How did they find us?" />
+              </SelectTrigger>
+              <SelectContent>
+                {LEAD_SOURCES.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {s}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {customLeadSource && (
+              <Input
+                className="mt-1.5"
+                placeholder="Specify lead source…"
+                value={form.lead_source ?? ""}
+                onChange={(e) => set("lead_source", e.target.value)}
+              />
+            )}
           </Field>
           <Field label="Tags (comma separated)">
             <Input

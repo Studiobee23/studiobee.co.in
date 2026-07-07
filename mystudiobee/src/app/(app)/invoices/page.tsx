@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { DocumentList } from "@/components/documents/document-list";
-import { getCurrentProfile, isBillingRole } from "@/lib/profile";
+import { getCurrentProfile, isBillingRole, canSeeCost } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function InvoicesPage() {
@@ -24,6 +24,7 @@ export default async function InvoicesPage() {
             docs={invoices ?? []}
             basePath="/invoices"
             emptyText="No invoices yet — convert a quote to create one."
+            canDelete={canSeeCost(profile.role)}
           />
         </div>
       </div>

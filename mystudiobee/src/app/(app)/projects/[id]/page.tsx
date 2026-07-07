@@ -19,6 +19,7 @@ export default async function ProjectDetailPage({
     { data: expenses },
     { data: checklist },
     { data: retainerMonths },
+    { data: clients },
   ] = await Promise.all([
     supabase.from("projects").select("*, clients(id, name)").eq("id", id).single(),
     supabase.from("project_stages").select("*").eq("project_id", id).order("created_at"),
@@ -28,6 +29,7 @@ export default async function ProjectDetailPage({
     supabase.from("project_expenses").select("*").eq("project_id", id).order("expense_date", { ascending: false }).then((r) => r, () => ({ data: [] })),
     supabase.from("delivery_checklists").select("*").eq("project_id", id).order("sort_order").then((r) => r, () => ({ data: [] })),
     supabase.from("retainer_months").select("*").eq("project_id", id).order("month", { ascending: false }).then((r) => r, () => ({ data: [] })),
+    supabase.from("clients").select("id, name").order("name"),
   ]);
 
   if (!project) notFound();
@@ -42,6 +44,7 @@ export default async function ProjectDetailPage({
       expenses={(expenses as never[]) ?? []}
       checklist={(checklist as never[]) ?? []}
       retainerMonths={(retainerMonths as never[]) ?? []}
+      clients={clients ?? []}
     />
   );
 }

@@ -64,6 +64,7 @@ export async function createQuote(input: {
   gst_rate: number;
   gst_amount: number;
   discount: number;
+  discount_type: "flat" | "percent";
   total: number;
   notes: string;
   validity_days: number;
@@ -102,6 +103,7 @@ export async function updateDocument(
     gst_rate: number;
     gst_amount: number;
     discount: number;
+    discount_type: "flat" | "percent";
     total: number;
     notes: string;
     validity_days: number;
@@ -145,6 +147,11 @@ export async function convertDocument(id: string) {
     .single();
   if (error) throw new Error(error.message);
 
+  // Mark the source document as no longer just a draft now that it's been converted —
+  // otherwise every quote/invoice sits in "draft" forever even after moving on.
+  const convertedStatus = src.type === "quote" ? "accepted" : "paid";
+  await supabase.from("documents").update({ status: convertedStatus }).eq("id", id);
+
   revalidatePath("/quotes");
   revalidatePath("/invoices");
   revalidatePath("/receipts");
@@ -156,17 +163,30 @@ type DocumentStatus = typeof ALLOWED_STATUSES[number];
 
 export async function updateDocumentStatus(id: string, status: DocumentStatus) {
   if (!ALLOWED_STATUSES.includes(status)) throw new Error("Invalid status");
-  const profile = await requireBillingRole();
+  // Any billing role (owner/admin/manager) may update status — documents are shared
+  // across the team, not just editable by whoever originally created them.
+  await requireBillingRole();
   const supabase = await createClient();
-  // Scope by created_by — users can only update documents they own or are assigned to
   const { data, error } = await supabase
     .from("documents")
     .update({ status })
     .eq("id", id)
-    .eq("created_by", profile.id)
     .select("id");
   if (error) throw new Error(error.message);
-  if (!data || data.length === 0) throw new Error("Document not found or not authorized");
+  if (!data || data.length === 0) throw new Error("Document not found");
+  revalidatePath("/quotes");
+  revalidatePath("/invoices");
+  revalidatePath("/receipts");
+}
+
+export async function deleteDocument(id: string) {
+  const profile = await requireBillingRole();
+  if (profile.role !== "owner" && profile.role !== "admin") {
+    throw new Error("Only owner/admin can delete documents");
+  }
+  const supabase = await createClient();
+  const { error } = await supabase.from("documents").delete().eq("id", id);
+  if (error) throw new Error(error.message);
   revalidatePath("/quotes");
   revalidatePath("/invoices");
   revalidatePath("/receipts");

@@ -87,9 +87,11 @@ export function redactCostBreakdown<T extends { cost_breakdown?: unknown }>(
  * the full combined rate either way (e.g. 18% whether it's 9+9 CGST/SGST or 18 IGST). */
 export function computeDocumentTotals(input: DocumentTotalsInput): DocumentTotals {
   const subtotal = round2(input.lineItems.reduce((sum, li) => sum + li.amount, 0));
-  const afterDiscount = round2(subtotal - input.discount);
+  const discountAmount =
+    input.discountType === "percent" ? round2(subtotal * (input.discount / 100)) : round2(input.discount);
+  const afterDiscount = round2(subtotal - discountAmount);
   const gstAmount = input.gstEnabled ? round2(afterDiscount * (input.gstRate / 100)) : 0;
   const total = round2(afterDiscount + gstAmount);
 
-  return { subtotal, gstAmount, total };
+  return { subtotal, discountAmount, gstAmount, total };
 }

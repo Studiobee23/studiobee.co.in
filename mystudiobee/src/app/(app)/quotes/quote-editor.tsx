@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, Eye, EyeOff, LayoutList, AlignLeft } from "lucide-react";
 import { toast } from "sonner";
@@ -26,10 +26,20 @@ import {
 } from "@/lib/profit-split/engine";
 import type { ProfitSplitSettings } from "@/lib/profit-split/engine";
 import type { LineItem } from "@/lib/costing/types";
-import { createQuote, updateDocument, convertDocument, priceLineItem } from "@/lib/actions/documents";
+import { createQuote, updateDocument, convertDocument, priceLineItem, deleteDocument, updateDocumentStatus } from "@/lib/actions/documents";
 
 type Client = { id: string; name: string };
-type EquipmentItem = { id: string; name: string; daily_rental_cost: number | null };
+type EquipmentItem = { id: string; name: string; daily_rental_cost: number | null; weekly_rental_cost: number | null };
+
+/** Weekly rate (if set) is applied to full weeks; remainder days bill at the daily rate. */
+function equipmentBaseCost(eq: EquipmentItem, days: number): number {
+  if (eq.weekly_rental_cost && days >= 7) {
+    const weeks = Math.floor(days / 7);
+    const remDays = days % 7;
+    return weeks * eq.weekly_rental_cost + remDays * (eq.daily_rental_cost ?? 0);
+  }
+  return (eq.daily_rental_cost ?? 0) * days;
+}
 type Preset = {
   id: string;
   category: string;
@@ -54,12 +64,21 @@ export type QuoteDoc = {
   gst_type: "cgst_sgst" | "igst";
   gst_rate: number;
   discount: number;
+  discount_type?: "flat" | "percent";
   notes: string;
   validity_days: number;
   executor_id?: string | null;
   manager_id?: string | null;
   client_handler_id?: string | null;
 };
+
+const STATUS_OPTIONS: Record<"quote" | "invoice" | "receipt", string[]> = {
+  quote: ["draft", "sent", "accepted", "cancelled"],
+  invoice: ["draft", "sent", "paid", "cancelled"],
+  receipt: ["paid", "cancelled"],
+};
+
+const NEXT_DOC_TYPE: Record<string, string> = { quote: "invoice", invoice: "receipt" };
 
 export function QuoteEditor({
   clients,
@@ -68,6 +87,7 @@ export function QuoteEditor({
   overheads,
   canSeeCost,
   doc,
+  docType = "quote",
   teamMembers = [],
   splitSettings = [],
   equipmentItems = [],
@@ -78,6 +98,7 @@ export function QuoteEditor({
   overheads: OverheadItem[];
   canSeeCost: boolean;
   doc?: QuoteDoc;
+  docType?: "quote" | "invoice" | "receipt";
   teamMembers?: TeamMember[];
   splitSettings?: ProfitSplitSettings[];
   equipmentItems?: EquipmentItem[];
@@ -91,6 +112,7 @@ export function QuoteEditor({
   const [gstType, setGstType] = useState<"cgst_sgst" | "igst">(doc?.gst_type ?? "cgst_sgst");
   const [gstRate, setGstRate] = useState(doc?.gst_rate ?? 18);
   const [discount, setDiscount] = useState(doc?.discount ?? 0);
+  const [discountType, setDiscountType] = useState<"flat" | "percent">(doc?.discount_type ?? "flat");
   const [notes, setNotes] = useState(doc?.notes ?? "");
   const [validityDays, setValidityDays] = useState(doc?.validity_days ?? 15);
   const [executorId, setExecutorId] = useState(doc?.executor_id ?? "");
@@ -100,10 +122,11 @@ export function QuoteEditor({
   const [generating, setGenerating] = useState(false);
   const [showCost, setShowCost] = useState<Record<number, boolean>>({});
   const [lumpsumView, setLumpsumView] = useState(false);
+  const [statusPending, startStatusTransition] = useTransition();
 
   const totals = useMemo(
-    () => computeDocumentTotals({ lineItems, discount, gstEnabled, gstRate }),
-    [lineItems, discount, gstEnabled, gstRate],
+    () => computeDocumentTotals({ lineItems, discount, discountType, gstEnabled, gstRate }),
+    [lineItems, discount, discountType, gstEnabled, gstRate],
   );
 
   const profitSplit = useMemo(() => {
@@ -144,6 +167,7 @@ export function QuoteEditor({
       gst_rate: gstRate,
       gst_amount: totals.gstAmount,
       discount,
+      discount_type: discountType,
       total: totals.total,
       notes,
       validity_days: validityDays,
@@ -155,7 +179,7 @@ export function QuoteEditor({
     try {
       if (doc) {
         await updateDocument(doc.id, payload);
-        toast.success("Quote saved");
+        toast.success(`${docType[0].toUpperCase()}${docType.slice(1)} saved`);
         router.refresh();
       } else {
         const id = await createQuote(payload);
@@ -172,9 +196,9 @@ export function QuoteEditor({
   async function handleConvert() {
     if (!doc) return;
     try {
-      const { id } = await convertDocument(doc.id);
-      toast.success("Converted to invoice");
-      router.push(`/invoices/${id}`);
+      const { id, type } = await convertDocument(doc.id);
+      toast.success(`Converted to ${type}`);
+      router.push(`/${type}s/${id}`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to convert");
     }
@@ -192,10 +216,23 @@ export function QuoteEditor({
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "Failed to generate PDF");
       window.open(result.url, "_blank");
+      router.refresh();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to generate PDF");
     } finally {
       setGenerating(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!doc) return;
+    if (!window.confirm(`Delete this ${docType}? This cannot be undone.`)) return;
+    try {
+      await deleteDocument(doc.id);
+      toast.success(`${docType[0].toUpperCase()}${docType.slice(1)} deleted`);
+      router.push(`/${docType}s`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete");
     }
   }
 
@@ -228,10 +265,12 @@ export function QuoteEditor({
             <Label>Category</Label>
             <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g. branding, video, web" />
           </div>
-          <div className="space-y-1.5">
-            <Label>Validity (days)</Label>
-            <Input type="number" value={validityDays} onChange={(e) => setValidityDays(Number(e.target.value))} />
-          </div>
+          {docType === "quote" && (
+            <div className="space-y-1.5">
+              <Label>Validity (days)</Label>
+              <Input type="number" value={validityDays} onChange={(e) => setValidityDays(Number(e.target.value))} />
+            </div>
+          )}
         </div>
       </div>
 
@@ -355,8 +394,29 @@ export function QuoteEditor({
               </div>
             )}
             <div className="space-y-1.5">
-              <Label>Discount (₹)</Label>
-              <Input type="number" value={discount} onChange={(e) => setDiscount(Number(e.target.value))} />
+              <Label>Discount</Label>
+              <div className="flex gap-2">
+                <Input
+                  type="number"
+                  value={discount}
+                  onChange={(e) => setDiscount(Number(e.target.value))}
+                  className="flex-1"
+                />
+                <div className="flex rounded-lg border border-border p-0.5">
+                  {(["flat", "percent"] as const).map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setDiscountType(t)}
+                      className={`rounded-md px-2.5 text-xs font-medium transition-colors ${
+                        discountType === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {t === "flat" ? "₹" : "%"}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -377,8 +437,8 @@ export function QuoteEditor({
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Discount</span>
-              <span>-₹{discount}</span>
+              <span className="text-muted-foreground">Discount{discountType === "percent" ? ` (${discount}%)` : ""}</span>
+              <span>-₹{totals.discountAmount}</span>
             </div>
             <div className="flex justify-between border-t border-border pt-1.5 font-heading font-semibold">
               <span>Total</span>
@@ -500,7 +560,7 @@ export function QuoteEditor({
         <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="mt-1.5" />
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button onClick={handleSave} disabled={saving}>
           {saving ? "Saving…" : doc ? "Save changes" : "Create quote"}
         </Button>
@@ -509,9 +569,42 @@ export function QuoteEditor({
             {generating ? "Generating…" : "Generate PDF"}
           </Button>
         )}
-        {doc && doc.status !== "cancelled" && (
+        {doc && NEXT_DOC_TYPE[docType] && doc.status !== "cancelled" && (
           <Button variant="outline" onClick={handleConvert}>
-            Convert to invoice
+            Convert to {NEXT_DOC_TYPE[docType]}
+          </Button>
+        )}
+        {doc && (
+          <Select
+            value={doc.status}
+            onValueChange={(v) =>
+              startStatusTransition(async () => {
+                try {
+                  await updateDocumentStatus(doc.id, v as "draft" | "sent" | "paid" | "accepted" | "cancelled");
+                  toast.success(`Status set to ${v}`);
+                  router.refresh();
+                } catch (e) {
+                  toast.error(e instanceof Error ? e.message : "Failed to update status");
+                }
+              })
+            }
+            disabled={statusPending}
+          >
+            <SelectTrigger className="h-9 w-32 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS[docType].map((s) => (
+                <SelectItem key={s} value={s} className="capitalize">
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+        {doc && (
+          <Button variant="ghost" className="ml-auto text-destructive hover:text-destructive" onClick={handleDelete}>
+            Delete
           </Button>
         )}
       </div>
@@ -588,8 +681,8 @@ function AddLineItemDialog({
     if (mode === "equipment") {
       const eq = equipmentItems.find((e) => e.id === equipmentId);
       if (!eq || !eq.daily_rental_cost) return;
-      const rate = withMarkup(eq.daily_rental_cost, equipmentMarkup);
-      const amount = Math.round(rate * equipmentDays * 100) / 100;
+      const amount = withMarkup(equipmentBaseCost(eq, equipmentDays), equipmentMarkup);
+      const rate = Math.round((amount / equipmentDays) * 100) / 100;
       onAdd({ description: `${eq.name} Rental`, qty: equipmentDays, cost_breakdown: null, rate, amount });
       reset(); return;
     }
@@ -782,7 +875,9 @@ function AddLineItemDialog({
                       <SelectContent>
                         {equipmentItems.map((e) => (
                           <SelectItem key={e.id} value={e.id}>
-                            {e.name}{e.daily_rental_cost ? ` · ₹${e.daily_rental_cost}/day` : ""}
+                            {e.name}
+                            {e.daily_rental_cost ? ` · ₹${e.daily_rental_cost}/day` : ""}
+                            {e.weekly_rental_cost ? ` · ₹${e.weekly_rental_cost}/wk` : ""}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -801,10 +896,14 @@ function AddLineItemDialog({
                   {equipmentId && (() => {
                     const eq = equipmentItems.find((e) => e.id === equipmentId);
                     if (!eq?.daily_rental_cost) return null;
-                    const rate = Math.round(eq.daily_rental_cost * (1 + equipmentMarkup / 100) * 100) / 100;
+                    const amount = withMarkup(equipmentBaseCost(eq, equipmentDays), equipmentMarkup);
+                    const usesWeekly = eq.weekly_rental_cost && equipmentDays >= 7;
                     return (
                       <p className="text-xs text-muted-foreground">
-                        Rate: ₹{rate}/day × {equipmentDays} day{equipmentDays !== 1 ? "s" : ""} = <strong>₹{Math.round(rate * equipmentDays * 100) / 100}</strong>
+                        {usesWeekly
+                          ? `${Math.floor(equipmentDays / 7)} wk${Math.floor(equipmentDays / 7) !== 1 ? "s" : ""}${equipmentDays % 7 ? ` + ${equipmentDays % 7} day(s)` : ""}`
+                          : `${equipmentDays} day${equipmentDays !== 1 ? "s" : ""}`}{" "}
+                        (incl. {equipmentMarkup}% markup) = <strong>₹{amount}</strong>
                       </p>
                     );
                   })()}

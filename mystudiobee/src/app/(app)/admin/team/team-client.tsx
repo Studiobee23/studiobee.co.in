@@ -25,6 +25,13 @@ type Employee = { id: string; email: string; display_name: string; role: Role; a
 
 const ROLES: Role[] = ["owner", "admin", "manager", "employee"];
 
+const ROLE_PERMISSIONS: Record<Role, string> = {
+  owner: "Full access — billing, cost visibility, admin settings, team management.",
+  admin: "Same as owner except can't be removed/demoted by another admin.",
+  manager: "Clients, projects, quotes/invoices/receipts — no cost breakdowns or admin settings.",
+  employee: "Tasks and Clock In only. No billing or client access.",
+};
+
 export function TeamClient({
   employees,
   currentUserId,
@@ -114,52 +121,64 @@ export function TeamClient({
             const isSelf = emp.id === currentUserId;
             return (
               <TableRow key={emp.id}>
-                <TableCell className="font-medium">{emp.display_name || "—"}</TableCell>
+                <TableCell className="font-medium">
+                  {emp.display_name || "—"}
+                  {isSelf && <span className="ml-1.5 text-[10px] text-muted-foreground">(you)</span>}
+                </TableCell>
                 <TableCell className="text-muted-foreground">{emp.email}</TableCell>
                 <TableCell>
-                  <Select
-                    value={emp.role}
-                    disabled={isSelf}
-                    onValueChange={async (v) => {
-                      try {
-                        await updateEmployeeRole(emp.id, v as Role);
-                        router.refresh();
-                      } catch (e) {
-                        toast.error(e instanceof Error ? e.message : "Failed to update role");
-                      }
-                    }}
-                  >
-                    <SelectTrigger className="w-32 capitalize">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ROLES.map((r) => (
-                        <SelectItem key={r} value={r} className="capitalize">
-                          {r}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div title={isSelf ? "You can't change your own role — ask another owner/admin." : ROLE_PERMISSIONS[emp.role]}>
+                    <Select
+                      value={emp.role}
+                      disabled={isSelf}
+                      onValueChange={async (v) => {
+                        try {
+                          await updateEmployeeRole(emp.id, v as Role);
+                          toast.success(`Role updated to ${v}`);
+                          router.refresh();
+                        } catch (e) {
+                          toast.error(e instanceof Error ? e.message : "Failed to update role");
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-32 capitalize">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ROLES.map((r) => (
+                          <SelectItem key={r} value={r} className="capitalize" title={ROLE_PERMISSIONS[r]}>
+                            {r}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </TableCell>
                 <TableCell>
-                  <Switch
-                    checked={emp.active}
-                    disabled={isSelf}
-                    onCheckedChange={async (v) => {
-                      try {
-                        await setEmployeeActive(emp.id, v);
-                        router.refresh();
-                      } catch (e) {
-                        toast.error(e instanceof Error ? e.message : "Failed to update");
-                      }
-                    }}
-                  />
+                  <div title={isSelf ? "You can't deactivate your own account." : emp.active ? "Deactivate to revoke access if this person leaves — their history (tasks, time logs, documents) is kept." : "Inactive — can't sign in."}>
+                    <Switch
+                      checked={emp.active}
+                      disabled={isSelf}
+                      onCheckedChange={async (v) => {
+                        try {
+                          await setEmployeeActive(emp.id, v);
+                          toast.success(v ? "Reactivated" : "Deactivated");
+                          router.refresh();
+                        } catch (e) {
+                          toast.error(e instanceof Error ? e.message : "Failed to update");
+                        }
+                      }}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             );
           })}
         </TableBody>
       </Table>
+      <p className="mt-3 text-[11px] text-muted-foreground">
+        <strong>Owner/Admin:</strong> {ROLE_PERMISSIONS.owner} <strong>Manager:</strong> {ROLE_PERMISSIONS.manager} <strong>Employee:</strong> {ROLE_PERMISSIONS.employee}
+      </p>
     </div>
   );
 }

@@ -41,6 +41,7 @@ export type PdfDocument = {
   gst_rate: number;
   gst_amount: number;
   discount: number;
+  discount_type?: 'flat' | 'percent';
   total: number;
   notes?: string;
   validity_days?: number;
@@ -84,8 +85,12 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
          <tr><td class="tot-label">SGST (${doc.gst_rate / 2}%)</td><td class="tot-val">${fmt(doc.gst_amount / 2)}</td></tr>`
     : '';
 
-  const discountRow = Number(doc.discount) > 0
-    ? `<tr><td class="tot-label">Discount</td><td class="tot-val" style="color:#e44;">-${fmt(doc.discount)}</td></tr>`
+  const discountAmount = doc.discount_type === 'percent'
+    ? Math.round(Number(doc.subtotal) * (Number(doc.discount) / 100) * 100) / 100
+    : Number(doc.discount);
+  const discountLabel = doc.discount_type === 'percent' ? `Discount (${doc.discount}%)` : 'Discount';
+  const discountRow = discountAmount > 0
+    ? `<tr><td class="tot-label">${discountLabel}</td><td class="tot-val" style="color:#e44;">-${fmt(discountAmount)}</td></tr>`
     : '';
 
   const validityNote = doc.type === 'quote' && doc.validity_days
@@ -145,6 +150,10 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   tr.grand .tot-val { font-size: 15px; font-weight: 700; color: #2F48DF; border-top: 2px solid #2F48DF; padding-top: 10px; }
 
   .notes-box { background: #f6f8ff; border-left: 3px solid #2F48DF; padding: 11px 15px; font-size: 12px; color: #555; margin-bottom: 24px; border-radius: 0 4px 4px 0; line-height: 1.6; }
+  .terms-box { font-size: 10.5px; color: #777; line-height: 1.6; margin-bottom: 16px; }
+  .terms-box strong { display: block; margin-bottom: 4px; color: #444; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .terms-box ol { margin: 0; padding-left: 16px; }
+  .terms-box li { margin-bottom: 2px; }
 
   .doc-footer { background: #0A0A0A; padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
   .footer-bank { font-size: 12px; color: #888; }
@@ -241,6 +250,19 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   </div>
 
   ${doc.notes ? `<div class="notes-box">${esc(doc.notes)}</div>` : ''}
+
+  ${doc.type === 'quote' ? `
+  <div class="terms-box">
+    <strong>Terms &amp; Conditions</strong>
+    <ol>
+      <li>This quotation is valid for ${esc(doc.validity_days || 15)} days from the date of issue.</li>
+      <li>A 50% advance payment is required to confirm and schedule the project; the balance is due on delivery.</li>
+      <li>Scope covers the deliverables and revisions listed above. Additional requests outside this scope will be quoted separately.</li>
+      <li>Final source files and assets are handed over only after full payment is received.</li>
+      <li>Cancellation after work has begun forfeits the advance payment to cover work already completed.</li>
+      <li>Timelines are estimates and may shift based on client feedback turnaround and third-party dependencies.</li>
+    </ol>
+  </div>` : ''}
 </div>
 
 <div class="doc-footer">

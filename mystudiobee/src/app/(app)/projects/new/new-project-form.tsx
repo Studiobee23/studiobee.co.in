@@ -61,7 +61,7 @@ export function NewProjectForm({
 
   return (
     <>
-      <DashboardHeader title="New Project" />
+      <DashboardHeader title="New Project" backHref="/projects" />
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="mx-auto max-w-xl space-y-4">
           <div className="space-y-1.5">

@@ -71,28 +71,28 @@ export default async function DashboardPage() {
 
           {/* Task stats */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Link href="/tasks" className="group rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+            <Link href="/tasks?status=pending" className="group rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
               <div className="flex items-center gap-2 text-muted-foreground mb-1">
                 <Clock className="h-3.5 w-3.5" />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.06em]">Pending</span>
               </div>
               <p className="font-heading text-2xl font-semibold">{taskCounts.pending}</p>
             </Link>
-            <Link href="/tasks" className="group rounded-xl border border-blue-200 bg-blue-50/50 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+            <Link href="/tasks?status=in_progress" className="group rounded-xl border border-blue-200 bg-blue-50/50 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
               <div className="flex items-center gap-2 text-blue-600 mb-1">
                 <CircleDot className="h-3.5 w-3.5" />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.06em]">In Progress</span>
               </div>
               <p className="font-heading text-2xl font-semibold text-blue-700">{taskCounts.in_progress}</p>
             </Link>
-            <Link href="/tasks" className="group rounded-xl border border-red-200 bg-red-50/50 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+            <Link href="/tasks?status=delayed" className="group rounded-xl border border-red-200 bg-red-50/50 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
               <div className="flex items-center gap-2 text-red-600 mb-1">
                 <AlertTriangle className="h-3.5 w-3.5" />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.06em]">Delayed</span>
               </div>
               <p className="font-heading text-2xl font-semibold text-red-700">{taskCounts.delayed}</p>
             </Link>
-            <Link href="/tasks" className="group rounded-xl border border-green-200 bg-green-50/50 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+            <Link href="/tasks?status=completed" className="group rounded-xl border border-green-200 bg-green-50/50 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
               <div className="flex items-center gap-2 text-green-600 mb-1">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.06em]">Completed</span>

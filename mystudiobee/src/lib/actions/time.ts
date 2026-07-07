@@ -8,26 +8,34 @@ import { getCurrentProfile } from "@/lib/profile";
 export async function clockIn(input: {
   project_id?: string;
   notes?: string;
+  latitude?: number;
+  longitude?: number;
+  location_label?: string;
 }) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
 
   const supabase = await createClient();
 
-  // Prevent double clock-in: check for any open entry
+  // Prevent double clock-in: check for any open entry (not .maybeSingle() —
+  // that throws if a stale duplicate row exists and would mask the real state)
   const { data: open } = await supabase
     .from("time_entries")
     .select("id")
     .eq("employee_id", profile.id)
     .is("clocked_out_at", null)
-    .maybeSingle();
+    .order("clocked_in_at", { ascending: false })
+    .limit(1);
 
-  if (open) throw new Error("You already have an active clock-in. Clock out first.");
+  if (open && open.length > 0) throw new Error("You already have an active clock-in. Clock out first.");
 
   const { error } = await supabase.from("time_entries").insert({
     employee_id: profile.id,
     project_id: input.project_id ?? null,
     notes: input.notes ?? null,
+    latitude: input.latitude ?? null,
+    longitude: input.longitude ?? null,
+    location_label: input.location_label ?? null,
   });
   if (error) throw new Error(error.message);
 

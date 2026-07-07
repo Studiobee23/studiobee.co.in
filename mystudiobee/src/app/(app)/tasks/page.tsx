@@ -3,7 +3,11 @@ import { getCurrentProfile } from "@/lib/profile";
 import { redirect } from "next/navigation";
 import { TasksClient } from "./tasks-client";
 
-export default async function TasksPage() {
+export default async function TasksPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
 
@@ -20,6 +24,7 @@ export default async function TasksPage() {
   }
 
   const { data: tasks } = await query;
+  const { status } = await searchParams;
 
-  return <TasksClient tasks={tasks ?? []} />;
+  return <TasksClient tasks={tasks ?? []} initialStatus={status} />;
 }

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { DocumentList } from "@/components/documents/document-list";
-import { getCurrentProfile, isBillingRole } from "@/lib/profile";
+import { getCurrentProfile, isBillingRole, canSeeCost } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function QuotesPage() {
@@ -29,7 +29,7 @@ export default async function QuotesPage() {
       </DashboardHeader>
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="animate-in-page mx-auto max-w-5xl">
-          <DocumentList docs={quotes ?? []} basePath="/quotes" emptyText="No quotes yet." />
+          <DocumentList docs={quotes ?? []} basePath="/quotes" emptyText="No quotes yet." canDelete={canSeeCost(profile.role)} />
         </div>
       </div>
     </>

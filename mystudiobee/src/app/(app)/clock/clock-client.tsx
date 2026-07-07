@@ -13,6 +13,7 @@ type ActiveEntry = {
   project_id: string | null;
   notes: string | null;
   projects: unknown;
+  location_label: string | null;
 };
 type RecentEntry = {
   id: string;
@@ -21,7 +22,24 @@ type RecentEntry = {
   notes: string | null;
   project_id: string | null;
   projects: unknown;
+  location_label: string | null;
 };
+
+function getCurrentLocation(): Promise<{ latitude?: number; longitude?: number; location_label?: string }> {
+  return new Promise((resolve) => {
+    if (!("geolocation" in navigator)) return resolve({});
+    navigator.geolocation.getCurrentPosition(
+      (pos) =>
+        resolve({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          location_label: `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`,
+        }),
+      () => resolve({}),
+      { timeout: 5000, maximumAge: 60_000 }
+    );
+  });
+}
 
 function projectName(projects: unknown): string {
   const p = projects as { name: string } | null;
@@ -96,7 +114,10 @@ export function ClockClient({
   }
 
   const handleClockIn = () =>
-    run(() => clockIn({ project_id: selectedProject || undefined, notes: notes || undefined }));
+    run(async () => {
+      const location = await getCurrentLocation();
+      await clockIn({ project_id: selectedProject || undefined, notes: notes || undefined, ...location });
+    });
 
   const handleClockOut = () =>
     run(() => clockOut(activeEntry!.id));
@@ -122,6 +143,7 @@ export function ClockClient({
           {activeEntry && (
             <p className="mt-2 text-xs text-muted-foreground">
               Since {formatTime(activeEntry.clocked_in_at)} · {projectName(activeEntry.projects)}
+              {activeEntry.location_label ? ` · 📍 ${activeEntry.location_label}` : ""}
             </p>
           )}
 
@@ -190,6 +212,7 @@ export function ClockClient({
                       </p>
                       <p className="text-[10px] text-muted-foreground">
                         {formatDate(e.clocked_in_at)} · {formatTime(e.clocked_in_at)} – {formatTime(e.clocked_out_at)}
+                        {e.location_label ? ` · 📍 ${e.location_label}` : ""}
                       </p>
                     </div>
                     <span className="shrink-0 font-heading text-sm font-semibold tabular-nums text-foreground">

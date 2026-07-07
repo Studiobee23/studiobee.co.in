@@ -1,5 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { deleteDocument } from "@/lib/actions/documents";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 const STATUS_VARIANT: Record<string, BadgeVariant> = {
@@ -14,6 +21,7 @@ export function DocumentList({
   docs,
   basePath,
   emptyText,
+  canDelete = false,
 }: {
   docs: Array<{
     id: string;
@@ -25,7 +33,25 @@ export function DocumentList({
   }>;
   basePath: string;
   emptyText: string;
+  canDelete?: boolean;
 }) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+
+  function handleDelete(e: React.MouseEvent, id: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!window.confirm("Delete this document? This cannot be undone.")) return;
+    startTransition(async () => {
+      try {
+        await deleteDocument(id);
+        router.refresh();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to delete");
+      }
+    });
+  }
+
   return (
     <div className="rounded-xl border border-border bg-card shadow-card">
       {docs.length === 0 ? (
@@ -50,6 +76,16 @@ export function DocumentList({
                 {d.status}
               </Badge>
               <p className="w-24 text-right font-heading text-[13px] font-semibold tabular-nums">₹{(d.total ?? 0).toLocaleString("en-IN")}</p>
+              {canDelete && (
+                <button
+                  onClick={(e) => handleDelete(e, d.id)}
+                  disabled={pending}
+                  className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
+                  title="Delete"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              )}
             </Link>
             );
           })}

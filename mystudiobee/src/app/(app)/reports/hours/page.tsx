@@ -39,7 +39,7 @@ export default async function HoursReportPage() {
 
   return (
     <>
-      <DashboardHeader title="Hours Report" />
+      <DashboardHeader title="Hours Report" backHref="/reports" />
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="rounded-xl border border-border overflow-hidden">
           <table className="w-full text-sm">

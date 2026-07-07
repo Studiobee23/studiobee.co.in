@@ -50,15 +50,19 @@ export type LineItem = {
 
 export type GstType = "cgst_sgst" | "igst";
 
+export type DiscountType = "flat" | "percent";
+
 export type DocumentTotalsInput = {
   lineItems: Array<{ amount: number }>;
   discount: number;
+  discountType?: DiscountType;
   gstEnabled: boolean;
   gstRate: number;
 };
 
 export type DocumentTotals = {
   subtotal: number;
+  discountAmount: number;
   gstAmount: number;
   total: number;
 };

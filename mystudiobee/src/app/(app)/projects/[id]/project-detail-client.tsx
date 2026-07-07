@@ -3,8 +3,9 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Check, Plus, Trash2, ChevronDown } from "lucide-react";
+import { Check, Plus, Trash2, ChevronDown, Pencil } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { EditProjectSheet } from "./edit-project-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -95,7 +96,7 @@ type Task = {
 };
 
 type Stage = { stage: string; completed_at: string | null; notes: string };
-type Mom = { id: string; title: string; content: string; meeting_date: string | null };
+type Mom = { id: string; title: string; content: string; meeting_date: string | null; attendees: string[] | null };
 type Document = { id: string; type: string; number: string; status: string; total: number };
 type Expense = {
   id: string;
@@ -119,6 +120,7 @@ export function ProjectDetailClient({
   expenses,
   checklist,
   retainerMonths,
+  clients,
 }: {
   project: Project;
   stages: Stage[];
@@ -128,15 +130,25 @@ export function ProjectDetailClient({
   expenses: Expense[];
   checklist: ChecklistItem[];
   retainerMonths: RetainerMonth[];
+  clients: Array<{ id: string; name: string }>;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [showEdit, setShowEdit] = useState(false);
 
   const completedStages = new Set(stages.filter((s) => s.completed_at).map((s) => s.stage));
 
   const [newTask, setNewTask] = useState({ title: "", due_date: "" });
   const [showMomForm, setShowMomForm] = useState(false);
-  const [momForm, setMomForm] = useState({ title: "", content: "", meeting_date: "" });
+  const [momForm, setMomForm] = useState({
+    title: "",
+    meeting_date: "",
+    agenda: "",
+    discussion: "",
+    actionItems: "",
+  });
+  const [attendees, setAttendees] = useState<string[]>([]);
+  const [attendeeInput, setAttendeeInput] = useState("");
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [expenseForm, setExpenseForm] = useState({
     category: "other",
@@ -172,12 +184,32 @@ export function ProjectDetailClient({
     });
   }
 
+  function addAttendee() {
+    const name = attendeeInput.trim();
+    if (!name || attendees.includes(name)) return;
+    setAttendees((a) => [...a, name]);
+    setAttendeeInput("");
+  }
+
   function addMom() {
     if (!momForm.title.trim()) return;
+    const sections = [
+      momForm.agenda.trim() && `Agenda:\n${momForm.agenda.trim()}`,
+      momForm.discussion.trim() && `Discussion:\n${momForm.discussion.trim()}`,
+      momForm.actionItems.trim() && `Action Items:\n${momForm.actionItems.trim()}`,
+    ].filter(Boolean);
     run(async () => {
-      await createMom({ project_id: project.id, ...momForm });
+      await createMom({
+        project_id: project.id,
+        title: momForm.title,
+        meeting_date: momForm.meeting_date,
+        attendees,
+        content: sections.join("\n\n"),
+      });
       setShowMomForm(false);
-      setMomForm({ title: "", content: "", meeting_date: "" });
+      setMomForm({ title: "", meeting_date: "", agenda: "", discussion: "", actionItems: "" });
+      setAttendees([]);
+      setAttendeeInput("");
     });
   }
 
@@ -210,7 +242,27 @@ export function ProjectDetailClient({
 
   return (
     <>
-      <DashboardHeader title={project.name} />
+      <DashboardHeader title={project.name} backHref="/projects">
+        <Button variant="outline" size="sm" onClick={() => setShowEdit(true)}>
+          <Pencil className="h-3.5 w-3.5" /> Edit
+        </Button>
+      </DashboardHeader>
+      <EditProjectSheet
+        open={showEdit}
+        onOpenChange={setShowEdit}
+        projectId={project.id}
+        clients={clients}
+        project={{
+          name: project.name,
+          description: project.description ?? "",
+          category: project.category ?? "",
+          type: project.type,
+          client_id: project.clients?.id ?? "",
+          est_hours: project.est_hours,
+          start_date: project.start_date,
+          end_date: project.end_date,
+        }}
+      />
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
 
         {/* Project meta + status */}
@@ -488,22 +540,71 @@ export function ProjectDetailClient({
           </div>
           {showMomForm && (
             <div className="space-y-2 rounded-lg border border-border p-3">
-              <Input
-                placeholder="Title"
-                value={momForm.title}
-                onChange={(e) => setMomForm((f) => ({ ...f, title: e.target.value }))}
-              />
-              <Textarea
-                placeholder="Notes / action items..."
-                value={momForm.content}
-                onChange={(e) => setMomForm((f) => ({ ...f, content: e.target.value }))}
-                rows={3}
-              />
-              <Input
-                type="date"
-                value={momForm.meeting_date}
-                onChange={(e) => setMomForm((f) => ({ ...f, meeting_date: e.target.value }))}
-              />
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  placeholder="Title"
+                  value={momForm.title}
+                  onChange={(e) => setMomForm((f) => ({ ...f, title: e.target.value }))}
+                />
+                <Input
+                  type="date"
+                  value={momForm.meeting_date}
+                  onChange={(e) => setMomForm((f) => ({ ...f, meeting_date: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Attendees</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {attendees.map((a) => (
+                    <span key={a} className="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px]">
+                      {a}
+                      <button onClick={() => setAttendees((list) => list.filter((x) => x !== a))} className="text-muted-foreground hover:text-destructive">×</button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add attendee name, press Enter"
+                    value={attendeeInput}
+                    onChange={(e) => setAttendeeInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") { e.preventDefault(); addAttendee(); }
+                    }}
+                    className="flex-1"
+                  />
+                  <Button type="button" size="sm" variant="outline" onClick={addAttendee}>Add</Button>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Agenda</label>
+                <Textarea
+                  placeholder="What was this meeting about?"
+                  value={momForm.agenda}
+                  onChange={(e) => setMomForm((f) => ({ ...f, agenda: e.target.value }))}
+                  rows={2}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Discussion / decisions</label>
+                <Textarea
+                  placeholder="What was discussed or decided..."
+                  value={momForm.discussion}
+                  onChange={(e) => setMomForm((f) => ({ ...f, discussion: e.target.value }))}
+                  rows={3}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Action items</label>
+                <Textarea
+                  placeholder={"One per line, e.g. \"Nikhil to send revised quote by Friday\""}
+                  value={momForm.actionItems}
+                  onChange={(e) => setMomForm((f) => ({ ...f, actionItems: e.target.value }))}
+                  rows={3}
+                />
+              </div>
+
               <Button size="sm" onClick={addMom} disabled={pending}>Save MOM</Button>
             </div>
           )}
@@ -516,7 +617,12 @@ export function ProjectDetailClient({
                 <p className="text-sm font-medium">{m.title}</p>
                 {m.meeting_date && <p className="text-[10px] text-muted-foreground">{m.meeting_date}</p>}
               </div>
-              {m.content && <p className="mt-1 text-xs text-muted-foreground whitespace-pre-line">{m.content}</p>}
+              {m.attendees && m.attendees.length > 0 && (
+                <p className="mt-1 text-[10px] text-muted-foreground">
+                  Attendees: {m.attendees.join(", ")}
+                </p>
+              )}
+              {m.content && <p className="mt-1.5 text-xs text-muted-foreground whitespace-pre-line">{m.content}</p>}
             </div>
           ))}
         </div>

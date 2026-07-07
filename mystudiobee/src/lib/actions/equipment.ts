@@ -17,6 +17,7 @@ export async function upsertEquipment(input: {
   gst_amount?: number;
   receipt_url?: string;
   daily_rental_cost?: number;
+  weekly_rental_cost?: number;
 }) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");

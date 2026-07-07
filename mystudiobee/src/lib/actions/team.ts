@@ -19,7 +19,7 @@ export async function inviteEmployee(input: { email: string; role: Role }) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const { data, error } = await admin.auth.admin.inviteUserByEmail(input.email, {
-    redirectTo: `${siteUrl}/accept-invite`,
+    redirectTo: `${siteUrl}/auth/callback?next=/accept-invite`,
   });
   if (error) throw new Error(error.message);
 
