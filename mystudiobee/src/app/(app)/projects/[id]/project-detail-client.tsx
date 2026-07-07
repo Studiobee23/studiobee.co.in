@@ -202,7 +202,7 @@ export function ProjectDetailClient({
       await createMom({
         project_id: project.id,
         title: momForm.title,
-        meeting_date: momForm.meeting_date,
+        meeting_date: momForm.meeting_date || undefined,
         attendees,
         content: sections.join("\n\n"),
       });

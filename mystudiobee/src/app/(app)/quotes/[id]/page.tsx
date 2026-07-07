@@ -76,6 +76,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               gst_type: doc.gst_type,
               gst_rate: doc.gst_rate,
               discount: doc.discount,
+              discount_type: (doc as Record<string, unknown>).discount_type as "flat" | "percent" | undefined,
               notes: doc.notes,
               validity_days: doc.validity_days,
               executor_id: (doc as Record<string, unknown>).executor_id as string | null,
