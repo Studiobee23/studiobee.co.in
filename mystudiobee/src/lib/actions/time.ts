@@ -29,15 +29,41 @@ export async function clockIn(input: {
 
   if (open && open.length > 0) throw new Error("You already have an active clock-in. Clock out first.");
 
-  const { error } = await supabase.from("time_entries").insert({
-    employee_id: profile.id,
-    project_id: input.project_id ?? null,
-    notes: input.notes ?? null,
-    latitude: input.latitude ?? null,
-    longitude: input.longitude ?? null,
-    location_label: input.location_label ?? null,
-  });
+  const { data, error } = await supabase
+    .from("time_entries")
+    .insert({
+      employee_id: profile.id,
+      project_id: input.project_id ?? null,
+      notes: input.notes ?? null,
+      latitude: input.latitude ?? null,
+      longitude: input.longitude ?? null,
+      location_label: input.location_label ?? null,
+    })
+    .select("id")
+    .single();
   if (error) throw new Error(error.message);
+
+  revalidatePath("/clock");
+  revalidatePath("/reports/time");
+  return data.id as string;
+}
+
+/** Best-effort location patch applied after clock-in — never blocks the clock-in
+ * button on the browser's geolocation permission prompt/timeout. */
+export async function attachClockInLocation(
+  entryId: string,
+  location: { latitude?: number; longitude?: number; location_label?: string }
+) {
+  const profile = await getCurrentProfile();
+  if (!profile) return;
+  if (!location.latitude && !location.longitude) return;
+
+  const supabase = await createClient();
+  await supabase
+    .from("time_entries")
+    .update(location)
+    .eq("id", entryId)
+    .eq("employee_id", profile.id);
 
   revalidatePath("/clock");
   revalidatePath("/reports/time");

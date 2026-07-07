@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Timer, Play, Square, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
-import { clockIn, clockOut } from "@/lib/actions/time";
+import { clockIn, clockOut, attachClockInLocation } from "@/lib/actions/time";
 
 type Project = { id: string; name: string };
 type ActiveEntry = {
@@ -70,6 +70,7 @@ function formatDate(iso: string): string {
 }
 
 export function ClockClient({
+  profile,
   activeEntry,
   recentEntries,
   projects,
@@ -115,8 +116,12 @@ export function ClockClient({
 
   const handleClockIn = () =>
     run(async () => {
-      const location = await getCurrentLocation();
-      await clockIn({ project_id: selectedProject || undefined, notes: notes || undefined, ...location });
+      const entryId = await clockIn({ project_id: selectedProject || undefined, notes: notes || undefined });
+      // Fire-and-forget: never block the clock-in button on the geolocation
+      // permission prompt/timeout — attach location once (if) it resolves.
+      getCurrentLocation().then((location) => {
+        if (location.latitude) attachClockInLocation(entryId, location);
+      });
     });
 
   const handleClockOut = () =>
@@ -182,7 +187,9 @@ export function ClockClient({
                 : "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
             }`}
           >
-            {activeEntry ? (
+            {isPending ? (
+              activeEntry ? "Clocking out…" : "Clocking in…"
+            ) : activeEntry ? (
               <><Square className="h-5 w-5 fill-current" /> Clock Out</>
             ) : (
               <><Play className="h-5 w-5 fill-current" /> Clock In</>
@@ -194,7 +201,7 @@ export function ClockClient({
         {recentEntries.length > 0 && (
           <div className="rounded-xl border border-border bg-card p-4 shadow-card">
             <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-              Recent Sessions
+              Recent Sessions · {profile.display_name || "You"}
             </p>
             <div className="space-y-2">
               {recentEntries.map((e) => {
