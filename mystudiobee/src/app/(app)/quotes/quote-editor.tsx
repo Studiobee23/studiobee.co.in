@@ -28,7 +28,7 @@ import type { ProfitSplitSettings } from "@/lib/profit-split/engine";
 import type { LineItem } from "@/lib/costing/types";
 import { createQuote, updateDocument, convertDocument, priceLineItem, deleteDocument, updateDocumentStatus } from "@/lib/actions/documents";
 
-type Client = { id: string; name: string };
+type Client = { id: string; name: string; email?: string | null };
 type EquipmentItem = { id: string; name: string; daily_rental_cost: number | null; weekly_rental_cost: number | null };
 
 /** Weekly rate (if set) is applied to full weeks; remainder days bill at the daily rate. */
@@ -131,6 +131,10 @@ export function QuoteEditor({
   const [clientHandlerId, setClientHandlerId] = useState(doc?.client_handler_id ?? "");
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const selectedClient = clients.find((c) => c.id === clientId);
+  const [emailForm, setEmailForm] = useState({ to: "", subject: "", message: "" });
   const [showCost, setShowCost] = useState<Record<number, boolean>>({});
   const [lumpsumView, setLumpsumView] = useState(false);
   const [statusPending, startStatusTransition] = useTransition();
@@ -233,6 +237,43 @@ export function QuoteEditor({
       toast.error(e instanceof Error ? e.message : "Failed to generate PDF");
     } finally {
       setGenerating(false);
+    }
+  }
+
+  function openEmailDialog() {
+    if (!doc) return;
+    const label = docType[0].toUpperCase() + docType.slice(1);
+    setEmailForm({
+      to: selectedClient?.email ?? "",
+      subject: `${label} ${doc.number} from StudioBee`,
+      message: `Hi ${selectedClient?.name ?? ""},\n\nPlease find attached ${docType} ${doc.number}.\n\nThanks,\nStudioBee`,
+    });
+    setShowEmailDialog(true);
+  }
+
+  async function handleSendEmail() {
+    if (!doc || !emailForm.to.trim()) return;
+    setSendingEmail(true);
+    try {
+      const res = await fetch("/api/email-document", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          doc_id: doc.id,
+          to: emailForm.to,
+          subject: emailForm.subject,
+          message: emailForm.message,
+        }),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Failed to send email");
+      toast.success(`Emailed to ${emailForm.to}`);
+      setShowEmailDialog(false);
+      router.refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to send email");
+    } finally {
+      setSendingEmail(false);
     }
   }
 
@@ -618,6 +659,11 @@ export function QuoteEditor({
             {generating ? "Generating…" : "Generate PDF"}
           </Button>
         )}
+        {doc && (
+          <Button variant="outline" onClick={openEmailDialog}>
+            Email to client
+          </Button>
+        )}
         {doc && NEXT_DOC_TYPE[docType] && doc.status !== "cancelled" && (
           <Button variant="outline" onClick={handleConvert}>
             Convert to {NEXT_DOC_TYPE[docType]}
@@ -657,6 +703,53 @@ export function QuoteEditor({
           </Button>
         )}
       </div>
+
+      <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Email {docType} to client</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label>To *</Label>
+              <Input
+                type="email"
+                value={emailForm.to}
+                onChange={(e) => setEmailForm((f) => ({ ...f, to: e.target.value }))}
+                placeholder="client@example.com"
+              />
+              {!selectedClient?.email && (
+                <p className="text-xs text-muted-foreground">
+                  This client has no email on file — add one or enter an address here.
+                </p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label>Subject</Label>
+              <Input
+                value={emailForm.subject}
+                onChange={(e) => setEmailForm((f) => ({ ...f, subject: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Message</Label>
+              <Textarea
+                value={emailForm.message}
+                onChange={(e) => setEmailForm((f) => ({ ...f, message: e.target.value }))}
+                rows={5}
+              />
+              <p className="text-xs text-muted-foreground">
+                The {docType} PDF is generated fresh and attached automatically.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleSendEmail} disabled={sendingEmail || !emailForm.to.trim()}>
+              {sendingEmail ? "Sending…" : "Send"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -18,7 +18,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   const seeCost = canSeeCost(profile.role);
 
   const [{ data: clients }, { data: presets }, { data: equipmentItems }, { data: projects }] = await Promise.all([
-    supabase.from("clients").select("id, name").order("name"),
+    supabase.from("clients").select("id, name, email").order("name"),
     supabase.from("service_presets").select("*").order("category"),
     supabase.from("equipment").select("id, name, daily_rental_cost, weekly_rental_cost").eq("active", true).order("name"),
     supabase.from("projects").select("id, name, client_id").order("name"),
