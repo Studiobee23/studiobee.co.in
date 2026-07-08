@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { inviteEmployee, updateEmployeeRole, setEmployeeActive } from "@/lib/actions/team";
+import { inviteEmployee, updateEmployeeRole, setEmployeeActive, deleteEmployee } from "@/lib/actions/team";
 import type { Role } from "@/lib/profile";
 
 type Employee = { id: string; email: string; display_name: string; role: Role; active: boolean };
@@ -44,6 +44,22 @@ export function TeamClient({
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Role>("employee");
   const [loading, setLoading] = useState(false);
+
+  async function handleDelete(emp: Employee) {
+    if (
+      !window.confirm(
+        `Delete ${emp.display_name || emp.email}? This removes their login and profile permanently — their name will show blank on past tasks, time logs, and documents. This cannot be undone.\n\nIf they just left the team, consider deactivating instead.`
+      )
+    )
+      return;
+    try {
+      await deleteEmployee(emp.id);
+      toast.success("Employee deleted");
+      router.refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete");
+    }
+  }
 
   async function handleInvite() {
     setLoading(true);
@@ -114,6 +130,7 @@ export function TeamClient({
             <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Active</TableHead>
+            <TableHead />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -170,6 +187,17 @@ export function TeamClient({
                       }}
                     />
                   </div>
+                </TableCell>
+                <TableCell>
+                  {!isSelf && (
+                    <button
+                      onClick={() => handleDelete(emp)}
+                      className="text-muted-foreground hover:text-destructive transition-colors"
+                      title="Delete permanently"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                 </TableCell>
               </TableRow>
             );

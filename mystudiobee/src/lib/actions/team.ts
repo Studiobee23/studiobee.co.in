@@ -51,3 +51,18 @@ export async function setEmployeeActive(id: string, active: boolean) {
   if (error) throw new Error(error.message);
   revalidatePath("/admin/team");
 }
+
+/** Hard delete — their id is referenced (on delete set null) from tasks,
+ * time_entries, documents, moms, etc., so history stays but shows no
+ * attribution afterward. Prefer setEmployeeActive() for "they left"; this is
+ * for correcting a mistaken invite or a genuine data-removal request. */
+export async function deleteEmployee(id: string) {
+  const profile = await requireOwnerOrAdmin();
+  if (id === profile.id) throw new Error("You can't delete your own account.");
+  const admin = createAdminClient();
+  const { error: profileError } = await admin.from("profiles").delete().eq("id", id);
+  if (profileError) throw new Error(profileError.message);
+  const { error: authError } = await admin.auth.admin.deleteUser(id);
+  if (authError) throw new Error(authError.message);
+  revalidatePath("/admin/team");
+}
