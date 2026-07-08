@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# scratch/verification scripts (never commit — may contain test credentials)
+_tmp-*.mjs
+_tmp-*.ts
+_tmp-*.js

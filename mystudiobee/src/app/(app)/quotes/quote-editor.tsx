@@ -57,6 +57,7 @@ export type QuoteDoc = {
   number: string;
   status: string;
   client_id: string | null;
+  project_id?: string | null;
   project_name: string;
   category: string;
   line_items: LineItem[];
@@ -85,6 +86,8 @@ const NEXT_DOC_TYPE: Record<string, string> = { quote: "invoice", invoice: "rece
 // text without silently breaking the profit-split match on a typo.
 const CATEGORIES = ["video", "web", "design", "retainer"] as const;
 
+type ProjectOption = { id: string; name: string; client_id: string | null };
+
 export function QuoteEditor({
   clients,
   presets,
@@ -96,6 +99,7 @@ export function QuoteEditor({
   teamMembers = [],
   splitSettings = [],
   equipmentItems = [],
+  projects = [],
 }: {
   clients: Client[];
   presets: Preset[];
@@ -107,9 +111,11 @@ export function QuoteEditor({
   teamMembers?: TeamMember[];
   splitSettings?: ProfitSplitSettings[];
   equipmentItems?: EquipmentItem[];
+  projects?: ProjectOption[];
 }) {
   const router = useRouter();
   const [clientId, setClientId] = useState(doc?.client_id ?? "");
+  const [projectId, setProjectId] = useState(doc?.project_id ?? "");
   const [projectName, setProjectName] = useState(doc?.project_name ?? "");
   const [category, setCategory] = useState(doc?.category ?? "");
   const [lineItems, setLineItems] = useState<LineItem[]>(doc?.line_items ?? []);
@@ -163,6 +169,7 @@ export function QuoteEditor({
     setSaving(true);
     const payload = {
       client_id: clientId,
+      project_id: projectId || null,
       project_name: projectName,
       category,
       line_items: lineItems,
@@ -259,6 +266,32 @@ export function QuoteEditor({
                     {c.name}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Link to project (optional)</Label>
+            <Select
+              value={projectId || "none"}
+              onValueChange={(v) => {
+                setProjectId(v === "none" ? "" : v);
+                const p = projects.find((pr) => pr.id === v);
+                if (p) setProjectName(p.name);
+              }}
+              disabled={!clientId}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={clientId ? "No project" : "Select a client first"} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No project</SelectItem>
+                {projects
+                  .filter((p) => p.client_id === clientId)
+                  .map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>

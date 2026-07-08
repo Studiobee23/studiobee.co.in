@@ -67,8 +67,17 @@ export async function updateSession(request: NextRequest) {
     }
 
     if (profile.role === "employee") {
-      // Phase 1: employees have no screens yet beyond a holding page.
-      const allowed = pathname === "/" || pathname.startsWith("/account");
+      // Matches what page-level checks already allow employees to see (e.g.
+      // /projects only requires *a* profile, no role check — employees can
+      // already read project data, they just can't create/bill). This
+      // previously only allowed "/" and "/account", which put employees in a
+      // redirect loop the moment the dashboard sent them to /tasks.
+      const allowed =
+        pathname === "/" ||
+        pathname.startsWith("/account") ||
+        pathname.startsWith("/tasks") ||
+        pathname.startsWith("/clock") ||
+        pathname.startsWith("/projects");
       if (!allowed) {
         const url = request.nextUrl.clone();
         url.pathname = "/";

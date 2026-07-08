@@ -11,7 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { updateTaskStatus } from "@/lib/actions/tasks";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { updateTaskStatus, updateTaskAssignee, createTask } from "@/lib/actions/tasks";
 import { toast } from "sonner";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -35,19 +38,70 @@ type Task = {
   status: string;
   due_date: string | null;
   project_id: string | null;
+  assigned_to: string | null;
   payment_linked: boolean;
   payment_amount: number | null;
   projects: { name: string } | null;
   profiles: { display_name: string; email: string } | null;
 };
 
+type TeamMember = { id: string; display_name: string; email: string };
+
 type GroupBy = "project" | "status" | "none";
 
-export function TasksClient({ tasks, initialStatus }: { tasks: Task[]; initialStatus?: string }) {
+export function TasksClient({
+  tasks,
+  initialStatus,
+  projects,
+  teamMembers,
+  currentUserId,
+}: {
+  tasks: Task[];
+  initialStatus?: string;
+  projects: Array<{ id: string; name: string }>;
+  teamMembers: TeamMember[];
+  currentUserId: string;
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [statusFilter, setStatusFilter] = useState<string | null>(initialStatus ?? null);
   const [groupBy, setGroupBy] = useState<GroupBy>("project");
+  const [showAddTask, setShowAddTask] = useState(false);
+  const [newTask, setNewTask] = useState({ title: "", project_id: "", due_date: "", assigned_to: currentUserId });
+
+  function addTask() {
+    if (!newTask.title.trim()) return;
+    startTransition(async () => {
+      try {
+        await createTask({
+          title: newTask.title,
+          project_id: newTask.project_id || undefined,
+          due_date: newTask.due_date || undefined,
+          assigned_to: newTask.assigned_to || undefined,
+        });
+        setNewTask({ title: "", project_id: "", due_date: "", assigned_to: currentUserId });
+        setShowAddTask(false);
+        router.refresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Failed to add task");
+      }
+    });
+  }
+
+  function changeAssignee(id: string, assignedTo: string) {
+    startTransition(async () => {
+      try {
+        await updateTaskAssignee(id, assignedTo || null);
+        router.refresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Failed to reassign");
+      }
+    });
+  }
+
+  function memberLabel(m: TeamMember) {
+    return m.id === currentUserId ? `${m.display_name || m.email} (you)` : m.display_name || m.email;
+  }
 
   const stats = {
     pending: tasks.filter((t) => t.status === "pending").length,
@@ -99,8 +153,53 @@ export function TasksClient({ tasks, initialStatus }: { tasks: Task[]; initialSt
 
   return (
     <>
-      <DashboardHeader title="Tasks" />
+      <DashboardHeader title="Tasks">
+        <Button size="sm" onClick={() => setShowAddTask((v) => !v)}>
+          <Plus className="h-3.5 w-3.5" /> Add task
+        </Button>
+      </DashboardHeader>
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        {showAddTask && (
+          <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-card p-3">
+            <Input
+              placeholder="Task title..."
+              value={newTask.title}
+              onChange={(e) => setNewTask((f) => ({ ...f, title: e.target.value }))}
+              onKeyDown={(e) => e.key === "Enter" && addTask()}
+              className="min-w-[180px] flex-1"
+              autoFocus
+            />
+            <Select value={newTask.project_id || "none"} onValueChange={(v) => setNewTask((f) => ({ ...f, project_id: v === "none" ? "" : v }))}>
+              <SelectTrigger className="w-44 text-xs">
+                <SelectValue placeholder="No project" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No project</SelectItem>
+                {projects.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={newTask.assigned_to} onValueChange={(v) => setNewTask((f) => ({ ...f, assigned_to: v }))}>
+              <SelectTrigger className="w-40 text-xs">
+                <SelectValue placeholder="Assign to..." />
+              </SelectTrigger>
+              <SelectContent>
+                {teamMembers.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>{memberLabel(m)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              type="date"
+              value={newTask.due_date}
+              onChange={(e) => setNewTask((f) => ({ ...f, due_date: e.target.value }))}
+              className="w-36"
+            />
+            <Button onClick={addTask} disabled={pending || !newTask.title.trim()}>Add</Button>
+          </div>
+        )}
+
         {/* Stats — click to filter */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {STATUS_ORDER.map((key) => (
@@ -148,7 +247,7 @@ export function TasksClient({ tasks, initialStatus }: { tasks: Task[]; initialSt
         <div className="space-y-6">
           {!filteredTasks.length && (
             <div className="rounded-xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground">
-              {tasks.length ? "No tasks match this filter." : "No tasks yet. Add tasks from within a project."}
+              {tasks.length ? "No tasks match this filter." : "No tasks yet. Click \"Add task\" to create one."}
             </div>
           )}
           {groups.map((g) => (
@@ -194,6 +293,21 @@ export function TasksClient({ tasks, initialStatus }: { tasks: Task[]; initialSt
                         : ""}
                     </p>
                   </div>
+                  <Select
+                    value={t.assigned_to ?? "unassigned"}
+                    onValueChange={(v) => changeAssignee(t.id, v === "unassigned" ? "" : v)}
+                    disabled={pending}
+                  >
+                    <SelectTrigger className="w-36 text-xs">
+                      <SelectValue placeholder="Unassigned" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
+                      {teamMembers.map((m) => (
+                        <SelectItem key={m.id} value={m.id}>{memberLabel(m)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Select
                     value={t.status}
                     onValueChange={(v) => changeStatus(t.id, v)}

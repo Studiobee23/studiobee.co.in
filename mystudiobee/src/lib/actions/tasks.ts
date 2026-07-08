@@ -8,7 +8,7 @@ export async function createTask(input: {
   project_id?: string;
   title: string;
   description?: string;
-  assignee_id?: string;
+  assigned_to?: string;
   due_date?: string;
   payment_linked?: boolean;
   payment_amount?: number;
@@ -18,7 +18,9 @@ export async function createTask(input: {
   const supabase = await createClient();
   const { error } = await supabase
     .from("tasks")
-    .insert({ ...input, created_by: profile.id });
+    // Default to the creator so a task never ends up assigned to nobody —
+    // an unassigned task is invisible in every employee's filtered task view.
+    .insert({ ...input, assigned_to: input.assigned_to ?? profile.id, created_by: profile.id });
   if (error) throw new Error(error.message);
   revalidatePath("/tasks");
   if (input.project_id) revalidatePath(`/projects/${input.project_id}`);
@@ -32,6 +34,16 @@ export async function updateTaskStatus(
   const { error } = await supabase
     .from("tasks")
     .update({ status, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/tasks");
+}
+
+export async function updateTaskAssignee(id: string, assignedTo: string | null) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("tasks")
+    .update({ assigned_to: assignedTo, updated_at: new Date().toISOString() })
     .eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/tasks");

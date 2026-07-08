@@ -12,10 +12,11 @@ export default async function NewQuotePage() {
   const supabase = await createClient();
   const seeCost = canSeeCost(profile.role);
 
-  const [{ data: clients }, { data: presets }, { data: equipmentItems }] = await Promise.all([
+  const [{ data: clients }, { data: presets }, { data: equipmentItems }, { data: projects }] = await Promise.all([
     supabase.from("clients").select("id, name").order("name"),
     supabase.from("service_presets").select("*").order("category"),
     supabase.from("equipment").select("id, name, daily_rental_cost, weekly_rental_cost").eq("active", true).order("name"),
+    supabase.from("projects").select("id, name, client_id").order("name"),
   ]);
 
   let roles: { id: string; name: string; hourly_rate: number }[] = [];
@@ -59,6 +60,7 @@ export default async function NewQuotePage() {
             teamMembers={teamMembers}
             splitSettings={splitSettings as never}
             equipmentItems={equipmentItems ?? []}
+            projects={projects ?? []}
           />
         </div>
       </div>

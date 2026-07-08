@@ -26,5 +26,25 @@ export default async function TasksPage({
   const { data: tasks } = await query;
   const { status } = await searchParams;
 
-  return <TasksClient tasks={tasks ?? []} initialStatus={status} />;
+  const { data: projects } = await supabase
+    .from("projects")
+    .select("id, name")
+    .eq("status", "active")
+    .order("name");
+
+  const { data: teamMembers } = await supabase
+    .from("profiles")
+    .select("id, display_name, email")
+    .eq("active", true)
+    .order("display_name");
+
+  return (
+    <TasksClient
+      tasks={tasks ?? []}
+      initialStatus={status}
+      projects={projects ?? []}
+      teamMembers={teamMembers ?? []}
+      currentUserId={profile.id}
+    />
+  );
 }
