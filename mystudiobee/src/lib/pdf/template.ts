@@ -26,6 +26,51 @@ function validUntil(iso: string | null | undefined, days: number | null | undefi
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+const ONES = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+  'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+const TENS = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+function twoDigitWords(n: number): string {
+  if (n < 20) return ONES[n];
+  return TENS[Math.floor(n / 10)] + (n % 10 ? '-' + ONES[n % 10] : '');
+}
+
+function threeDigitWords(n: number): string {
+  let str = '';
+  if (n >= 100) {
+    str += ONES[Math.floor(n / 100)] + ' Hundred';
+    n %= 100;
+    if (n) str += ' ';
+  }
+  if (n > 0) str += twoDigitWords(n);
+  return str;
+}
+
+/** Indian numbering system (Crore/Lakh/Thousand), not the international
+ * Million/Billion grouping — matches how INR amounts are conventionally spelled out. */
+function numberToIndianWords(n: number): string {
+  if (n === 0) return 'Zero';
+  const crore = Math.floor(n / 10000000); n %= 10000000;
+  const lakh = Math.floor(n / 100000); n %= 100000;
+  const thousand = Math.floor(n / 1000); n %= 1000;
+  const hundred = n;
+  const parts: string[] = [];
+  if (crore) parts.push(threeDigitWords(crore) + ' Crore');
+  if (lakh) parts.push(threeDigitWords(lakh) + ' Lakh');
+  if (thousand) parts.push(threeDigitWords(thousand) + ' Thousand');
+  if (hundred) parts.push(threeDigitWords(hundred));
+  return parts.join(' ');
+}
+
+/** e.g. "Indian Rupee Twenty-Three Thousand Five Hundred Only" */
+function totalInWords(total: number): string {
+  const rupees = Math.floor(Math.abs(total));
+  const paise = Math.round((Math.abs(total) - rupees) * 100);
+  let words = `Indian Rupee ${numberToIndianWords(rupees)}`;
+  if (paise > 0) words += ` and ${numberToIndianWords(paise)} Paise`;
+  return words + ' Only';
+}
+
 const TYPE_LABEL: Record<string, string> = { quote: 'Quote', proforma: 'Proforma Invoice', invoice: 'Invoice', receipt: 'Receipt' };
 
 export type PdfDocument = {
@@ -110,10 +155,12 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   const showQty = !summaryView;
   const showPricing = !summaryView && !hidePricing;
 
+  const descWidth = showPricing ? '46%' : showQty ? '76%' : '96%';
   const itemsSection = `<table class="items">
     <thead>
       <tr>
-        <th style="${showPricing ? 'width:50%' : showQty ? 'width:80%' : 'width:100%'}">Service / Description</th>
+        <th style="width:4%">#</th>
+        <th style="width:${descWidth}">Description</th>
         ${showQty ? '<th style="width:10%;text-align:center">Qty</th>' : ''}
         ${showPricing ? `
         <th style="width:18%;text-align:right">Rate</th>
@@ -121,8 +168,9 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
       </tr>
     </thead>
     <tbody>
-      ${displayItems.map(item => `
+      ${displayItems.map((item, idx) => `
       <tr>
+        <td>${idx + 1}</td>
         <td>
           ${esc(item.description || '')}
           ${'detail' in item && item.detail ? `<div class="item-detail">${esc(item.detail)}</div>` : ''}
@@ -166,15 +214,20 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   .meta-val { font-size: 13px; color: #0A0A0A; font-weight: 500; }
 
   table.items { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-  table.items thead tr { background: #0A0A0A; }
+  table.items thead tr { background: #333; }
   table.items th { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #fff; padding: 9px 12px; text-align: left; font-weight: 500; }
   table.items th:last-child { text-align: right; }
-  table.items td { font-size: 13px; color: #333; padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+  table.items td { font-size: 13px; color: #333; padding: 12px; border-bottom: 1px solid #e5e5e5; vertical-align: top; }
   table.items td:last-child { text-align: right; font-weight: 500; }
-  table.items tr:nth-child(even) td { background: #f6f8ff; }
   .item-detail { font-size: 11px; color: #999; margin-top: 2px; }
 
-  .totals-wrap { display: flex; justify-content: flex-end; margin-bottom: 24px; }
+  .totals-wrap { display: flex; justify-content: flex-end; margin-bottom: 4px; }
+  .words-wrap, .bank-wrap { display: flex; justify-content: flex-end; }
+  .words-box, .bank-box { min-width: 220px; max-width: 300px; text-align: right; padding: 6px 0; }
+  .words-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-bottom: 3px; }
+  .words-val { font-size: 12px; font-weight: 600; font-style: italic; color: #333; line-height: 1.5; }
+  .bank-wrap { margin-bottom: 24px; }
+  .bank-val { font-size: 12px; color: #555; line-height: 1.6; }
   table.tots { border-collapse: collapse; min-width: 220px; }
   .tot-label { padding: 5px 16px 5px 0; font-size: 13px; color: #555; text-align: left; }
   .tot-val { padding: 5px 0; font-size: 13px; color: #333; text-align: right; }
@@ -259,6 +312,20 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
       ${gstRows}
       <tr class="grand"><td class="tot-label">Total</td><td class="tot-val">${fmt(doc.total)}</td></tr>
     </table>
+  </div>
+
+  <div class="words-wrap">
+    <div class="words-box">
+      <div class="words-label">Total In Words</div>
+      <div class="words-val">${esc(totalInWords(doc.total))}</div>
+    </div>
+  </div>
+
+  <div class="bank-wrap">
+    <div class="bank-box">
+      <div class="words-label">Bank Details</div>
+      <div class="bank-val">HDFC Bank<br>A/C 50200012345678 &middot; IFSC HDFC0001234</div>
+    </div>
   </div>
 
   ${doc.notes ? `<div class="notes-box">${esc(doc.notes)}</div>` : ''}
