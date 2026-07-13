@@ -89,9 +89,11 @@ export function sumDirectCost(lineItems: Array<{ cost_breakdown: unknown }>): nu
   for (const item of lineItems) {
     const cb = item.cost_breakdown as {
       overheads?: Array<{ cost_snapshot: number }>;
+      pass_through_cost?: number;
     } | null;
-    if (!cb?.overheads) continue;
-    for (const o of cb.overheads) total += o.cost_snapshot;
+    if (!cb) continue;
+    if (cb.overheads) for (const o of cb.overheads) total += o.cost_snapshot;
+    if (cb.pass_through_cost) total += cb.pass_through_cost;
   }
   return round2(total);
 }

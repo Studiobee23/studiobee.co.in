@@ -38,6 +38,9 @@ export type CostBreakdown = {
   }>;
   markup_pct: number;
   cost_subtotal: number;
+  /** Cost paid out to an external vendor (rental house, freelancer) — excluded from the
+   * profit-split pool since it never belonged to the company/team, only the markup does. */
+  pass_through_cost?: number;
 };
 
 export type LineItem = {

@@ -839,17 +839,31 @@ function AddLineItemDialog({
     }
     if (mode === "external_equipment") {
       const base = Number(extEqRate);
+      const passThrough = Math.round(base * extEqDays * extEqUnits * 100) / 100;
       const amount = withMarkup(base * extEqDays, extEqMarkup) * extEqUnits;
       const rate = Math.round((amount / extEqDays) * 100) / 100;
       const desc = extEqUnits > 1 ? `${extEqName} Rental (x${extEqUnits})` : `${extEqName} Rental`;
-      onAdd({ description: desc, qty: extEqDays, cost_breakdown: null, rate, amount });
+      onAdd({
+        description: desc,
+        qty: extEqDays,
+        cost_breakdown: { role_hours: [], overheads: [], markup_pct: extEqMarkup, cost_subtotal: passThrough, pass_through_cost: passThrough },
+        rate,
+        amount,
+      });
       reset(); return;
     }
     if (mode === "external_hire") {
       const base = Number(hireRate);
+      const passThrough = Math.round(base * hireDays * 100) / 100;
       const rate = withMarkup(base, hireMarkup);
       const amount = Math.round(rate * hireDays * 100) / 100;
-      onAdd({ description: hireName || "External Creative Hire", qty: hireDays, cost_breakdown: null, rate, amount });
+      onAdd({
+        description: hireName || "External Creative Hire",
+        qty: hireDays,
+        cost_breakdown: { role_hours: [], overheads: [], markup_pct: hireMarkup, cost_subtotal: passThrough, pass_through_cost: passThrough },
+        rate,
+        amount,
+      });
       reset(); return;
     }
     if (mode === "studio") {
