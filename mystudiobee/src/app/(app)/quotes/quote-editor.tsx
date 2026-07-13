@@ -755,7 +755,7 @@ export function QuoteEditor({
   );
 }
 
-type LineItemMode = "preset" | "manual" | "equipment" | "external_hire" | "studio" | "boost";
+type LineItemMode = "preset" | "manual" | "equipment" | "external_equipment" | "external_hire" | "studio" | "boost";
 
 function AddLineItemDialog({
   presets,
@@ -784,6 +784,12 @@ function AddLineItemDialog({
   const [equipmentDays, setEquipmentDays] = useState(1);
   const [equipmentUnits, setEquipmentUnits] = useState(1);
   const [equipmentMarkup, setEquipmentMarkup] = useState(20);
+  // external equipment rental (from an outside rental house, not our inventory)
+  const [extEqName, setExtEqName] = useState("");
+  const [extEqRate, setExtEqRate] = useState("");
+  const [extEqDays, setExtEqDays] = useState(1);
+  const [extEqUnits, setExtEqUnits] = useState(1);
+  const [extEqMarkup, setExtEqMarkup] = useState(20);
   // external hire
   const [hireName, setHireName] = useState("");
   const [hireRate, setHireRate] = useState("");
@@ -831,6 +837,14 @@ function AddLineItemDialog({
       onAdd({ description: desc, qty: equipmentDays, cost_breakdown: null, rate, amount });
       reset(); return;
     }
+    if (mode === "external_equipment") {
+      const base = Number(extEqRate);
+      const amount = withMarkup(base * extEqDays, extEqMarkup) * extEqUnits;
+      const rate = Math.round((amount / extEqDays) * 100) / 100;
+      const desc = extEqUnits > 1 ? `${extEqName} Rental (x${extEqUnits})` : `${extEqName} Rental`;
+      onAdd({ description: desc, qty: extEqDays, cost_breakdown: null, rate, amount });
+      reset(); return;
+    }
     if (mode === "external_hire") {
       const base = Number(hireRate);
       const rate = withMarkup(base, hireMarkup);
@@ -875,6 +889,7 @@ function AddLineItemDialog({
     if (mode === "preset") return !description;
     if (mode === "manual") return !description || !manualRate;
     if (mode === "equipment") return !equipmentId || equipmentUnits < 1 || equipmentDays < 1;
+    if (mode === "external_equipment") return !extEqName || !extEqRate || extEqUnits < 1 || extEqDays < 1;
     if (mode === "external_hire") return !hireName || !hireRate;
     if (mode === "studio") return !studioDailyRate;
     if (mode === "boost") return !boostBudget;
@@ -885,6 +900,7 @@ function AddLineItemDialog({
     setOpen(false);
     setPresetId(""); setDescription(""); setQty(1); setHours({}); setOverheadIds([]); setMarkup(0); setManualRate("");
     setEquipmentId(""); setEquipmentDays(1); setEquipmentUnits(1); setEquipmentMarkup(20);
+    setExtEqName(""); setExtEqRate(""); setExtEqDays(1); setExtEqUnits(1); setExtEqMarkup(20);
     setHireName(""); setHireRate(""); setHireDays(1); setHireMarkup(0);
     setStudioDesc("Studio Rental"); setStudioDailyRate(""); setStudioDays(1); setStudioMarkup(0);
     setBoostPlatform("Meta"); setBoostBudget(""); setBoostMarkup(0);
@@ -894,6 +910,7 @@ function AddLineItemDialog({
     { key: "preset", label: "Preset" },
     { key: "manual", label: "Manual" },
     { key: "equipment", label: "Equipment" },
+    { key: "external_equipment", label: "Ext. Equipment" },
     { key: "external_hire", label: "Ext. Hire" },
     { key: "studio", label: "Studio" },
     { key: "boost", label: "Boost" },
@@ -1058,6 +1075,40 @@ function AddLineItemDialog({
                     );
                   })()}
                 </>
+              )}
+            </>
+          )}
+
+          {/* External equipment rental mode (from an outside rental house) */}
+          {mode === "external_equipment" && (
+            <>
+              <div className="space-y-1.5">
+                <Label>Equipment name</Label>
+                <Input placeholder="e.g. RED Komodo 6K" value={extEqName} onChange={(e) => setExtEqName(e.target.value)} />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1.5">
+                  <Label>Rate / day (₹)</Label>
+                  <Input type="number" value={extEqRate} onChange={(e) => setExtEqRate(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Days</Label>
+                  <Input type="number" min={1} value={extEqDays} onChange={(e) => setExtEqDays(Number(e.target.value))} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Qty (units)</Label>
+                  <Input type="number" min={1} value={extEqUnits} onChange={(e) => setExtEqUnits(Number(e.target.value))} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Markup (%)</Label>
+                <Input type="number" value={extEqMarkup} onChange={(e) => setExtEqMarkup(Number(e.target.value))} />
+              </div>
+              {extEqRate && (
+                <p className="text-xs text-muted-foreground">
+                  {extEqUnits}x {extEqName || "item"} · {extEqDays} day{extEqDays !== 1 ? "s" : ""} (incl. {extEqMarkup}% markup) ={" "}
+                  <strong>₹{Math.round(withMarkup(Number(extEqRate) * extEqDays, extEqMarkup) * extEqUnits * 100) / 100}</strong>
+                </p>
               )}
             </>
           )}
