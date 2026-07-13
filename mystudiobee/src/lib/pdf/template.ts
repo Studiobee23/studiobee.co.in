@@ -195,10 +195,17 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   tr.grand .tot-val { font-size: 15px; font-weight: 700; color: #2F48DF; border-top: 2px solid #2F48DF; padding-top: 10px; }
 
   .notes-box { background: #f6f8ff; border-left: 3px solid #2F48DF; padding: 11px 15px; font-size: 12px; color: #555; margin-bottom: 24px; border-radius: 0 4px 4px 0; line-height: 1.6; }
-  .terms-box { font-size: 10.5px; color: #777; line-height: 1.6; margin-bottom: 16px; }
-  .terms-box strong { display: block; margin-bottom: 4px; color: #444; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
-  .terms-box ol { margin: 0; padding-left: 16px; }
-  .terms-box li { margin-bottom: 2px; }
+
+  .terms-page { page-break-before: always; padding: 40px; }
+  .terms-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+  .terms-title { font-size: 22px; font-weight: 600; color: #2F48DF; letter-spacing: -0.01em; white-space: nowrap; }
+  .terms-rule { flex: 1; height: 1px; background: #d8dcf5; }
+  .terms-grid { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 28px; row-gap: 22px; }
+  .terms-col strong { display: block; margin-bottom: 7px; color: #2F48DF; font-size: 11.5px; font-weight: 700; }
+  .terms-col p { font-size: 10.5px; color: #555; line-height: 1.55; margin-bottom: 4px; }
+  .terms-col ul { margin: 0; padding-left: 13px; }
+  .terms-col li { font-size: 10.5px; color: #555; line-height: 1.55; margin-bottom: 4px; }
+  .terms-ack { margin-top: 30px; padding-top: 16px; border-top: 1px solid #ebebeb; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #0A0A0A; text-align: center; line-height: 1.6; }
 
   .doc-footer { background: #0A0A0A; padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
   .footer-bank { font-size: 12px; color: #888; }
@@ -276,19 +283,91 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
 
   ${doc.notes ? `<div class="notes-box">${esc(doc.notes)}</div>` : ''}
 
-  ${doc.type === 'quote' ? `
-  <div class="terms-box">
-    <strong>Terms &amp; Conditions</strong>
-    <ol>
-      <li>This quotation is valid for ${esc(doc.validity_days || 15)} days from the date of issue.</li>
-      <li>A 50% advance payment is required to confirm and schedule the project; the balance is due on delivery.</li>
-      <li>Scope covers the deliverables and revisions listed above. Additional requests outside this scope will be quoted separately.</li>
-      <li>Final source files and assets are handed over only after full payment is received.</li>
-      <li>Cancellation after work has begun forfeits the advance payment to cover work already completed.</li>
-      <li>Timelines are estimates and may shift based on client feedback turnaround and third-party dependencies.</li>
-    </ol>
-  </div>` : ''}
 </div>
+
+${doc.type === 'quote' || doc.type === 'proforma' ? `
+<div class="terms-page">
+  <div class="terms-header">
+    <div class="terms-title">Terms &amp; Conditions</div>
+    <div class="terms-rule"></div>
+  </div>
+  <div class="terms-grid">
+    <div class="terms-col">
+      <strong>Payment &amp; Scope</strong>
+      <ul>
+        <li>This quotation is valid for ${esc(doc.validity_days || 15)} days from the date of issue.</li>
+        <li>The quoted fee covers the deliverables outlined in this proposal.</li>
+        <li>A 50% advance payment is required before project initiation.</li>
+        <li>The remaining 50% must be cleared before delivery of final assets and source files.</li>
+        <li>Additional assets, revisions beyond scope, or add-on services will be quoted and charged separately.</li>
+        <li>Future work, updates, or extensions are not included in this proposal and will be billed separately.</li>
+        <li>StudioBee reserves the right to pause or terminate work in the event of delayed payments.</li>
+      </ul>
+    </div>
+    <div class="terms-col">
+      <strong>Revisions Policy</strong>
+      <ul>
+        <li>Each project includes a maximum of 3 revision cycles.</li>
+        <li>Revisions apply only to the originally agreed scope.</li>
+        <li>Any revisions beyond the included limit will incur additional charges.</li>
+        <li>Major changes or direction shifts after approval of concepts will be treated as a new scope.</li>
+      </ul>
+    </div>
+    <div class="terms-col">
+      <strong>Intellectual Property</strong>
+      <ul>
+        <li>Final deliverables will be transferred to the client upon full payment.</li>
+        <li>StudioBee retains the right to showcase completed work in its portfolio, social media, and promotional materials unless otherwise agreed in writing.</li>
+        <li>Raw files, working files, or source files will only be shared if explicitly included in the agreement.</li>
+      </ul>
+    </div>
+    <div class="terms-col">
+      <strong>Lodging &amp; Accommodation (Outstation Shoots)</strong>
+      <p>For all video or photography projects outside Delhi NCR, the client will be responsible for covering travel, lodging, and accommodation for the StudioBee team.</p>
+    </div>
+    <div class="terms-col">
+      <strong>Timelines &amp; Delivery</strong>
+      <ul>
+        <li>Project timelines will be mutually agreed upon before commencement.</li>
+        <li>Timely delivery depends on prompt client feedback and approvals.</li>
+        <li>StudioBee is not responsible for delays caused by lack of communication or delayed inputs from the client.</li>
+      </ul>
+    </div>
+    <div class="terms-col">
+      <strong>Cancellation &amp; Refund Policy</strong>
+      <ul>
+        <li>Advance payments are non-refundable once the project has commenced.</li>
+        <li>If a project is canceled midway, the client will be billed for work completed up to that point.</li>
+        <li>StudioBee reserves the right to cancel a project under unforeseen circumstances, with proportional refund if applicable.</li>
+      </ul>
+    </div>
+    <div class="terms-col">
+      <strong>Client Responsibilities</strong>
+      <p>The client agrees to:</p>
+      <ul>
+        <li>Provide clear briefs, content, and necessary assets on time.</li>
+        <li>Ensure all provided materials (text, images, logos) are legally owned or licensed.</li>
+        <li>Review and provide feedback within the agreed timeframe (3 working days).</li>
+      </ul>
+    </div>
+    <div class="terms-col">
+      <strong>Confidentiality</strong>
+      <p>All client information and project details will be kept confidential and will not be disclosed to third parties without consent.</p>
+    </div>
+    <div class="terms-col">
+      <strong>Liability</strong>
+      <p>StudioBee will not be held liable for:</p>
+      <ul>
+        <li>Any indirect or consequential losses.</li>
+        <li>Errors arising from incorrect information provided by the client.</li>
+        <li>Performance issues caused by third-party platforms or tools.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="terms-ack">
+    By engaging StudioBee&rsquo;s services, the client acknowledges that they have read, understood, and agreed to these terms &amp; conditions.
+  </div>
+</div>` : ''}
 
 <div class="doc-footer">
   <div class="footer-bank">
