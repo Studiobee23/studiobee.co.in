@@ -13,6 +13,10 @@ function fmt(n: unknown) {
   return '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function fmtQty(n: unknown) {
+  return Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 function fmtDate(iso: string | null | undefined) {
   if (!iso) return '';
   const d = new Date(iso);
@@ -175,7 +179,7 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
           ${esc(item.description || '')}
           ${'detail' in item && item.detail ? `<div class="item-detail">${esc(item.detail)}</div>` : ''}
         </td>
-        ${showQty ? `<td style="text-align:center">${esc('qty' in item ? item.qty : '')}</td>` : ''}
+        ${showQty ? `<td style="text-align:center">${fmtQty('qty' in item ? item.qty : 0)}</td>` : ''}
         ${showPricing ? `
         <td style="text-align:right">${fmt('rate' in item ? item.rate : 0)}</td>
         <td>${fmt('amount' in item ? item.amount : 0)}</td>` : ''}
@@ -223,11 +227,15 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
 
   .totals-wrap { display: flex; justify-content: flex-end; margin-bottom: 4px; }
   .words-wrap, .bank-wrap { display: flex; justify-content: flex-end; }
-  .words-box, .bank-box { min-width: 220px; max-width: 300px; text-align: right; padding: 6px 0; }
+  .words-box { min-width: 220px; max-width: 300px; text-align: right; padding: 6px 0; }
   .words-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-bottom: 3px; }
   .words-val { font-size: 12px; font-weight: 600; font-style: italic; color: #333; line-height: 1.5; }
   .bank-wrap { margin-bottom: 24px; }
-  .bank-val { font-size: 12px; color: #555; line-height: 1.6; }
+  .bank-box { padding: 6px 0; }
+  table.bank-table { border-collapse: collapse; }
+  table.bank-table td { font-size: 11px; padding: 1.5px 0; }
+  table.bank-table td:first-child { color: #999; padding-right: 20px; white-space: nowrap; }
+  table.bank-table td:last-child { color: #333; font-weight: 500; }
   table.tots { border-collapse: collapse; min-width: 220px; }
   .tot-label { padding: 5px 16px 5px 0; font-size: 13px; color: #555; text-align: left; }
   .tot-val { padding: 5px 0; font-size: 13px; color: #333; text-align: right; }
@@ -324,7 +332,14 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   <div class="bank-wrap">
     <div class="bank-box">
       <div class="words-label">Bank Details</div>
-      <div class="bank-val">HDFC Bank<br>A/C 50200012345678 &middot; IFSC HDFC0001234</div>
+      <table class="bank-table">
+        <tr><td>Beneficiary Name</td><td>Beenext Pvt. Ltd.</td></tr>
+        <tr><td>Bank</td><td>HDFC Bank Ltd.</td></tr>
+        <tr><td>A/c No</td><td>50200016917978</td></tr>
+        <tr><td>IFSC</td><td>HDFC0000557</td></tr>
+        <tr><td>Branch</td><td>Greater Kailash- II, New Delhi-110048</td></tr>
+        <tr><td>Swift Code</td><td>HDFCINBBDEL</td></tr>
+      </table>
     </div>
   </div>
 
@@ -422,32 +437,26 @@ ${doc.type === 'quote' || doc.type === 'proforma' ? `
 /** Height (px) to reserve via Puppeteer's `margin.bottom` so the repeating
  * footer template never overlaps flowed page content. Keep in sync with the
  * footer's own padding/line-height below. */
-export const FOOTER_HEIGHT_PX = 68;
+export const FOOTER_HEIGHT_PX = 40;
 
-/** Renders the black footer bar as a Puppeteer `footerTemplate` fragment, so it
+/** Renders the plain-text footer as a Puppeteer `footerTemplate` fragment, so it
  * repeats identically on every page instead of only appearing once at the very
  * end of the document's HTML flow. Puppeteer's header/footer templates run in
- * an isolated context — no access to the main document's <style> or web fonts —
- * so all styling here is inlined and font-family falls back to system fonts. */
-export function renderFooterTemplate(doc: PdfDocument, settings: PdfSettings = {}) {
-  const { bankName = '', accountNumber = '', ifsc = '' } = settings;
-
-  const bankInfo = bankName
-    ? `<strong style="color:#fff;display:block;font-size:12px;margin-bottom:2px;">${esc(bankName)}</strong> A/C ${esc(accountNumber)} &middot; IFSC ${esc(ifsc)}`
-    : 'Bank details on file';
-
+ * an isolated context — no access to the main document's <style> or web fonts,
+ * and background colors on this layer are unreliable across Chrome versions —
+ * so this stays plain text on a transparent background. `pageNumber`/
+ * `totalPages` are Puppeteer's own template classes; it substitutes their
+ * text content automatically when `displayHeaderFooter` is on. */
+export function renderFooterTemplate(doc: PdfDocument) {
   const validityNote = doc.type === 'quote' && doc.validity_days
-    ? esc(`Valid until ${validUntil(doc.created_at, doc.validity_days)}`)
+    ? esc(`Valid until ${validUntil(doc.created_at, doc.validity_days)}`) + ' &middot; studiobee.co.in'
     : doc.type === 'receipt'
-    ? '<span style="color:#6ee;font-weight:600;">Payment Received</span>'
-    : '';
+    ? '<span style="color:#2a2;font-weight:600;">Payment Received</span> &middot; studiobee.co.in'
+    : 'studiobee.co.in';
 
   return `
-  <div style="width:100%;box-sizing:border-box;background:#0A0A0A;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:#888;">
-    <div>${bankInfo}</div>
-    <div style="text-align:right;color:#666;line-height:1.6;">
-      ${validityNote ? `<span>${validityNote}</span>` : ''}
-      <span style="color:#555;">studiobee.co.in</span>
-    </div>
+  <div style="width:100%;box-sizing:border-box;padding:10px 40px;display:flex;justify-content:space-between;align-items:center;font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#888;">
+    <div>${validityNote}</div>
+    <div>Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>
   </div>`;
 }

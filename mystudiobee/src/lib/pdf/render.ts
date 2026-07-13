@@ -63,7 +63,7 @@ export async function renderDocumentToPdf(docId: string) {
       printBackground: true,
       displayHeaderFooter: true,
       headerTemplate: "<span></span>",
-      footerTemplate: renderFooterTemplate(doc, settings),
+      footerTemplate: renderFooterTemplate(doc),
       margin: { top: "0px", right: "0px", bottom: `${FOOTER_HEIGHT_PX}px`, left: "0px" },
     });
     await browser.close();
