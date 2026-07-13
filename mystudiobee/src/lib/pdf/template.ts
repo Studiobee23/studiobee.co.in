@@ -26,10 +26,10 @@ function validUntil(iso: string | null | undefined, days: number | null | undefi
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-const TYPE_LABEL: Record<string, string> = { quote: 'Quote', invoice: 'Invoice', receipt: 'Receipt' };
+const TYPE_LABEL: Record<string, string> = { quote: 'Quote', proforma: 'Proforma Invoice', invoice: 'Invoice', receipt: 'Receipt' };
 
 export type PdfDocument = {
-  type: 'quote' | 'invoice' | 'receipt';
+  type: 'quote' | 'proforma' | 'invoice' | 'receipt';
   number: string;
   created_at: string;
   project_name?: string;

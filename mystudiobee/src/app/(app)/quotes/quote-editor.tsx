@@ -73,13 +73,14 @@ export type QuoteDoc = {
   client_handler_id?: string | null;
 };
 
-const STATUS_OPTIONS: Record<"quote" | "invoice" | "receipt", string[]> = {
+const STATUS_OPTIONS: Record<"quote" | "proforma" | "invoice" | "receipt", string[]> = {
   quote: ["draft", "sent", "accepted", "cancelled"],
+  proforma: ["draft", "sent", "accepted", "cancelled"],
   invoice: ["draft", "sent", "paid", "cancelled"],
   receipt: ["paid", "cancelled"],
 };
 
-const NEXT_DOC_TYPE: Record<string, string> = { quote: "invoice", invoice: "receipt" };
+const NEXT_DOC_TYPE: Record<string, string> = { quote: "proforma", proforma: "invoice", invoice: "receipt" };
 
 // Matches the profit_split_settings categories exactly — category here is a lookup
 // key (computeProfitSplit does `settings.category === category`), so it can't be free
@@ -107,7 +108,7 @@ export function QuoteEditor({
   overheads: OverheadItem[];
   canSeeCost: boolean;
   doc?: QuoteDoc;
-  docType?: "quote" | "invoice" | "receipt";
+  docType?: "quote" | "proforma" | "invoice" | "receipt";
   teamMembers?: TeamMember[];
   splitSettings?: ProfitSplitSettings[];
   equipmentItems?: EquipmentItem[];

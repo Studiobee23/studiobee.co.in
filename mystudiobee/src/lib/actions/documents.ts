@@ -13,10 +13,10 @@ async function requireBillingRole() {
   return profile;
 }
 
-const DOC_PREFIX = { quote: "SB-Q", invoice: "SB-I", receipt: "SB-R" } as const;
-const NEXT_TYPE = { quote: "invoice", invoice: "receipt" } as const;
+const DOC_PREFIX = { quote: "SB-Q", proforma: "SB-PI", invoice: "SB-I", receipt: "SB-R" } as const;
+const NEXT_TYPE = { quote: "proforma", proforma: "invoice", invoice: "receipt" } as const;
 
-async function nextDocNumber(type: "quote" | "invoice" | "receipt") {
+async function nextDocNumber(type: "quote" | "proforma" | "invoice" | "receipt") {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("increment_doc_series", { series_type: type });
   if (error) throw new Error(error.message);
@@ -119,6 +119,7 @@ export async function updateDocument(
   const { error } = await supabase.from("documents").update(input).eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/quotes");
+  revalidatePath("/proformas");
   revalidatePath("/invoices");
   revalidatePath("/receipts");
 }
@@ -134,7 +135,7 @@ export async function convertDocument(id: string) {
     .single();
   if (fetchError) throw new Error("Document not found.");
 
-  const nextType = NEXT_TYPE[src.type as "quote" | "invoice"];
+  const nextType = NEXT_TYPE[src.type as "quote" | "proforma" | "invoice"];
   if (!nextType) throw new Error("Receipts can't be converted further.");
 
   const number = await nextDocNumber(nextType);
@@ -149,10 +150,11 @@ export async function convertDocument(id: string) {
 
   // Mark the source document as no longer just a draft now that it's been converted —
   // otherwise every quote/invoice sits in "draft" forever even after moving on.
-  const convertedStatus = src.type === "quote" ? "accepted" : "paid";
+  const convertedStatus = src.type === "quote" || src.type === "proforma" ? "accepted" : "paid";
   await supabase.from("documents").update({ status: convertedStatus }).eq("id", id);
 
   revalidatePath("/quotes");
+  revalidatePath("/proformas");
   revalidatePath("/invoices");
   revalidatePath("/receipts");
   return { id: data.id as string, type: nextType };
@@ -175,6 +177,7 @@ export async function updateDocumentStatus(id: string, status: DocumentStatus) {
   if (error) throw new Error(error.message);
   if (!data || data.length === 0) throw new Error("Document not found");
   revalidatePath("/quotes");
+  revalidatePath("/proformas");
   revalidatePath("/invoices");
   revalidatePath("/receipts");
 }
@@ -188,6 +191,7 @@ export async function deleteDocument(id: string) {
   const { error } = await supabase.from("documents").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/quotes");
+  revalidatePath("/proformas");
   revalidatePath("/invoices");
   revalidatePath("/receipts");
 }

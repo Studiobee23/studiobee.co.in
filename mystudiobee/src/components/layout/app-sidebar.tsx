@@ -18,6 +18,8 @@ import {
   PieChart,
   Package,
   Clock,
+  FileStack,
+  Layers,
 } from "lucide-react";
 import {
   Sidebar,
@@ -44,11 +46,13 @@ const taskNav: NavEntry[] = [{ title: "Tasks", href: "/tasks", icon: CheckSquare
 const clockNav: NavEntry[] = [{ title: "Clock In", href: "/clock", icon: Clock }];
 const billingNav: NavEntry[] = [
   { title: "Quotes", href: "/quotes", icon: FileText },
+  { title: "Proforma Invoices", href: "/proformas", icon: FileStack },
   { title: "Invoices", href: "/invoices", icon: Receipt },
   { title: "Receipts", href: "/receipts", icon: ScrollText },
 ];
 const adminNav: NavEntry[] = [
   { title: "Team", href: "/admin/team", icon: UserCog },
+  { title: "Services", href: "/admin/services", icon: Layers },
   { title: "Cost Model", href: "/admin/cost-model", icon: Calculator },
   { title: "Profit Split", href: "/admin/profit-split", icon: PieChart },
   { title: "Equipment", href: "/admin/equipment", icon: Package },

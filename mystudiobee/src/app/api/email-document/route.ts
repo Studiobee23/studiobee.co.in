@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { renderDocumentToPdf } from "@/lib/pdf/render";
 import { getSmtpTransport, getSmtpFrom } from "@/lib/email";
 
-const TYPE_LABEL: Record<string, string> = { quote: "Quote", invoice: "Invoice", receipt: "Receipt" };
+const TYPE_LABEL: Record<string, string> = { quote: "Quote", proforma: "Proforma Invoice", invoice: "Invoice", receipt: "Receipt" };
 
 export async function POST(req: NextRequest) {
   const profile = await getCurrentProfile();

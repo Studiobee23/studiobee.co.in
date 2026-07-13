@@ -8,7 +8,7 @@ import { ClientFormSheet, type ClientRecord } from "../client-form-sheet";
 
 type Document = {
   id: string;
-  type: "quote" | "invoice" | "receipt";
+  type: "quote" | "proforma" | "invoice" | "receipt";
   number: string;
   project_name: string;
   status: string;
@@ -56,7 +56,7 @@ export function ClientDetailClient({
 
       <div className="rounded-xl border border-border bg-card p-5 shadow-card">
         <h3 className="mb-4 font-heading text-[11px] font-semibold uppercase tracking-[0.08em]">
-          Quotes, invoices &amp; receipts
+          Quotes, proformas, invoices &amp; receipts
         </h3>
         {documents.length === 0 ? (
           <p className="py-6 text-center text-xs text-muted-foreground">Nothing yet for this client.</p>
