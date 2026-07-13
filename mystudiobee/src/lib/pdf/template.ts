@@ -105,36 +105,38 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   const summaryView = doc.summary_view === true;
   const hidePricing = doc.hide_pricing === true;
 
-  const itemsSection = summaryView
-    ? `<div class="summary-box">
-        <div class="summary-sub">${esc(
-          doc.summary_label?.trim() ||
-            `${doc.project_name || 'Project'} · ${items.length} service${items.length !== 1 ? 's' : ''} included`
-        )}</div>
-        <div class="summary-total">${fmt(doc.total)}</div>
-        ${doc.gst_enabled ? `<div class="summary-gst">Incl. ${doc.gst_type === 'igst' ? 'IGST' : 'CGST+SGST'} @ ${doc.gst_rate}%</div>` : ''}
-      </div>`
-    : `<table class="items">
+  // Summary view collapses every line item into a single row — the custom label
+  // (or a fallback) — with no qty/rate/amount columns, same table chrome as normal.
+  const displayItems = summaryView
+    ? [{
+        description: doc.summary_label?.trim() ||
+          `${doc.project_name || 'Project'} · ${items.length} service${items.length !== 1 ? 's' : ''} included`,
+      }]
+    : items;
+  const showQty = !summaryView;
+  const showPricing = !summaryView && !hidePricing;
+
+  const itemsSection = `<table class="items">
     <thead>
       <tr>
-        <th style="${hidePricing ? 'width:80%' : 'width:50%'}">Service / Description</th>
-        <th style="width:10%;text-align:center">Qty</th>
-        ${hidePricing ? '' : `
+        <th style="${showPricing ? 'width:50%' : showQty ? 'width:80%' : 'width:100%'}">Service / Description</th>
+        ${showQty ? '<th style="width:10%;text-align:center">Qty</th>' : ''}
+        ${showPricing ? `
         <th style="width:18%;text-align:right">Rate</th>
-        <th style="width:22%;text-align:right">Amount</th>`}
+        <th style="width:22%;text-align:right">Amount</th>` : ''}
       </tr>
     </thead>
     <tbody>
-      ${items.map(item => `
+      ${displayItems.map(item => `
       <tr>
         <td>
           ${esc(item.description || '')}
-          ${item.detail ? `<div class="item-detail">${esc(item.detail)}</div>` : ''}
+          ${'detail' in item && item.detail ? `<div class="item-detail">${esc(item.detail)}</div>` : ''}
         </td>
-        <td style="text-align:center">${esc(item.qty)}</td>
-        ${hidePricing ? '' : `
-        <td style="text-align:right">${fmt(item.rate)}</td>
-        <td>${fmt(item.amount)}</td>`}
+        ${showQty ? `<td style="text-align:center">${esc('qty' in item ? item.qty : '')}</td>` : ''}
+        ${showPricing ? `
+        <td style="text-align:right">${fmt('rate' in item ? item.rate : 0)}</td>
+        <td>${fmt('amount' in item ? item.amount : 0)}</td>` : ''}
       </tr>`).join('')}
     </tbody>
   </table>`;
@@ -181,11 +183,6 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   table.items td:last-child { text-align: right; font-weight: 500; }
   table.items tr:nth-child(even) td { background: #f6f8ff; }
   .item-detail { font-size: 11px; color: #999; margin-top: 2px; }
-
-  .summary-box { text-align: center; background: #f6f8ff; border-radius: 8px; padding: 28px 20px; margin-bottom: 20px; }
-  .summary-total { font-size: 28px; font-weight: 700; color: #2F48DF; margin-top: 6px; }
-  .summary-sub { font-size: 15px; color: #333; font-weight: 500; }
-  .summary-gst { font-size: 11px; color: #888; margin-top: 3px; }
 
   .totals-wrap { display: flex; justify-content: flex-end; margin-bottom: 24px; }
   table.tots { border-collapse: collapse; min-width: 220px; }
@@ -271,7 +268,6 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
 
   ${itemsSection}
 
-  ${summaryView ? '' : `
   <div class="totals-wrap">
     <table class="tots">
       <tr><td class="tot-label">Subtotal</td><td class="tot-val">${fmt(doc.subtotal)}</td></tr>
@@ -279,7 +275,7 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
       ${gstRows}
       <tr class="grand"><td class="tot-label">Total</td><td class="tot-val">${fmt(doc.total)}</td></tr>
     </table>
-  </div>`}
+  </div>
 
   ${doc.notes ? `<div class="notes-box">${esc(doc.notes)}</div>` : ''}
 
