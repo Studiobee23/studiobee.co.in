@@ -45,6 +45,8 @@ export type PdfDocument = {
   total: number;
   notes?: string;
   validity_days?: number;
+  hide_pricing?: boolean;
+  summary_view?: boolean;
 };
 
 export type PdfClient = {
@@ -99,6 +101,40 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
     ? `<span style="color:#6ee;font-weight:600;">Payment Received</span>`
     : '';
 
+  const summaryView = doc.summary_view === true;
+  const hidePricing = doc.hide_pricing === true;
+
+  const itemsSection = summaryView
+    ? `<div class="summary-box">
+        <div class="summary-total">${fmt(doc.total)}</div>
+        <div class="summary-sub">${esc(doc.project_name || 'Project')} &middot; ${items.length} service${items.length !== 1 ? 's' : ''} included</div>
+        ${doc.gst_enabled ? `<div class="summary-gst">Incl. ${doc.gst_type === 'igst' ? 'IGST' : 'CGST+SGST'} @ ${doc.gst_rate}%</div>` : ''}
+      </div>`
+    : `<table class="items">
+    <thead>
+      <tr>
+        <th style="${hidePricing ? 'width:80%' : 'width:50%'}">Service / Description</th>
+        <th style="width:10%;text-align:center">Qty</th>
+        ${hidePricing ? '' : `
+        <th style="width:18%;text-align:right">Rate</th>
+        <th style="width:22%;text-align:right">Amount</th>`}
+      </tr>
+    </thead>
+    <tbody>
+      ${items.map(item => `
+      <tr>
+        <td>
+          ${esc(item.description || '')}
+          ${item.detail ? `<div class="item-detail">${esc(item.detail)}</div>` : ''}
+        </td>
+        <td style="text-align:center">${esc(item.qty)}</td>
+        ${hidePricing ? '' : `
+        <td style="text-align:right">${fmt(item.rate)}</td>
+        <td>${fmt(item.amount)}</td>`}
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+
   const bankInfo = bankName
     ? `<strong>${esc(bankName)}</strong> &nbsp;·&nbsp; A/C ${esc(accountNumber)} &nbsp;·&nbsp; IFSC ${esc(ifsc)}`
     : 'Bank details on file';
@@ -141,6 +177,11 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   table.items td:last-child { text-align: right; font-weight: 500; }
   table.items tr:nth-child(even) td { background: #f6f8ff; }
   .item-detail { font-size: 11px; color: #999; margin-top: 2px; }
+
+  .summary-box { text-align: center; background: #f6f8ff; border-radius: 8px; padding: 28px 20px; margin-bottom: 20px; }
+  .summary-total { font-size: 28px; font-weight: 700; color: #2F48DF; }
+  .summary-sub { font-size: 13px; color: #555; margin-top: 6px; }
+  .summary-gst { font-size: 11px; color: #888; margin-top: 3px; }
 
   .totals-wrap { display: flex; justify-content: flex-end; margin-bottom: 24px; }
   table.tots { border-collapse: collapse; min-width: 220px; }
@@ -217,29 +258,9 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
     </div>` : ''}
   </div>
 
-  <table class="items">
-    <thead>
-      <tr>
-        <th style="width:50%">Service / Description</th>
-        <th style="width:10%;text-align:center">Qty</th>
-        <th style="width:18%;text-align:right">Rate</th>
-        <th style="width:22%;text-align:right">Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${items.map(item => `
-      <tr>
-        <td>
-          ${esc(item.description || '')}
-          ${item.detail ? `<div class="item-detail">${esc(item.detail)}</div>` : ''}
-        </td>
-        <td style="text-align:center">${esc(item.qty)}</td>
-        <td style="text-align:right">${fmt(item.rate)}</td>
-        <td>${fmt(item.amount)}</td>
-      </tr>`).join('')}
-    </tbody>
-  </table>
+  ${itemsSection}
 
+  ${summaryView ? '' : `
   <div class="totals-wrap">
     <table class="tots">
       <tr><td class="tot-label">Subtotal</td><td class="tot-val">${fmt(doc.subtotal)}</td></tr>
@@ -247,7 +268,7 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
       ${gstRows}
       <tr class="grand"><td class="tot-label">Total</td><td class="tot-val">${fmt(doc.total)}</td></tr>
     </table>
-  </div>
+  </div>`}
 
   ${doc.notes ? `<div class="notes-box">${esc(doc.notes)}</div>` : ''}
 

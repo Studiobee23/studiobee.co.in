@@ -71,6 +71,8 @@ export type QuoteDoc = {
   executor_id?: string | null;
   manager_id?: string | null;
   client_handler_id?: string | null;
+  hide_pricing?: boolean;
+  summary_view?: boolean;
 };
 
 const STATUS_OPTIONS: Record<"quote" | "proforma" | "invoice" | "receipt", string[]> = {
@@ -137,7 +139,8 @@ export function QuoteEditor({
   const selectedClient = clients.find((c) => c.id === clientId);
   const [emailForm, setEmailForm] = useState({ to: "", subject: "", message: "" });
   const [showCost, setShowCost] = useState<Record<number, boolean>>({});
-  const [lumpsumView, setLumpsumView] = useState(false);
+  const [lumpsumView, setLumpsumView] = useState(doc?.summary_view ?? false);
+  const [hidePricing, setHidePricing] = useState(doc?.hide_pricing ?? false);
   const [statusPending, startStatusTransition] = useTransition();
 
   const totals = useMemo(
@@ -166,13 +169,8 @@ export function QuoteEditor({
     setLineItems((items) => items.filter((_, i) => i !== idx));
   }
 
-  async function handleSave() {
-    if (!clientId || lineItems.length === 0) {
-      toast.error("Pick a client and add at least one line item.");
-      return;
-    }
-    setSaving(true);
-    const payload = {
+  function buildPayload() {
+    return {
       client_id: clientId,
       project_id: projectId || null,
       project_name: projectName,
@@ -188,11 +186,22 @@ export function QuoteEditor({
       total: totals.total,
       notes,
       validity_days: validityDays,
+      hide_pricing: hidePricing,
+      summary_view: lumpsumView,
       executor_id: executorId || null,
       manager_id: managerId || null,
       client_handler_id: clientHandlerId || null,
       profit_split: profitSplit ?? null,
     };
+  }
+
+  async function handleSave() {
+    if (!clientId || lineItems.length === 0) {
+      toast.error("Pick a client and add at least one line item.");
+      return;
+    }
+    setSaving(true);
+    const payload = buildPayload();
     try {
       if (doc) {
         await updateDocument(doc.id, payload);
@@ -225,6 +234,7 @@ export function QuoteEditor({
     if (!doc) return;
     setGenerating(true);
     try {
+      await updateDocument(doc.id, buildPayload());
       const res = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -256,6 +266,7 @@ export function QuoteEditor({
     if (!doc || !emailForm.to.trim()) return;
     setSendingEmail(true);
     try {
+      await updateDocument(doc.id, buildPayload());
       const res = await fetch("/api/email-document", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -469,6 +480,10 @@ export function QuoteEditor({
             <div className="flex items-center justify-between">
               <Label>GST enabled</Label>
               <Switch checked={gstEnabled} onCheckedChange={setGstEnabled} />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label>Hide rate &amp; amount on PDF</Label>
+              <Switch checked={hidePricing} onCheckedChange={setHidePricing} />
             </div>
             {gstEnabled && (
               <div className="grid grid-cols-2 gap-3">

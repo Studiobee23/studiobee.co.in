@@ -68,6 +68,8 @@ export async function createQuote(input: {
   total: number;
   notes: string;
   validity_days: number;
+  hide_pricing?: boolean;
+  summary_view?: boolean;
   project_id?: string | null;
   executor_id?: string | null;
   manager_id?: string | null;
@@ -107,6 +109,8 @@ export async function updateDocument(
     total: number;
     notes: string;
     validity_days: number;
+    hide_pricing: boolean;
+    summary_view: boolean;
     project_id: string | null;
     executor_id: string | null;
     manager_id: string | null;

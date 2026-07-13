@@ -86,6 +86,8 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
               executor_id: (doc as Record<string, unknown>).executor_id as string | null,
               manager_id: (doc as Record<string, unknown>).manager_id as string | null,
               client_handler_id: (doc as Record<string, unknown>).client_handler_id as string | null,
+              hide_pricing: (doc as Record<string, unknown>).hide_pricing as boolean | undefined,
+              summary_view: (doc as Record<string, unknown>).summary_view as boolean | undefined,
             }}
           />
         </div>
