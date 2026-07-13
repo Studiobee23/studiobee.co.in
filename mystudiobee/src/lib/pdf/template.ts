@@ -437,25 +437,29 @@ ${doc.type === 'quote' || doc.type === 'proforma' ? `
 /** Height (px) to reserve via Puppeteer's `margin.bottom` so the repeating
  * footer template never overlaps flowed page content. Keep in sync with the
  * footer's own padding/line-height below. */
-export const FOOTER_HEIGHT_PX = 40;
+export const FOOTER_HEIGHT_PX = 44;
 
-/** Renders the plain-text footer as a Puppeteer `footerTemplate` fragment, so it
+/** Renders the black footer bar as a Puppeteer `footerTemplate` fragment, so it
  * repeats identically on every page instead of only appearing once at the very
  * end of the document's HTML flow. Puppeteer's header/footer templates run in
- * an isolated context — no access to the main document's <style> or web fonts,
- * and background colors on this layer are unreliable across Chrome versions —
- * so this stays plain text on a transparent background. `pageNumber`/
- * `totalPages` are Puppeteer's own template classes; it substitutes their
- * text content automatically when `displayHeaderFooter` is on. */
+ * an isolated context — no access to the main document's <style> or web fonts —
+ * so all styling here is inlined and font-family falls back to system fonts.
+ * Chrome's print pipeline drops background colors/images by default even with
+ * `printBackground: true` on the main page, *specifically* inside header/footer
+ * templates, unless `-webkit-print-color-adjust: exact` is set within the
+ * template's own markup — that omission (not an inherent Chrome limitation)
+ * is why the black bar wasn't showing up before. `pageNumber`/`totalPages` are
+ * Puppeteer's own template classes; it substitutes their text automatically. */
 export function renderFooterTemplate(doc: PdfDocument) {
   const validityNote = doc.type === 'quote' && doc.validity_days
     ? esc(`Valid until ${validUntil(doc.created_at, doc.validity_days)}`) + ' &middot; studiobee.co.in'
     : doc.type === 'receipt'
-    ? '<span style="color:#2a2;font-weight:600;">Payment Received</span> &middot; studiobee.co.in'
+    ? '<span style="color:#6ee;font-weight:600;">Payment Received</span> &middot; studiobee.co.in'
     : 'studiobee.co.in';
 
   return `
-  <div style="width:100%;box-sizing:border-box;padding:10px 40px;display:flex;justify-content:space-between;align-items:center;font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#888;">
+  <style>* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }</style>
+  <div style="width:100%;box-sizing:border-box;background:#0A0A0A;padding:12px 40px;display:flex;justify-content:space-between;align-items:center;font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#999;">
     <div>${validityNote}</div>
     <div>Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>
   </div>`;
