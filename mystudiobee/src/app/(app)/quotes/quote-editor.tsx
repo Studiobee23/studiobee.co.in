@@ -74,6 +74,8 @@ export type QuoteDoc = {
   hide_pricing?: boolean;
   summary_view?: boolean;
   summary_label?: string | null;
+  summary_qty?: number | null;
+  summary_rate?: number | null;
 };
 
 const STATUS_OPTIONS: Record<"quote" | "proforma" | "invoice" | "receipt", string[]> = {
@@ -143,6 +145,8 @@ export function QuoteEditor({
   const [lumpsumView, setLumpsumView] = useState(doc?.summary_view ?? false);
   const [hidePricing, setHidePricing] = useState(doc?.hide_pricing ?? false);
   const [summaryLabel, setSummaryLabel] = useState(doc?.summary_label ?? "");
+  const [summaryQty, setSummaryQty] = useState(doc?.summary_qty ?? 1);
+  const [summaryRate, setSummaryRate] = useState(doc?.summary_rate?.toString() ?? "");
   const [statusPending, startStatusTransition] = useTransition();
 
   const totals = useMemo(
@@ -191,6 +195,8 @@ export function QuoteEditor({
       hide_pricing: hidePricing,
       summary_view: lumpsumView,
       summary_label: summaryLabel.trim() || null,
+      summary_qty: lumpsumView ? summaryQty : null,
+      summary_rate: lumpsumView ? (summaryRate ? Number(summaryRate) : totals.total) : null,
       executor_id: executorId || null,
       manager_id: managerId || null,
       client_handler_id: clientHandlerId || null,
@@ -423,12 +429,33 @@ export function QuoteEditor({
                 onChange={(e) => setSummaryLabel(e.target.value)}
               />
             </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Qty shown on PDF</Label>
+                <Input type="number" value={summaryQty} onChange={(e) => setSummaryQty(Number(e.target.value))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Rate shown on PDF (₹)</Label>
+                <Input
+                  type="number"
+                  placeholder={totals.total.toString()}
+                  value={summaryRate}
+                  onChange={(e) => setSummaryRate(e.target.value)}
+                />
+              </div>
+            </div>
             <div className="rounded-lg border border-border bg-muted/30 p-4 text-center">
               <p className="text-sm font-medium">
                 {summaryLabel.trim() || `${projectName || "Project"} · ${lineItems.length} service${lineItems.length !== 1 ? "s" : ""} included`}
               </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Qty {summaryQty} × ₹{(summaryRate ? Number(summaryRate) : totals.total).toLocaleString("en-IN")}
+              </p>
               <p className="mt-1 font-heading text-2xl font-semibold">
-                ₹{totals.total.toLocaleString("en-IN")}
+                ₹{(summaryQty * (summaryRate ? Number(summaryRate) : totals.total)).toLocaleString("en-IN")}
+              </p>
+              <p className="mt-0.5 text-[10px] text-muted-foreground">
+                Actual document total (used for GST/accounting): ₹{totals.total.toLocaleString("en-IN")}
               </p>
               {gstEnabled && (
                 <p className="mt-0.5 text-xs text-muted-foreground">

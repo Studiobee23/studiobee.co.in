@@ -89,6 +89,8 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
               hide_pricing: (doc as Record<string, unknown>).hide_pricing as boolean | undefined,
               summary_view: (doc as Record<string, unknown>).summary_view as boolean | undefined,
               summary_label: (doc as Record<string, unknown>).summary_label as string | null | undefined,
+              summary_qty: (doc as Record<string, unknown>).summary_qty as number | null | undefined,
+              summary_rate: (doc as Record<string, unknown>).summary_rate as number | null | undefined,
             }}
           />
         </div>

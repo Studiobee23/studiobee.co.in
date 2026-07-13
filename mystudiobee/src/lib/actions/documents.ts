@@ -71,6 +71,8 @@ export async function createQuote(input: {
   hide_pricing?: boolean;
   summary_view?: boolean;
   summary_label?: string | null;
+  summary_qty?: number | null;
+  summary_rate?: number | null;
   project_id?: string | null;
   executor_id?: string | null;
   manager_id?: string | null;
@@ -113,6 +115,8 @@ export async function updateDocument(
     hide_pricing: boolean;
     summary_view: boolean;
     summary_label: string | null;
+    summary_qty: number | null;
+    summary_rate: number | null;
     project_id: string | null;
     executor_id: string | null;
     manager_id: string | null;

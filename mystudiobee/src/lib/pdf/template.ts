@@ -13,6 +13,10 @@ function fmt(n: unknown) {
   return '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function capitalize(s: string) {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+}
+
 function fmtQty(n: unknown) {
   return Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
@@ -97,6 +101,8 @@ export type PdfDocument = {
   hide_pricing?: boolean;
   summary_view?: boolean;
   summary_label?: string | null;
+  summary_qty?: number | null;
+  summary_rate?: number | null;
 };
 
 export type PdfClient = {
@@ -149,15 +155,21 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   const hidePricing = doc.hide_pricing === true;
 
   // Summary view collapses every line item into a single row — the custom label
-  // (or a fallback) — with no qty/rate/amount columns, same table chrome as normal.
+  // (or a fallback) — with its own manually-entered qty/rate (not derived from the
+  // real line items), same table chrome and columns as normal.
+  const summaryQty = doc.summary_qty ?? 1;
+  const summaryRate = doc.summary_rate ?? doc.total;
   const displayItems = summaryView
     ? [{
         description: doc.summary_label?.trim() ||
           `${doc.project_name || 'Project'} · ${items.length} service${items.length !== 1 ? 's' : ''} included`,
+        qty: summaryQty,
+        rate: summaryRate,
+        amount: Math.round(summaryQty * summaryRate * 100) / 100,
       }]
     : items;
-  const showQty = !summaryView;
-  const showPricing = !summaryView && !hidePricing;
+  const showQty = true;
+  const showPricing = !hidePricing;
 
   const descWidth = showPricing ? '46%' : showQty ? '76%' : '96%';
   const itemsSection = `<table class="items">
@@ -307,7 +319,7 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
     ${doc.category ? `
     <div class="meta-item">
       <div class="meta-lbl">Category</div>
-      <div class="meta-val">${esc(doc.category)}</div>
+      <div class="meta-val">${esc(capitalize(doc.category))}</div>
     </div>` : ''}
   </div>
 
