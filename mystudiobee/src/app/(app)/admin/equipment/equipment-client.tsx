@@ -33,6 +33,8 @@ type EquipmentItem = {
   receipt_url: string | null;
   daily_rental_cost: number | null;
   weekly_rental_cost: number | null;
+  useful_life_days: number | null;
+  weekly_discount_pct: number | null;
   active: boolean;
 };
 
@@ -46,7 +48,20 @@ const EMPTY_FORM = {
   receipt_url: "",
   daily_rental_cost: "",
   weekly_rental_cost: "",
+  useful_life_days: "",
+  weekly_discount_pct: "",
 };
+
+// daily = purchase_cost / useful_life_days; weekly = daily * 7 * (1 - discount%)
+function deriveRates(purchaseCost: string, lifeDays: string, discountPct: string) {
+  const cost = parseFloat(purchaseCost);
+  const days = parseFloat(lifeDays);
+  if (!cost || !days) return null;
+  const daily = cost / days;
+  const discount = parseFloat(discountPct) || 0;
+  const weekly = daily * 7 * (1 - discount / 100);
+  return { daily: Math.round(daily * 100) / 100, weekly: Math.round(weekly * 100) / 100 };
+}
 
 export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
   const router = useRouter();
@@ -70,12 +85,24 @@ export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
       receipt_url: item.receipt_url ?? "",
       daily_rental_cost: item.daily_rental_cost?.toString() ?? "",
       weekly_rental_cost: item.weekly_rental_cost?.toString() ?? "",
+      useful_life_days: item.useful_life_days?.toString() ?? "",
+      weekly_discount_pct: item.weekly_discount_pct?.toString() ?? "",
     });
     setOpen(true);
   }
 
   function set(field: string, val: string) {
-    setForm((f) => ({ ...f, [field]: val }));
+    setForm((f) => {
+      const next = { ...f, [field]: val };
+      if (field === "purchase_cost" || field === "useful_life_days" || field === "weekly_discount_pct") {
+        const rates = deriveRates(next.purchase_cost, next.useful_life_days, next.weekly_discount_pct);
+        if (rates) {
+          next.daily_rental_cost = rates.daily.toString();
+          next.weekly_rental_cost = rates.weekly.toString();
+        }
+      }
+      return next;
+    });
   }
 
   function save() {
@@ -92,6 +119,8 @@ export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
           receipt_url: form.receipt_url || undefined,
           daily_rental_cost: form.daily_rental_cost ? parseFloat(form.daily_rental_cost) : undefined,
           weekly_rental_cost: form.weekly_rental_cost ? parseFloat(form.weekly_rental_cost) : undefined,
+          useful_life_days: form.useful_life_days ? parseFloat(form.useful_life_days) : undefined,
+          weekly_discount_pct: form.weekly_discount_pct ? parseFloat(form.weekly_discount_pct) : undefined,
         });
         toast.success(form.id ? "Updated" : "Added");
         setOpen(false);
@@ -214,12 +243,24 @@ export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
+                <label className="text-xs font-medium">Useful Life (days)</label>
+                <Input type="number" value={form.useful_life_days} onChange={(e) => set("useful_life_days", e.target.value)} placeholder="e.g. 365" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-medium">Weekly Discount (%)</label>
+                <Input type="number" value={form.weekly_discount_pct} onChange={(e) => set("weekly_discount_pct", e.target.value)} placeholder="e.g. 10" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
                 <label className="text-xs font-medium">Daily Rental (₹)</label>
                 <Input type="number" value={form.daily_rental_cost} onChange={(e) => set("daily_rental_cost", e.target.value)} />
+                <p className="text-[11px] text-muted-foreground">Auto-calculated, editable</p>
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-medium">Weekly Rental (₹)</label>
-                <Input type="number" value={form.weekly_rental_cost} onChange={(e) => set("weekly_rental_cost", e.target.value)} placeholder="Optional discount rate" />
+                <Input type="number" value={form.weekly_rental_cost} onChange={(e) => set("weekly_rental_cost", e.target.value)} />
+                <p className="text-[11px] text-muted-foreground">Auto-calculated, editable</p>
               </div>
             </div>
             <div className="space-y-1">

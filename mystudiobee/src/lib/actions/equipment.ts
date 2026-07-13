@@ -18,6 +18,8 @@ export async function upsertEquipment(input: {
   receipt_url?: string;
   daily_rental_cost?: number;
   weekly_rental_cost?: number;
+  useful_life_days?: number;
+  weekly_discount_pct?: number;
 }) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");

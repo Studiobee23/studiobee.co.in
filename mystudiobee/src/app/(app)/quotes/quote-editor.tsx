@@ -782,6 +782,7 @@ function AddLineItemDialog({
   // equipment rental
   const [equipmentId, setEquipmentId] = useState("");
   const [equipmentDays, setEquipmentDays] = useState(1);
+  const [equipmentUnits, setEquipmentUnits] = useState(1);
   const [equipmentMarkup, setEquipmentMarkup] = useState(20);
   // external hire
   const [hireName, setHireName] = useState("");
@@ -824,9 +825,10 @@ function AddLineItemDialog({
     if (mode === "equipment") {
       const eq = equipmentItems.find((e) => e.id === equipmentId);
       if (!eq || !eq.daily_rental_cost) return;
-      const amount = withMarkup(equipmentBaseCost(eq, equipmentDays), equipmentMarkup);
+      const amount = withMarkup(equipmentBaseCost(eq, equipmentDays), equipmentMarkup) * equipmentUnits;
       const rate = Math.round((amount / equipmentDays) * 100) / 100;
-      onAdd({ description: `${eq.name} Rental`, qty: equipmentDays, cost_breakdown: null, rate, amount });
+      const desc = equipmentUnits > 1 ? `${eq.name} Rental (x${equipmentUnits})` : `${eq.name} Rental`;
+      onAdd({ description: desc, qty: equipmentDays, cost_breakdown: null, rate, amount });
       reset(); return;
     }
     if (mode === "external_hire") {
@@ -872,7 +874,7 @@ function AddLineItemDialog({
     if (loading) return true;
     if (mode === "preset") return !description;
     if (mode === "manual") return !description || !manualRate;
-    if (mode === "equipment") return !equipmentId;
+    if (mode === "equipment") return !equipmentId || equipmentUnits < 1 || equipmentDays < 1;
     if (mode === "external_hire") return !hireName || !hireRate;
     if (mode === "studio") return !studioDailyRate;
     if (mode === "boost") return !boostBudget;
@@ -882,7 +884,7 @@ function AddLineItemDialog({
   function reset() {
     setOpen(false);
     setPresetId(""); setDescription(""); setQty(1); setHours({}); setOverheadIds([]); setMarkup(0); setManualRate("");
-    setEquipmentId(""); setEquipmentDays(1); setEquipmentMarkup(20);
+    setEquipmentId(""); setEquipmentDays(1); setEquipmentUnits(1); setEquipmentMarkup(20);
     setHireName(""); setHireRate(""); setHireDays(1); setHireMarkup(0);
     setStudioDesc("Studio Rental"); setStudioDailyRate(""); setStudioDays(1); setStudioMarkup(0);
     setBoostPlatform("Meta"); setBoostBudget(""); setBoostMarkup(0);
@@ -1026,7 +1028,11 @@ function AddLineItemDialog({
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1.5">
+                      <Label>Qty (units)</Label>
+                      <Input type="number" min={1} value={equipmentUnits} onChange={(e) => setEquipmentUnits(Number(e.target.value))} />
+                    </div>
                     <div className="space-y-1.5">
                       <Label>Days</Label>
                       <Input type="number" min={1} value={equipmentDays} onChange={(e) => setEquipmentDays(Number(e.target.value))} />
@@ -1039,10 +1045,11 @@ function AddLineItemDialog({
                   {equipmentId && (() => {
                     const eq = equipmentItems.find((e) => e.id === equipmentId);
                     if (!eq?.daily_rental_cost) return null;
-                    const amount = withMarkup(equipmentBaseCost(eq, equipmentDays), equipmentMarkup);
+                    const amount = withMarkup(equipmentBaseCost(eq, equipmentDays), equipmentMarkup) * equipmentUnits;
                     const usesWeekly = eq.weekly_rental_cost && equipmentDays >= 7;
                     return (
                       <p className="text-xs text-muted-foreground">
+                        {equipmentUnits}x {eq.name} ·{" "}
                         {usesWeekly
                           ? `${Math.floor(equipmentDays / 7)} wk${Math.floor(equipmentDays / 7) !== 1 ? "s" : ""}${equipmentDays % 7 ? ` + ${equipmentDays % 7} day(s)` : ""}`
                           : `${equipmentDays} day${equipmentDays !== 1 ? "s" : ""}`}{" "}
