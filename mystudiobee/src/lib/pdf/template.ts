@@ -47,6 +47,7 @@ export type PdfDocument = {
   validity_days?: number;
   hide_pricing?: boolean;
   summary_view?: boolean;
+  summary_label?: string | null;
 };
 
 export type PdfClient = {
@@ -106,8 +107,11 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
 
   const itemsSection = summaryView
     ? `<div class="summary-box">
+        <div class="summary-sub">${esc(
+          doc.summary_label?.trim() ||
+            `${doc.project_name || 'Project'} · ${items.length} service${items.length !== 1 ? 's' : ''} included`
+        )}</div>
         <div class="summary-total">${fmt(doc.total)}</div>
-        <div class="summary-sub">${esc(doc.project_name || 'Project')} &middot; ${items.length} service${items.length !== 1 ? 's' : ''} included</div>
         ${doc.gst_enabled ? `<div class="summary-gst">Incl. ${doc.gst_type === 'igst' ? 'IGST' : 'CGST+SGST'} @ ${doc.gst_rate}%</div>` : ''}
       </div>`
     : `<table class="items">
@@ -179,8 +183,8 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   .item-detail { font-size: 11px; color: #999; margin-top: 2px; }
 
   .summary-box { text-align: center; background: #f6f8ff; border-radius: 8px; padding: 28px 20px; margin-bottom: 20px; }
-  .summary-total { font-size: 28px; font-weight: 700; color: #2F48DF; }
-  .summary-sub { font-size: 13px; color: #555; margin-top: 6px; }
+  .summary-total { font-size: 28px; font-weight: 700; color: #2F48DF; margin-top: 6px; }
+  .summary-sub { font-size: 15px; color: #333; font-weight: 500; }
   .summary-gst { font-size: 11px; color: #888; margin-top: 3px; }
 
   .totals-wrap { display: flex; justify-content: flex-end; margin-bottom: 24px; }

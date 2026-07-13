@@ -87,6 +87,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               client_handler_id: (doc as Record<string, unknown>).client_handler_id as string | null,
               hide_pricing: (doc as Record<string, unknown>).hide_pricing as boolean | undefined,
               summary_view: (doc as Record<string, unknown>).summary_view as boolean | undefined,
+              summary_label: (doc as Record<string, unknown>).summary_label as string | null | undefined,
             }}
           />
         </div>

@@ -73,6 +73,7 @@ export type QuoteDoc = {
   client_handler_id?: string | null;
   hide_pricing?: boolean;
   summary_view?: boolean;
+  summary_label?: string | null;
 };
 
 const STATUS_OPTIONS: Record<"quote" | "proforma" | "invoice" | "receipt", string[]> = {
@@ -141,6 +142,7 @@ export function QuoteEditor({
   const [showCost, setShowCost] = useState<Record<number, boolean>>({});
   const [lumpsumView, setLumpsumView] = useState(doc?.summary_view ?? false);
   const [hidePricing, setHidePricing] = useState(doc?.hide_pricing ?? false);
+  const [summaryLabel, setSummaryLabel] = useState(doc?.summary_label ?? "");
   const [statusPending, startStatusTransition] = useTransition();
 
   const totals = useMemo(
@@ -188,6 +190,7 @@ export function QuoteEditor({
       validity_days: validityDays,
       hide_pricing: hidePricing,
       summary_view: lumpsumView,
+      summary_label: summaryLabel.trim() || null,
       executor_id: executorId || null,
       manager_id: managerId || null,
       client_handler_id: clientHandlerId || null,
@@ -411,18 +414,28 @@ export function QuoteEditor({
             No line items yet.
           </p>
         ) : lumpsumView ? (
-          <div className="rounded-lg border border-border bg-muted/30 p-4 text-center">
-            <p className="font-heading text-2xl font-semibold">
-              ₹{totals.total.toLocaleString("en-IN")}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {projectName || "Project"} · {lineItems.length} service{lineItems.length !== 1 ? "s" : ""} included
-            </p>
-            {gstEnabled && (
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Incl. {gstType === "igst" ? "IGST" : "CGST+SGST"} @ {gstRate}%
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label>Custom label shown on PDF (optional)</Label>
+              <Input
+                placeholder={`e.g. "1 Day Video Production" — leave blank for "${projectName || "Project"} · ${lineItems.length} service${lineItems.length !== 1 ? "s" : ""} included"`}
+                value={summaryLabel}
+                onChange={(e) => setSummaryLabel(e.target.value)}
+              />
+            </div>
+            <div className="rounded-lg border border-border bg-muted/30 p-4 text-center">
+              <p className="text-sm font-medium">
+                {summaryLabel.trim() || `${projectName || "Project"} · ${lineItems.length} service${lineItems.length !== 1 ? "s" : ""} included`}
               </p>
-            )}
+              <p className="mt-1 font-heading text-2xl font-semibold">
+                ₹{totals.total.toLocaleString("en-IN")}
+              </p>
+              {gstEnabled && (
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Incl. {gstType === "igst" ? "IGST" : "CGST+SGST"} @ {gstRate}%
+                </p>
+              )}
+            </div>
           </div>
         ) : (
           <div className="space-y-2">
