@@ -74,8 +74,8 @@ const LOGO_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAuoAAACBCAY
 
 export function renderDocument(doc: PdfDocument, client: PdfClient, settings: PdfSettings = {}) {
   const {
-    bankName = '', accountNumber = '', ifsc = '', studioGstin = '',
-    studioAddress = 'Bangalore, Karnataka', studioPhone = '', studioEmail = '',
+    studioGstin = '',
+    studioAddress = 'Sultanpur, Delhi', studioPhone = '', studioEmail = '',
   } = settings;
 
   const items = Array.isArray(doc.line_items) ? doc.line_items : [];
@@ -94,12 +94,6 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   const discountLabel = doc.discount_type === 'percent' ? `Discount (${doc.discount}%)` : 'Discount';
   const discountRow = discountAmount > 0
     ? `<tr><td class="tot-label">${discountLabel}</td><td class="tot-val" style="color:#e44;">-${fmt(discountAmount)}</td></tr>`
-    : '';
-
-  const validityNote = doc.type === 'quote' && doc.validity_days
-    ? `<span>Valid until ${esc(validUntil(doc.created_at, doc.validity_days))}</span>`
-    : doc.type === 'receipt'
-    ? `<span style="color:#6ee;font-weight:600;">Payment Received</span>`
     : '';
 
   const summaryView = doc.summary_view === true;
@@ -140,10 +134,6 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
       </tr>`).join('')}
     </tbody>
   </table>`;
-
-  const bankInfo = bankName
-    ? `<strong>${esc(bankName)}</strong> &nbsp;·&nbsp; A/C ${esc(accountNumber)} &nbsp;·&nbsp; IFSC ${esc(ifsc)}`
-    : 'Bank details on file';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -203,12 +193,6 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   .terms-col ul { margin: 0; padding-left: 13px; }
   .terms-col li { font-size: 10.5px; color: #555; line-height: 1.55; margin-bottom: 4px; }
   .terms-ack { margin-top: 30px; padding-top: 16px; border-top: 1px solid #ebebeb; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #0A0A0A; text-align: center; line-height: 1.6; }
-
-  .doc-footer { background: #0A0A0A; padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-  .footer-bank { font-size: 12px; color: #888; }
-  .footer-bank strong { color: #fff; display: block; margin-bottom: 2px; font-size: 12px; }
-  .footer-right { font-size: 12px; color: #666; text-align: right; line-height: 1.6; }
-  .footer-right span { display: block; }
 </style>
 </head>
 <body>
@@ -364,17 +348,39 @@ ${doc.type === 'quote' || doc.type === 'proforma' ? `
     By engaging StudioBee&rsquo;s services, the client acknowledges that they have read, understood, and agreed to these terms &amp; conditions.
   </div>
 </div>` : ''}
-
-<div class="doc-footer">
-  <div class="footer-bank">
-    <strong>Bank Transfer</strong>
-    ${bankInfo}
-  </div>
-  <div class="footer-right">
-    ${validityNote}
-    <span style="color:#555;margin-top:4px">studiobee.co.in</span>
-  </div>
-</div>
 </body>
 </html>`;
+}
+
+/** Height (px) to reserve via Puppeteer's `margin.bottom` so the repeating
+ * footer template never overlaps flowed page content. Keep in sync with the
+ * footer's own padding/line-height below. */
+export const FOOTER_HEIGHT_PX = 68;
+
+/** Renders the black footer bar as a Puppeteer `footerTemplate` fragment, so it
+ * repeats identically on every page instead of only appearing once at the very
+ * end of the document's HTML flow. Puppeteer's header/footer templates run in
+ * an isolated context — no access to the main document's <style> or web fonts —
+ * so all styling here is inlined and font-family falls back to system fonts. */
+export function renderFooterTemplate(doc: PdfDocument, settings: PdfSettings = {}) {
+  const { bankName = '', accountNumber = '', ifsc = '' } = settings;
+
+  const bankInfo = bankName
+    ? `<strong style="color:#fff;display:block;font-size:12px;margin-bottom:2px;">${esc(bankName)}</strong> A/C ${esc(accountNumber)} &middot; IFSC ${esc(ifsc)}`
+    : 'Bank details on file';
+
+  const validityNote = doc.type === 'quote' && doc.validity_days
+    ? esc(`Valid until ${validUntil(doc.created_at, doc.validity_days)}`)
+    : doc.type === 'receipt'
+    ? '<span style="color:#6ee;font-weight:600;">Payment Received</span>'
+    : '';
+
+  return `
+  <div style="width:100%;box-sizing:border-box;background:#0A0A0A;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:#888;">
+    <div>${bankInfo}</div>
+    <div style="text-align:right;color:#666;line-height:1.6;">
+      ${validityNote ? `<span>${validityNote}</span>` : ''}
+      <span style="color:#555;">studiobee.co.in</span>
+    </div>
+  </div>`;
 }

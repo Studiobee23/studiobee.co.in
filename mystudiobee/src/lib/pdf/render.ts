@@ -1,4 +1,4 @@
-import { renderDocument } from "@/lib/pdf/template";
+import { renderDocument, renderFooterTemplate, FOOTER_HEIGHT_PX } from "@/lib/pdf/template";
 import { createClient } from "@/lib/supabase/server";
 
 // Local dev: reuse the same Chrome install the marketing site's screenshot.mjs already
@@ -42,7 +42,7 @@ export async function renderDocumentToPdf(docId: string) {
 
   // The PDF template never reads cost_breakdown — only description/qty/rate/amount —
   // so it's safe to render regardless of who (owner/admin/manager) requested it.
-  const html = renderDocument(doc, client, {
+  const settings = {
     bankName: process.env.BANK_NAME,
     accountNumber: process.env.BANK_ACCOUNT,
     ifsc: process.env.BANK_IFSC,
@@ -50,14 +50,22 @@ export async function renderDocumentToPdf(docId: string) {
     studioAddress: process.env.STUDIO_ADDRESS,
     studioPhone: process.env.STUDIO_PHONE,
     studioEmail: process.env.STUDIO_EMAIL,
-  });
+  };
+  const html = renderDocument(doc, client, settings);
 
   let browser;
   try {
     browser = await launchBrowser();
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "load" });
-    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      displayHeaderFooter: true,
+      headerTemplate: "<span></span>",
+      footerTemplate: renderFooterTemplate(doc, settings),
+      margin: { top: "0px", right: "0px", bottom: `${FOOTER_HEIGHT_PX}px`, left: "0px" },
+    });
     await browser.close();
     return { doc, client, pdfBuffer: pdfBuffer as Buffer };
   } catch (e) {
