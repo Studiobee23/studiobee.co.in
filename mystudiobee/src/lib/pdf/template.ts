@@ -219,11 +219,14 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
 
   .doc-body { padding: 32px 40px; }
 
-  .parties { display: flex; gap: 32px; margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid #ebebeb; }
+  .parties { display: flex; gap: 32px; margin-bottom: 20px; }
   .parties > div { flex: 1; min-width: 0; }
   .party-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #2F48DF; font-weight: 600; margin-bottom: 7px; }
   .party-name { font-size: 14px; font-weight: 600; color: #0A0A0A; margin-bottom: 3px; }
   .party-detail { font-size: 12px; color: #666; line-height: 1.7; }
+
+  .section-divider { position: relative; height: 1px; background: #ebebeb; margin-bottom: 24px; }
+  .section-divider span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 0 14px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: #2F48DF; font-weight: 600; white-space: nowrap; }
 
   table.quote-meta { border-collapse: collapse; }
   table.quote-meta td { font-size: 12px; padding: 2px 0; }
@@ -314,6 +317,8 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
       </table>
     </div>
   </div>
+
+  <div class="section-divider"><span>${label}</span></div>
 
   ${doc.type === 'quote' || doc.category ? `
   <div class="meta-row">
