@@ -214,15 +214,21 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   .doc-header { background: #2F48DF; padding: 24px 40px; display: flex; justify-content: space-between; align-items: center; min-height: 80px; }
   .doc-logo { height: 28px; width: auto; display: block; }
   .doc-title-block { text-align: right; }
-  .doc-type { font-size: 18px; font-weight: 400; color: #fff; letter-spacing: 0.01em; line-height: 1; }
-  .doc-num { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 5px; }
+  .doc-brand { font-size: 18px; font-weight: 400; color: #fff; letter-spacing: 0.01em; line-height: 1; }
+  .doc-brand-address { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 5px; }
 
   .doc-body { padding: 32px 40px; }
 
-  .parties { display: flex; gap: 48px; margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid #ebebeb; }
+  .parties { display: flex; gap: 32px; margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid #ebebeb; }
+  .parties > div { flex: 1; min-width: 0; }
   .party-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #2F48DF; font-weight: 600; margin-bottom: 7px; }
   .party-name { font-size: 14px; font-weight: 600; color: #0A0A0A; margin-bottom: 3px; }
   .party-detail { font-size: 12px; color: #666; line-height: 1.7; }
+
+  table.quote-meta { border-collapse: collapse; }
+  table.quote-meta td { font-size: 12px; padding: 2px 0; }
+  table.quote-meta td:first-child { font-weight: 600; color: #0A0A0A; padding-right: 14px; white-space: nowrap; }
+  table.quote-meta td:last-child { color: #2F48DF; font-weight: 500; }
 
   .meta-row { display: flex; gap: 28px; margin-bottom: 24px; flex-wrap: wrap; }
   .meta-item { }
@@ -238,14 +244,14 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   .item-detail { font-size: 11px; color: #999; margin-top: 2px; }
 
   .totals-wrap { display: flex; justify-content: flex-end; margin-bottom: 4px; }
-  .words-wrap, .bank-wrap { display: flex; justify-content: flex-end; }
+  .words-wrap { display: flex; justify-content: flex-end; }
   .words-box { min-width: 220px; max-width: 300px; text-align: right; padding: 6px 0; }
   .words-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-bottom: 3px; }
   .words-val { font-size: 12px; font-weight: 600; font-style: italic; color: #333; line-height: 1.5; }
-  .bank-wrap { margin-bottom: 24px; }
+  .bank-wrap { display: flex; justify-content: flex-start; margin-bottom: 24px; }
   .bank-box { padding: 6px 0; }
   table.bank-table { border-collapse: collapse; }
-  table.bank-table td { font-size: 11px; padding: 1.5px 0; }
+  table.bank-table td { font-size: 13px; padding: 3px 0; }
   table.bank-table td:first-child { color: #999; padding-right: 20px; white-space: nowrap; }
   table.bank-table td:last-child { color: #333; font-weight: 500; }
   table.tots { border-collapse: collapse; min-width: 220px; }
@@ -272,8 +278,8 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
 <div class="doc-header">
   <img src="${LOGO_DATA_URI}" alt="StudioBee" class="doc-logo">
   <div class="doc-title-block">
-    <div class="doc-type">${label}</div>
-    <div class="doc-num">${esc(doc.number)} &nbsp;·&nbsp; ${esc(fmtDate(doc.created_at))}</div>
+    <div class="doc-brand">StudioBee</div>
+    <div class="doc-brand-address">${esc(studioAddress)}</div>
   </div>
 </div>
 
@@ -299,29 +305,29 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
         ${client?.gstin ? '<br>GSTIN: ' + esc(client.gstin) : ''}
       </div>
     </div>
+    <div>
+      <div class="party-label">${label} Info</div>
+      <table class="quote-meta">
+        <tr><td>${label}#</td><td>${esc(doc.number)}</td></tr>
+        <tr><td>${label} Date</td><td>${esc(fmtDate(doc.created_at))}</td></tr>
+        ${doc.project_name ? `<tr><td>Project Name</td><td>${esc(doc.project_name)}</td></tr>` : ''}
+      </table>
+    </div>
   </div>
 
+  ${doc.type === 'quote' || doc.category ? `
   <div class="meta-row">
-    <div class="meta-item">
-      <div class="meta-lbl">Date</div>
-      <div class="meta-val">${esc(fmtDate(doc.created_at))}</div>
-    </div>
     ${doc.type === 'quote' ? `
     <div class="meta-item">
       <div class="meta-lbl">Valid Until</div>
       <div class="meta-val">${esc(validUntil(doc.created_at, doc.validity_days))}</div>
-    </div>` : ''}
-    ${doc.project_name ? `
-    <div class="meta-item">
-      <div class="meta-lbl">Project</div>
-      <div class="meta-val">${esc(doc.project_name)}</div>
     </div>` : ''}
     ${doc.category ? `
     <div class="meta-item">
       <div class="meta-lbl">Category</div>
       <div class="meta-val">${esc(capitalize(doc.category))}</div>
     </div>` : ''}
-  </div>
+  </div>` : ''}
 
   ${itemsSection}
 
@@ -345,12 +351,12 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
     <div class="bank-box">
       <div class="words-label">Bank Details</div>
       <table class="bank-table">
-        <tr><td>Beneficiary Name</td><td>Beenext Pvt. Ltd.</td></tr>
-        <tr><td>Bank</td><td>HDFC Bank Ltd.</td></tr>
-        <tr><td>A/c No</td><td>50200016917978</td></tr>
-        <tr><td>IFSC</td><td>HDFC0000557</td></tr>
-        <tr><td>Branch</td><td>Greater Kailash- II, New Delhi-110048</td></tr>
-        <tr><td>Swift Code</td><td>HDFCINBBDEL</td></tr>
+        <tr><td>Beneficiary Name</td><td>StudioBee Media Pvt. Ltd.</td></tr>
+        <tr><td>Bank</td><td>Bank Name</td></tr>
+        <tr><td>A/c No</td><td>000000000000</td></tr>
+        <tr><td>IFSC</td><td>ABCD0123456</td></tr>
+        <tr><td>Branch</td><td>Branch Name, City</td></tr>
+        <tr><td>Swift Code</td><td>ABCDINBBXXX</td></tr>
       </table>
     </div>
   </div>
@@ -471,7 +477,7 @@ export function renderFooterTemplate(doc: PdfDocument) {
 
   return `
   <style>* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }</style>
-  <div style="width:100%;box-sizing:border-box;background:#0A0A0A;padding:12px 40px;display:flex;justify-content:space-between;align-items:center;font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#999;">
+  <div style="position:fixed;bottom:0;left:0;width:100%;height:${FOOTER_HEIGHT_PX}px;box-sizing:border-box;background:#0A0A0A;padding:0 40px;display:flex;justify-content:space-between;align-items:center;font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;color:#999;">
     <div>${validityNote}</div>
     <div>Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>
   </div>`;
