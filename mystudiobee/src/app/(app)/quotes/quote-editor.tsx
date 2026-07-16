@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Pencil, Eye, EyeOff, LayoutList, AlignLeft, Layers } from "lucide-react";
+import { Plus, Trash2, Pencil, Eye, EyeOff, LayoutList, AlignLeft, Layers, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { computeDocumentTotals } from "@/lib/costing/engine";
+import { computeDocumentTotals, orderGroups } from "@/lib/costing/engine";
 import {
   computeProfitSplit,
   sumLaborCost,
@@ -76,6 +76,7 @@ export type QuoteDoc = {
   summary_label?: string | null;
   summary_qty?: number | null;
   summary_rate?: number | null;
+  group_order?: string[] | null;
 };
 
 const STATUS_OPTIONS: Record<"quote" | "proforma" | "invoice" | "receipt", string[]> = {
@@ -148,6 +149,7 @@ export function QuoteEditor({
   const [summaryLabel, setSummaryLabel] = useState(doc?.summary_label ?? "");
   const [summaryQty, setSummaryQty] = useState(doc?.summary_qty ?? 1);
   const [summaryRate, setSummaryRate] = useState(doc?.summary_rate?.toString() ?? "");
+  const [groupOrder, setGroupOrder] = useState<string[]>(doc?.group_order ?? []);
   const [statusPending, startStatusTransition] = useTransition();
 
   const totals = useMemo(
@@ -187,6 +189,36 @@ export function QuoteEditor({
 
   function renameGroup(oldName: string, newName: string) {
     setLineItems((items) => items.map((it) => (it.group === oldName ? { ...it, group: newName } : it)));
+  }
+
+  // Group order is derived from first-appearance in `lineItems`, not a separate
+  // stored field — so "moving" a group means physically reordering the item blocks
+  // it owns. Ungrouped items always settle at the end; their own order is preserved.
+  function moveGroup(groupName: string, direction: "up" | "down") {
+    const order = groupedBuckets.order;
+    const idx = order.indexOf(groupName);
+    const swapWith = direction === "up" ? idx - 1 : idx + 1;
+    if (idx < 0 || swapWith < 0 || swapWith >= order.length) return;
+    const newOrder = [...order];
+    [newOrder[idx], newOrder[swapWith]] = [newOrder[swapWith], newOrder[idx]];
+
+    setLineItems((items) => {
+      const byGroup = new Map<string, LineItem[]>();
+      const ungrouped: LineItem[] = [];
+      for (const item of items) {
+        const g = item.group?.trim();
+        if (!g) {
+          ungrouped.push(item);
+          continue;
+        }
+        if (!byGroup.has(g)) byGroup.set(g, []);
+        byGroup.get(g)!.push(item);
+      }
+      const reordered: LineItem[] = [];
+      for (const g of newOrder) reordered.push(...(byGroup.get(g) ?? []));
+      reordered.push(...ungrouped);
+      return reordered;
+    });
   }
 
   const profitSplit = useMemo(() => {
@@ -521,7 +553,7 @@ export function QuoteEditor({
                 No groups yet — pick a group for any item below to create one.
               </p>
             )}
-            {groupedBuckets.order.map((groupName) => {
+            {groupedBuckets.order.map((groupName, i) => {
               const bucket = groupedBuckets.groups.get(groupName)!;
               return (
                 <GroupCard
@@ -532,6 +564,9 @@ export function QuoteEditor({
                   groupNames={groupedBuckets.order}
                   onRename={renameGroup}
                   onItemGroupChange={setItemGroup}
+                  onMove={(direction) => moveGroup(groupName, direction)}
+                  isFirst={i === 0}
+                  isLast={i === groupedBuckets.order.length - 1}
                 />
               );
             })}
@@ -966,6 +1001,9 @@ function GroupCard({
   groupNames,
   onRename,
   onItemGroupChange,
+  onMove,
+  isFirst,
+  isLast,
 }: {
   groupName: string;
   items: Array<{ item: LineItem; idx: number }>;
@@ -973,6 +1011,9 @@ function GroupCard({
   groupNames: string[];
   onRename: (oldName: string, newName: string) => void;
   onItemGroupChange: (idx: number, group: string | null) => void;
+  onMove: (direction: "up" | "down") => void;
+  isFirst: boolean;
+  isLast: boolean;
 }) {
   const [name, setName] = useState(groupName);
   useEffect(() => setName(groupName), [groupName]);
@@ -986,15 +1027,37 @@ function GroupCard({
   return (
     <div className="rounded-lg border border-border p-3">
       <div className="mb-2 flex items-center justify-between gap-3">
-        <Input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={commit}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-          }}
-          className="h-7 max-w-[220px] text-xs font-medium"
-        />
+        <div className="flex items-center gap-1.5">
+          <div className="flex flex-col">
+            <button
+              type="button"
+              onClick={() => onMove("up")}
+              disabled={isFirst}
+              className="text-muted-foreground hover:text-foreground disabled:opacity-25 disabled:hover:text-muted-foreground"
+              title="Move group up"
+            >
+              <ChevronUp className="h-3 w-3" />
+            </button>
+            <button
+              type="button"
+              onClick={() => onMove("down")}
+              disabled={isLast}
+              className="text-muted-foreground hover:text-foreground disabled:opacity-25 disabled:hover:text-muted-foreground"
+              title="Move group down"
+            >
+              <ChevronDown className="h-3 w-3" />
+            </button>
+          </div>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+            }}
+            className="h-7 max-w-[220px] text-xs font-medium"
+          />
+        </div>
         <span className="whitespace-nowrap text-xs font-semibold">₹{total.toLocaleString("en-IN")}</span>
       </div>
       <div className="space-y-1.5">
