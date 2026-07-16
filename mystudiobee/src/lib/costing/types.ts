@@ -43,6 +43,19 @@ export type CostBreakdown = {
   pass_through_cost?: number;
 };
 
+/** Snapshot of whichever "Add line item" tab built this item, plus the raw inputs
+ * entered in it — lets the edit dialog reopen the same tab pre-filled instead of
+ * only exposing description/qty/rate. Items saved before this existed (or built
+ * via a mode not captured here) simply have no `meta`, and edit falls back to Manual. */
+export type LineItemMeta =
+  | { mode: "preset"; presetId: string; hours: Record<string, string>; overheadIds: string[]; markupPct: number }
+  | { mode: "manual" }
+  | { mode: "equipment"; equipmentId: string; days: number; units: number; markupPct: number }
+  | { mode: "external_equipment"; name: string; rate: number; days: number; units: number; markupPct: number }
+  | { mode: "external_hire"; name: string; rate: number; days: number; markupPct: number }
+  | { mode: "studio"; description: string; dailyRate: number; days: number; markupPct: number }
+  | { mode: "boost"; platform: string; budget: number; markupPct: number };
+
 export type LineItem = {
   description: string;
   qty: number;
@@ -51,6 +64,7 @@ export type LineItem = {
   amount: number;
   /** Grouped-view bucket label. Only assigned via the grouped-view editor; null/absent means "unassigned". */
   group?: string | null;
+  meta?: LineItemMeta | null;
 };
 
 export type GstType = "cgst_sgst" | "igst";

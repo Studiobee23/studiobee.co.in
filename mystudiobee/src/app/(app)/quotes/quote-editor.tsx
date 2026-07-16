@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, Pencil, Eye, EyeOff, LayoutList, AlignLeft, Layers } from "lucide-react";
 import { toast } from "sonner";
@@ -25,7 +25,7 @@ import {
   sumDirectCost,
 } from "@/lib/profit-split/engine";
 import type { ProfitSplitSettings } from "@/lib/profit-split/engine";
-import type { LineItem } from "@/lib/costing/types";
+import type { LineItem, LineItemMeta } from "@/lib/costing/types";
 import { createQuote, updateDocument, convertDocument, priceLineItem, deleteDocument, updateDocumentStatus } from "@/lib/actions/documents";
 
 type Client = { id: string; name: string; email?: string | null };
@@ -903,10 +903,17 @@ export function QuoteEditor({
         </DialogContent>
       </Dialog>
 
-      <EditLineItemDialog
-        item={editingIdx !== null ? lineItems[editingIdx] : null}
-        onClose={() => setEditingIdx(null)}
-        onSave={(item) => {
+      <LineItemFormDialog
+        presets={presets}
+        roles={roles}
+        overheads={overheads}
+        equipmentItems={equipmentItems}
+        open={editingIdx !== null}
+        onOpenChange={(open) => !open && setEditingIdx(null)}
+        initial={editingIdx !== null ? lineItems[editingIdx] : null}
+        title="Edit line item"
+        submitLabel="Save"
+        onSubmit={(item) => {
           if (editingIdx !== null) updateLineItem(editingIdx, item);
           setEditingIdx(null);
         }}
@@ -1004,93 +1011,36 @@ function GroupCard({
   );
 }
 
-function EditLineItemDialog({
-  item,
-  onClose,
-  onSave,
-}: {
-  item: LineItem | null;
-  onClose: () => void;
-  onSave: (item: LineItem) => void;
-}) {
-  const [description, setDescription] = useState("");
-  const [qty, setQty] = useState(1);
-  const [rate, setRate] = useState("");
-
-  useEffect(() => {
-    if (item) {
-      setDescription(item.description);
-      setQty(item.qty);
-      setRate(item.rate.toString());
-    }
-  }, [item]);
-
-  function handleSave() {
-    if (!item) return;
-    const newRate = Number(rate);
-    onSave({
-      ...item,
-      description,
-      qty,
-      rate: newRate,
-      amount: Math.round(newRate * qty * 100) / 100,
-    });
-  }
-
-  return (
-    <Dialog open={item !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit line item</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-3">
-          <div className="space-y-1.5">
-            <Label>Description</Label>
-            <Input value={description} onChange={(e) => setDescription(e.target.value)} />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label>Rate (₹)</Label>
-              <Input type="number" value={rate} onChange={(e) => setRate(e.target.value)} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Qty</Label>
-              <Input type="number" value={qty} onChange={(e) => setQty(Number(e.target.value))} />
-            </div>
-          </div>
-          {item?.cost_breakdown && (
-            <p className="text-[10px] text-muted-foreground">
-              This item has a cost breakdown (role hours/overheads) used for profit-split — it's kept as-is;
-              only the description/qty/rate above are changed.
-            </p>
-          )}
-        </div>
-        <DialogFooter>
-          <Button onClick={handleSave} disabled={!description.trim() || !rate}>
-            Save
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 type LineItemMode = "preset" | "manual" | "equipment" | "external_equipment" | "external_hire" | "studio" | "boost";
 
-function AddLineItemDialog({
+/** Shared by both "Add line item" and "Edit line item" — when `initial` is set, the
+ * form pre-fills itself from `initial.meta` (falling back to a plain Manual entry if
+ * the item predates `meta` tracking) instead of starting blank. */
+function LineItemFormDialog({
   presets,
   roles,
   overheads,
   equipmentItems,
-  onAdd,
+  open,
+  onOpenChange,
+  initial,
+  onSubmit,
+  title,
+  submitLabel,
+  trigger,
 }: {
   presets: Preset[];
   roles: CostRole[];
   overheads: OverheadItem[];
   equipmentItems: EquipmentItem[];
-  onAdd: (item: LineItem) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  initial?: LineItem | null;
+  onSubmit: (item: LineItem) => void;
+  title: string;
+  submitLabel: string;
+  trigger?: ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<LineItemMode>(presets.length > 0 ? "preset" : "manual");
   const [presetId, setPresetId] = useState("");
   const [description, setDescription] = useState("");
@@ -1127,6 +1077,60 @@ function AddLineItemDialog({
 
   const [loading, setLoading] = useState(false);
 
+  // Re-populate the form every time the dialog opens: from `initial.meta` when editing
+  // an item that has one, blank defaults when adding, or a plain Manual entry as the
+  // best-effort fallback for items saved before `meta` existed.
+  useEffect(() => {
+    if (!open) return;
+    resetFields();
+    if (initial) loadFromItem(initial);
+  }, [open, initial]);
+
+  function loadFromItem(item: LineItem) {
+    const meta = item.meta;
+    if (!meta || meta.mode === "manual") {
+      setMode("manual");
+      setDescription(item.description);
+      setManualRate(item.rate.toString());
+      setQty(item.qty);
+      return;
+    }
+    setMode(meta.mode);
+    if (meta.mode === "preset") {
+      setPresetId(meta.presetId);
+      setDescription(item.description);
+      setHours(meta.hours);
+      setOverheadIds(meta.overheadIds);
+      setMarkup(meta.markupPct);
+      setQty(item.qty);
+    } else if (meta.mode === "equipment") {
+      setEquipmentId(meta.equipmentId);
+      setEquipmentDays(meta.days);
+      setEquipmentUnits(meta.units);
+      setEquipmentMarkup(meta.markupPct);
+    } else if (meta.mode === "external_equipment") {
+      setExtEqName(meta.name);
+      setExtEqRate(meta.rate.toString());
+      setExtEqDays(meta.days);
+      setExtEqUnits(meta.units);
+      setExtEqMarkup(meta.markupPct);
+    } else if (meta.mode === "external_hire") {
+      setHireName(meta.name);
+      setHireRate(meta.rate.toString());
+      setHireDays(meta.days);
+      setHireMarkup(meta.markupPct);
+    } else if (meta.mode === "studio") {
+      setStudioDesc(meta.description);
+      setStudioDailyRate(meta.dailyRate.toString());
+      setStudioDays(meta.days);
+      setStudioMarkup(meta.markupPct);
+    } else if (meta.mode === "boost") {
+      setBoostPlatform(meta.platform);
+      setBoostBudget(meta.budget.toString());
+      setBoostMarkup(meta.markupPct);
+    }
+  }
+
   function selectPreset(id: string) {
     setPresetId(id);
     const preset = presets.find((p) => p.id === id);
@@ -1142,11 +1146,21 @@ function AddLineItemDialog({
     return Math.round(base * (1 + pct / 100) * 100) / 100;
   }
 
-  async function handleAdd() {
+  // Carries over the group assignment from the item being edited (add mode has no
+  // `initial`, so new items start ungrouped) and attaches the mode's meta so a later
+  // edit can reopen this exact tab pre-filled.
+  function submitItem(core: Omit<LineItem, "group" | "meta">, meta: LineItemMeta) {
+    onSubmit({ ...core, meta, group: initial?.group ?? null });
+  }
+
+  async function handleSubmit() {
     if (mode === "manual") {
       const rate = Number(manualRate);
-      onAdd({ description, qty, cost_breakdown: null, rate, amount: Math.round(rate * qty * 100) / 100 });
-      reset(); return;
+      submitItem(
+        { description, qty, cost_breakdown: null, rate, amount: Math.round(rate * qty * 100) / 100 },
+        { mode: "manual" },
+      );
+      return;
     }
     if (mode === "equipment") {
       const eq = equipmentItems.find((e) => e.id === equipmentId);
@@ -1154,8 +1168,11 @@ function AddLineItemDialog({
       const amount = withMarkup(equipmentBaseCost(eq, equipmentDays), equipmentMarkup) * equipmentUnits;
       const rate = Math.round((amount / equipmentDays) * 100) / 100;
       const desc = equipmentUnits > 1 ? `${eq.name} Rental (x${equipmentUnits})` : `${eq.name} Rental`;
-      onAdd({ description: desc, qty: equipmentDays, cost_breakdown: null, rate, amount });
-      reset(); return;
+      submitItem(
+        { description: desc, qty: equipmentDays, cost_breakdown: null, rate, amount },
+        { mode: "equipment", equipmentId, days: equipmentDays, units: equipmentUnits, markupPct: equipmentMarkup },
+      );
+      return;
     }
     if (mode === "external_equipment") {
       const base = Number(extEqRate);
@@ -1163,41 +1180,53 @@ function AddLineItemDialog({
       const amount = withMarkup(base * extEqDays, extEqMarkup) * extEqUnits;
       const rate = Math.round((amount / extEqDays) * 100) / 100;
       const desc = extEqUnits > 1 ? `${extEqName} Rental (x${extEqUnits})` : `${extEqName} Rental`;
-      onAdd({
-        description: desc,
-        qty: extEqDays,
-        cost_breakdown: { role_hours: [], overheads: [], markup_pct: extEqMarkup, cost_subtotal: passThrough, pass_through_cost: passThrough },
-        rate,
-        amount,
-      });
-      reset(); return;
+      submitItem(
+        {
+          description: desc,
+          qty: extEqDays,
+          cost_breakdown: { role_hours: [], overheads: [], markup_pct: extEqMarkup, cost_subtotal: passThrough, pass_through_cost: passThrough },
+          rate,
+          amount,
+        },
+        { mode: "external_equipment", name: extEqName, rate: base, days: extEqDays, units: extEqUnits, markupPct: extEqMarkup },
+      );
+      return;
     }
     if (mode === "external_hire") {
       const base = Number(hireRate);
       const passThrough = Math.round(base * hireDays * 100) / 100;
       const rate = withMarkup(base, hireMarkup);
       const amount = Math.round(rate * hireDays * 100) / 100;
-      onAdd({
-        description: hireName || "External Creative Hire",
-        qty: hireDays,
-        cost_breakdown: { role_hours: [], overheads: [], markup_pct: hireMarkup, cost_subtotal: passThrough, pass_through_cost: passThrough },
-        rate,
-        amount,
-      });
-      reset(); return;
+      submitItem(
+        {
+          description: hireName || "External Creative Hire",
+          qty: hireDays,
+          cost_breakdown: { role_hours: [], overheads: [], markup_pct: hireMarkup, cost_subtotal: passThrough, pass_through_cost: passThrough },
+          rate,
+          amount,
+        },
+        { mode: "external_hire", name: hireName, rate: base, days: hireDays, markupPct: hireMarkup },
+      );
+      return;
     }
     if (mode === "studio") {
       const base = Number(studioDailyRate);
       const rate = withMarkup(base, studioMarkup);
       const amount = Math.round(rate * studioDays * 100) / 100;
-      onAdd({ description: studioDesc, qty: studioDays, cost_breakdown: null, rate, amount });
-      reset(); return;
+      submitItem(
+        { description: studioDesc, qty: studioDays, cost_breakdown: null, rate, amount },
+        { mode: "studio", description: studioDesc, dailyRate: base, days: studioDays, markupPct: studioMarkup },
+      );
+      return;
     }
     if (mode === "boost") {
       const base = Number(boostBudget);
       const rate = withMarkup(base, boostMarkup);
-      onAdd({ description: `Ad Boost – ${boostPlatform}`, qty: 1, cost_breakdown: null, rate, amount: rate });
-      reset(); return;
+      submitItem(
+        { description: `Ad Boost – ${boostPlatform}`, qty: 1, cost_breakdown: null, rate, amount: rate },
+        { mode: "boost", platform: boostPlatform, budget: base, markupPct: boostMarkup },
+      );
+      return;
     }
     setLoading(true);
     try {
@@ -1209,8 +1238,7 @@ function AddLineItemDialog({
         qty,
         cost: { roleHours, overheadIds, markupPct: markup },
       });
-      onAdd(item);
-      reset();
+      submitItem(item, { mode: "preset", presetId, hours, overheadIds, markupPct: markup });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to price line item");
     } finally {
@@ -1218,7 +1246,7 @@ function AddLineItemDialog({
     }
   }
 
-  function isAddDisabled() {
+  function isSubmitDisabled() {
     if (loading) return true;
     if (mode === "preset") return !description;
     if (mode === "manual") return !description || !manualRate;
@@ -1230,8 +1258,8 @@ function AddLineItemDialog({
     return false;
   }
 
-  function reset() {
-    setOpen(false);
+  function resetFields() {
+    setMode(presets.length > 0 ? "preset" : "manual");
     setPresetId(""); setDescription(""); setQty(1); setHours({}); setOverheadIds([]); setMarkup(0); setManualRate("");
     setEquipmentId(""); setEquipmentDays(1); setEquipmentUnits(1); setEquipmentMarkup(20);
     setExtEqName(""); setExtEqRate(""); setExtEqDays(1); setExtEqUnits(1); setExtEqMarkup(20);
@@ -1251,15 +1279,11 @@ function AddLineItemDialog({
   ];
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="h-3.5 w-3.5" /> Add line item
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent className="max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add line item</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           {/* Mode tabs */}
@@ -1536,11 +1560,49 @@ function AddLineItemDialog({
           )}
         </div>
         <DialogFooter>
-          <Button onClick={handleAdd} disabled={isAddDisabled()}>
-            {loading ? "Pricing…" : "Add"}
+          <Button onClick={handleSubmit} disabled={isSubmitDisabled()}>
+            {loading ? "Pricing…" : submitLabel}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function AddLineItemDialog({
+  presets,
+  roles,
+  overheads,
+  equipmentItems,
+  onAdd,
+}: {
+  presets: Preset[];
+  roles: CostRole[];
+  overheads: OverheadItem[];
+  equipmentItems: EquipmentItem[];
+  onAdd: (item: LineItem) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <LineItemFormDialog
+      presets={presets}
+      roles={roles}
+      overheads={overheads}
+      equipmentItems={equipmentItems}
+      open={open}
+      onOpenChange={setOpen}
+      initial={null}
+      title="Add line item"
+      submitLabel="Add"
+      trigger={
+        <Button size="sm">
+          <Plus className="h-3.5 w-3.5" /> Add line item
+        </Button>
+      }
+      onSubmit={(item) => {
+        onAdd(item);
+        setOpen(false);
+      }}
+    />
   );
 }
