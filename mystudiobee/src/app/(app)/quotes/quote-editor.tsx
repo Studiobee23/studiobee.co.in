@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Eye, EyeOff, LayoutList, AlignLeft } from "lucide-react";
+import { Plus, Trash2, Eye, EyeOff, LayoutList, AlignLeft, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -72,7 +72,7 @@ export type QuoteDoc = {
   manager_id?: string | null;
   client_handler_id?: string | null;
   hide_pricing?: boolean;
-  summary_view?: boolean;
+  line_item_view?: "itemised" | "summary" | "grouped";
   summary_label?: string | null;
   summary_qty?: number | null;
   summary_rate?: number | null;
@@ -142,7 +142,7 @@ export function QuoteEditor({
   const selectedClient = clients.find((c) => c.id === clientId);
   const [emailForm, setEmailForm] = useState({ to: "", subject: "", message: "" });
   const [showCost, setShowCost] = useState<Record<number, boolean>>({});
-  const [lumpsumView, setLumpsumView] = useState(doc?.summary_view ?? false);
+  const [viewMode, setViewMode] = useState<"itemised" | "summary" | "grouped">(doc?.line_item_view ?? "itemised");
   const [hidePricing, setHidePricing] = useState(doc?.hide_pricing ?? false);
   const [summaryLabel, setSummaryLabel] = useState(doc?.summary_label ?? "");
   const [summaryQty, setSummaryQty] = useState(doc?.summary_qty ?? 1);
@@ -153,6 +153,40 @@ export function QuoteEditor({
     () => computeDocumentTotals({ lineItems, discount, discountType, gstEnabled, gstRate }),
     [lineItems, discount, discountType, gstEnabled, gstRate],
   );
+
+  // What the client owes before GST — the default for both the summary "Rate" and
+  // the grouped "Total" override, since the GST-inclusive figure was confusing as
+  // a default (it double-counts tax optics when GST is broken out separately below).
+  const nonGstTotal = totals.total - totals.gstAmount;
+
+  const groupedBuckets = useMemo(() => {
+    const order: string[] = [];
+    const groups = new Map<string, { items: Array<{ item: LineItem; idx: number }>; total: number }>();
+    const unassigned: Array<{ item: LineItem; idx: number }> = [];
+    lineItems.forEach((item, idx) => {
+      const g = item.group?.trim();
+      if (!g) {
+        unassigned.push({ item, idx });
+        return;
+      }
+      if (!groups.has(g)) {
+        groups.set(g, { items: [], total: 0 });
+        order.push(g);
+      }
+      const bucket = groups.get(g)!;
+      bucket.items.push({ item, idx });
+      bucket.total = Math.round((bucket.total + item.amount) * 100) / 100;
+    });
+    return { order, groups, unassigned };
+  }, [lineItems]);
+
+  function setItemGroup(idx: number, group: string | null) {
+    setLineItems((items) => items.map((it, i) => (i === idx ? { ...it, group } : it)));
+  }
+
+  function renameGroup(oldName: string, newName: string) {
+    setLineItems((items) => items.map((it) => (it.group === oldName ? { ...it, group: newName } : it)));
+  }
 
   const profitSplit = useMemo(() => {
     if (!canSeeCost || totals.subtotal <= 0) return null;
@@ -193,10 +227,10 @@ export function QuoteEditor({
       notes,
       validity_days: validityDays,
       hide_pricing: hidePricing,
-      summary_view: lumpsumView,
-      summary_label: summaryLabel.trim() || null,
-      summary_qty: lumpsumView ? summaryQty : null,
-      summary_rate: lumpsumView ? (summaryRate ? Number(summaryRate) : totals.total) : null,
+      line_item_view: viewMode,
+      summary_label: viewMode === "summary" ? summaryLabel.trim() || null : null,
+      summary_qty: viewMode === "summary" ? summaryQty : viewMode === "grouped" ? 1 : null,
+      summary_rate: viewMode === "itemised" ? null : summaryRate ? Number(summaryRate) : nonGstTotal,
       executor_id: executorId || null,
       manager_id: managerId || null,
       client_handler_id: clientHandlerId || null,
@@ -393,17 +427,28 @@ export function QuoteEditor({
               Line items
             </h3>
             {lineItems.length > 0 && (
-              <button
-                onClick={() => setLumpsumView((v) => !v)}
-                className="flex items-center gap-1 rounded-md border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                title={lumpsumView ? "Show itemised view" : "Show summary view"}
-              >
-                {lumpsumView ? (
-                  <><LayoutList className="h-3 w-3" /> Itemised</>
-                ) : (
-                  <><AlignLeft className="h-3 w-3" /> Summary</>
-                )}
-              </button>
+              <div className="flex items-center gap-0.5 rounded-md border border-border p-0.5">
+                {(
+                  [
+                    { key: "itemised", label: "Itemised", icon: LayoutList },
+                    { key: "grouped", label: "Grouped", icon: Layers },
+                    { key: "summary", label: "Summary", icon: AlignLeft },
+                  ] as const
+                ).map(({ key, label, icon: Icon }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setViewMode(key)}
+                    className={`flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                      viewMode === key
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
+                  >
+                    <Icon className="h-3 w-3" /> {label}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
           <AddLineItemDialog
@@ -419,7 +464,7 @@ export function QuoteEditor({
           <p className="rounded-lg border border-dashed border-border py-6 text-center text-xs text-muted-foreground">
             No line items yet.
           </p>
-        ) : lumpsumView ? (
+        ) : viewMode === "summary" ? (
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label>Custom label shown on PDF (optional)</Label>
@@ -435,10 +480,10 @@ export function QuoteEditor({
                 <Input type="number" value={summaryQty} onChange={(e) => setSummaryQty(Number(e.target.value))} />
               </div>
               <div className="space-y-1.5">
-                <Label>Rate shown on PDF (₹)</Label>
+                <Label>Rate shown on PDF (₹, non-GST total by default)</Label>
                 <Input
                   type="number"
-                  placeholder={totals.total.toString()}
+                  placeholder={nonGstTotal.toString()}
                   value={summaryRate}
                   onChange={(e) => setSummaryRate(e.target.value)}
                 />
@@ -449,10 +494,10 @@ export function QuoteEditor({
                 {summaryLabel.trim() || `${projectName || "Project"} · ${lineItems.length} service${lineItems.length !== 1 ? "s" : ""} included`}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Qty {summaryQty} × ₹{(summaryRate ? Number(summaryRate) : totals.total).toLocaleString("en-IN")}
+                Qty {summaryQty} × ₹{(summaryRate ? Number(summaryRate) : nonGstTotal).toLocaleString("en-IN")}
               </p>
               <p className="mt-1 font-heading text-2xl font-semibold">
-                ₹{(summaryQty * (summaryRate ? Number(summaryRate) : totals.total)).toLocaleString("en-IN")}
+                ₹{(summaryQty * (summaryRate ? Number(summaryRate) : nonGstTotal)).toLocaleString("en-IN")}
               </p>
               <p className="mt-0.5 text-[10px] text-muted-foreground">
                 Actual document total (used for GST/accounting): ₹{totals.total.toLocaleString("en-IN")}
@@ -462,6 +507,67 @@ export function QuoteEditor({
                   Incl. {gstType === "igst" ? "IGST" : "CGST+SGST"} @ {gstRate}%
                 </p>
               )}
+            </div>
+          </div>
+        ) : viewMode === "grouped" ? (
+          <div className="space-y-3">
+            {groupedBuckets.order.length === 0 && (
+              <p className="rounded-lg border border-dashed border-border py-4 text-center text-xs text-muted-foreground">
+                No groups yet — pick a group for any item below to create one.
+              </p>
+            )}
+            {groupedBuckets.order.map((groupName) => {
+              const bucket = groupedBuckets.groups.get(groupName)!;
+              return (
+                <GroupCard
+                  key={groupName}
+                  groupName={groupName}
+                  items={bucket.items}
+                  total={bucket.total}
+                  groupNames={groupedBuckets.order}
+                  onRename={renameGroup}
+                  onItemGroupChange={setItemGroup}
+                />
+              );
+            })}
+            {groupedBuckets.unassigned.length > 0 && (
+              <div className="rounded-lg border border-dashed border-border p-3">
+                <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                  Unassigned ({groupedBuckets.unassigned.length})
+                </p>
+                <div className="space-y-1.5">
+                  {groupedBuckets.unassigned.map(({ item, idx }) => (
+                    <div key={idx} className="flex items-center justify-between gap-2 text-[11px]">
+                      <span className="min-w-0 flex-1 truncate text-muted-foreground">
+                        {item.description} — Qty {item.qty} × ₹{item.rate}
+                      </span>
+                      <GroupSelect
+                        value={item.group ?? null}
+                        groupNames={groupedBuckets.order}
+                        onChange={(g) => setItemGroup(idx, g)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="rounded-lg border border-border bg-muted/30 p-4 text-center">
+              <p className="text-xs text-muted-foreground">
+                Total shown on PDF (extra row after the group rows, non-GST total by default)
+              </p>
+              <Input
+                type="number"
+                className="mx-auto mt-2 w-40 text-center"
+                placeholder={nonGstTotal.toString()}
+                value={summaryRate}
+                onChange={(e) => setSummaryRate(e.target.value)}
+              />
+              <p className="mt-2 font-heading text-xl font-semibold">
+                ₹{(summaryRate ? Number(summaryRate) : nonGstTotal).toLocaleString("en-IN")}
+              </p>
+              <p className="mt-0.5 text-[10px] text-muted-foreground">
+                Actual document total (used for GST/accounting): ₹{totals.total.toLocaleString("en-IN")}
+              </p>
             </div>
           </div>
         ) : (
@@ -806,6 +912,95 @@ export function QuoteEditor({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function GroupSelect({
+  value,
+  groupNames,
+  onChange,
+}: {
+  value: string | null;
+  groupNames: string[];
+  onChange: (group: string | null) => void;
+}) {
+  return (
+    <Select
+      value={value ?? "__none__"}
+      onValueChange={(v) => {
+        if (v === "__new__") {
+          const name = window.prompt("New group name");
+          if (name && name.trim()) onChange(name.trim());
+          return;
+        }
+        onChange(v === "__none__" ? null : v);
+      }}
+    >
+      <SelectTrigger className="h-7 w-36 text-[10px]">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="__none__">Unassigned</SelectItem>
+        {groupNames.map((g) => (
+          <SelectItem key={g} value={g}>
+            {g}
+          </SelectItem>
+        ))}
+        <SelectItem value="__new__">+ New group…</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+}
+
+function GroupCard({
+  groupName,
+  items,
+  total,
+  groupNames,
+  onRename,
+  onItemGroupChange,
+}: {
+  groupName: string;
+  items: Array<{ item: LineItem; idx: number }>;
+  total: number;
+  groupNames: string[];
+  onRename: (oldName: string, newName: string) => void;
+  onItemGroupChange: (idx: number, group: string | null) => void;
+}) {
+  const [name, setName] = useState(groupName);
+  useEffect(() => setName(groupName), [groupName]);
+
+  function commit() {
+    const trimmed = name.trim();
+    if (trimmed && trimmed !== groupName) onRename(groupName, trimmed);
+    else setName(groupName);
+  }
+
+  return (
+    <div className="rounded-lg border border-border p-3">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+          }}
+          className="h-7 max-w-[220px] text-xs font-medium"
+        />
+        <span className="whitespace-nowrap text-xs font-semibold">₹{total.toLocaleString("en-IN")}</span>
+      </div>
+      <div className="space-y-1.5">
+        {items.map(({ item, idx }) => (
+          <div key={idx} className="flex items-center justify-between gap-2 border-t border-border pt-1.5 text-[11px]">
+            <span className="min-w-0 flex-1 truncate text-muted-foreground">
+              {item.description} — Qty {item.qty} × ₹{item.rate}
+            </span>
+            <GroupSelect value={item.group ?? null} groupNames={groupNames} onChange={(g) => onItemGroupChange(idx, g)} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

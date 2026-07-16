@@ -49,6 +49,8 @@ export type LineItem = {
   cost_breakdown: CostBreakdown | null;
   rate: number;
   amount: number;
+  /** Grouped-view bucket label. Only assigned via the grouped-view editor; null/absent means "unassigned". */
+  group?: string | null;
 };
 
 export type GstType = "cgst_sgst" | "igst";

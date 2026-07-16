@@ -87,7 +87,7 @@ export default async function ProformaDetailPage({ params }: { params: Promise<{
               manager_id: (doc as Record<string, unknown>).manager_id as string | null,
               client_handler_id: (doc as Record<string, unknown>).client_handler_id as string | null,
               hide_pricing: (doc as Record<string, unknown>).hide_pricing as boolean | undefined,
-              summary_view: (doc as Record<string, unknown>).summary_view as boolean | undefined,
+              line_item_view: (doc as Record<string, unknown>).line_item_view as "itemised" | "summary" | "grouped" | undefined,
               summary_label: (doc as Record<string, unknown>).summary_label as string | null | undefined,
               summary_qty: (doc as Record<string, unknown>).summary_qty as number | null | undefined,
               summary_rate: (doc as Record<string, unknown>).summary_rate as number | null | undefined,

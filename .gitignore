@@ -25,6 +25,7 @@ Phone screenshots/
 
 # Local Claude project data
 .claude/
+.superpowers/
 
 # VS Code workspace settings
 .vscode/

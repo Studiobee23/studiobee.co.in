@@ -69,7 +69,7 @@ export async function createQuote(input: {
   notes: string;
   validity_days: number;
   hide_pricing?: boolean;
-  summary_view?: boolean;
+  line_item_view?: "itemised" | "summary" | "grouped";
   summary_label?: string | null;
   summary_qty?: number | null;
   summary_rate?: number | null;
@@ -113,7 +113,7 @@ export async function updateDocument(
     notes: string;
     validity_days: number;
     hide_pricing: boolean;
-    summary_view: boolean;
+    line_item_view: "itemised" | "summary" | "grouped";
     summary_label: string | null;
     summary_qty: number | null;
     summary_rate: number | null;

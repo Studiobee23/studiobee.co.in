@@ -87,7 +87,7 @@ export type PdfDocument = {
   created_at: string;
   project_name?: string;
   category?: string;
-  line_items: Array<{ description?: string; detail?: string; qty: number; rate: number; amount: number }>;
+  line_items: Array<{ description?: string; detail?: string; qty: number; rate: number; amount: number; group?: string | null }>;
   subtotal: number;
   gst_enabled: boolean;
   gst_type: 'cgst_sgst' | 'igst';
@@ -99,7 +99,7 @@ export type PdfDocument = {
   notes?: string;
   validity_days?: number;
   hide_pricing?: boolean;
-  summary_view?: boolean;
+  line_item_view?: 'itemised' | 'summary' | 'grouped';
   summary_label?: string | null;
   summary_qty?: number | null;
   summary_rate?: number | null;
@@ -151,23 +151,55 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
     ? `<tr><td class="tot-label">${discountLabel}</td><td class="tot-val" style="color:#e44;">-${fmt(discountAmount)}</td></tr>`
     : '';
 
-  const summaryView = doc.summary_view === true;
+  const lineItemView = doc.line_item_view ?? 'itemised';
   const hidePricing = doc.hide_pricing === true;
 
-  // Summary view collapses every line item into a single row — the custom label
-  // (or a fallback) — with its own manually-entered qty/rate (not derived from the
-  // real line items), same table chrome and columns as normal.
+  // Both the summary and grouped views default their editable override to the
+  // non-GST total — what the client owes before tax — rather than the
+  // GST-inclusive total, since GST is already broken out as its own line below.
+  const nonGstTotal = Math.round((Number(doc.total) - Number(doc.gst_amount)) * 100) / 100;
   const summaryQty = doc.summary_qty ?? 1;
-  const summaryRate = doc.summary_rate ?? doc.total;
-  const displayItems = summaryView
-    ? [{
-        description: doc.summary_label?.trim() ||
-          `${doc.project_name || 'Project'} · ${items.length} service${items.length !== 1 ? 's' : ''} included`,
-        qty: summaryQty,
-        rate: summaryRate,
-        amount: Math.round(summaryQty * summaryRate * 100) / 100,
-      }]
-    : items;
+  const summaryRate = doc.summary_rate ?? nonGstTotal;
+
+  type DisplayItem = { description?: string; detail?: string; qty: number; rate: number; amount: number };
+  let displayItems: DisplayItem[] = items;
+
+  if (lineItemView === 'summary') {
+    // Collapses every line item into a single row — the custom label (or a
+    // fallback) — with its own manually-entered qty/rate (not derived from the
+    // real line items), same table chrome and columns as normal.
+    displayItems = [{
+      description: doc.summary_label?.trim() ||
+        `${doc.project_name || 'Project'} · ${items.length} service${items.length !== 1 ? 's' : ''} included`,
+      qty: summaryQty,
+      rate: summaryRate,
+      amount: Math.round(summaryQty * summaryRate * 100) / 100,
+    }];
+  } else if (lineItemView === 'grouped') {
+    // Each named group collapses to one row (its member amounts summed); items
+    // with no group still render individually so nothing silently disappears
+    // from the invoice. A final manually-editable "Total" row caps the table.
+    const order: string[] = [];
+    const groupTotals = new Map<string, number>();
+    const ungrouped: DisplayItem[] = [];
+    for (const item of items) {
+      const g = item.group?.trim();
+      if (!g) {
+        ungrouped.push(item);
+        continue;
+      }
+      if (!groupTotals.has(g)) {
+        order.push(g);
+        groupTotals.set(g, 0);
+      }
+      groupTotals.set(g, Math.round((groupTotals.get(g)! + Number(item.amount)) * 100) / 100);
+    }
+    displayItems = [
+      ...order.map((g) => ({ description: g, qty: 1, rate: groupTotals.get(g)!, amount: groupTotals.get(g)! })),
+      ...ungrouped,
+      { description: 'Total', qty: summaryQty, rate: summaryRate, amount: Math.round(summaryQty * summaryRate * 100) / 100 },
+    ];
+  }
   const showQty = true;
   const showPricing = !hidePricing;
 
