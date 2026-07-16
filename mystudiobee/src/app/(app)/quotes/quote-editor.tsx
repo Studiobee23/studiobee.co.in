@@ -18,7 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { computeDocumentTotals, orderGroups } from "@/lib/costing/engine";
+import { computeDocumentTotals } from "@/lib/costing/engine";
 import {
   computeProfitSplit,
   sumLaborCost,
@@ -76,7 +76,6 @@ export type QuoteDoc = {
   summary_label?: string | null;
   summary_qty?: number | null;
   summary_rate?: number | null;
-  group_order?: string[] | null;
 };
 
 const STATUS_OPTIONS: Record<"quote" | "proforma" | "invoice" | "receipt", string[]> = {
@@ -149,7 +148,6 @@ export function QuoteEditor({
   const [summaryLabel, setSummaryLabel] = useState(doc?.summary_label ?? "");
   const [summaryQty, setSummaryQty] = useState(doc?.summary_qty ?? 1);
   const [summaryRate, setSummaryRate] = useState(doc?.summary_rate?.toString() ?? "");
-  const [groupOrder, setGroupOrder] = useState<string[]>(doc?.group_order ?? []);
   const [statusPending, startStatusTransition] = useTransition();
 
   const totals = useMemo(
