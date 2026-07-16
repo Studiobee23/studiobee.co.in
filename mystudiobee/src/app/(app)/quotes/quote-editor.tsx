@@ -1088,11 +1088,15 @@ function LineItemFormDialog({
 
   function loadFromItem(item: LineItem) {
     const meta = item.meta;
-    if (!meta || meta.mode === "manual") {
+    if (meta?.mode === "manual") {
       setMode("manual");
       setDescription(item.description);
       setManualRate(item.rate.toString());
       setQty(item.qty);
+      return;
+    }
+    if (!meta) {
+      loadFromCostBreakdown(item);
       return;
     }
     setMode(meta.mode);
@@ -1129,6 +1133,41 @@ function LineItemFormDialog({
       setBoostBudget(meta.budget.toString());
       setBoostMarkup(meta.markupPct);
     }
+  }
+
+  // Fallback for items saved before `meta` existed. A bare description/qty/rate
+  // Manual entry would hide markup entirely even though it's sitting right there in
+  // cost_breakdown — so recover as much as the breakdown actually holds instead.
+  function loadFromCostBreakdown(item: LineItem) {
+    const cb = item.cost_breakdown;
+    if (cb && (cb.role_hours.length > 0 || cb.overheads.length > 0)) {
+      // Role hours / overheads present — same shape Preset mode edits.
+      setMode("preset");
+      setPresetId("");
+      setDescription(item.description);
+      setHours(Object.fromEntries(cb.role_hours.map((rh) => [rh.role_id, String(rh.hours)])));
+      setOverheadIds(cb.overheads.map((o) => o.overhead_id));
+      setMarkup(cb.markup_pct);
+      setQty(item.qty);
+      return;
+    }
+    if (cb?.pass_through_cost) {
+      // Pass-through-only breakdown (external equipment/hire) — no role hours to
+      // show, but the markup and effective per-day rate are still recoverable.
+      // withMarkup(base, m) is linear, so base = pass_through_cost / qty reproduces
+      // the exact original rate regardless of whether units were folded in.
+      setMode("external_hire");
+      setHireName(item.description);
+      setHireDays(item.qty);
+      setHireRate(String(Math.round((cb.pass_through_cost / (item.qty || 1)) * 100) / 100));
+      setHireMarkup(cb.markup_pct);
+      return;
+    }
+    // No cost_breakdown at all — nothing to recover a markup from.
+    setMode("manual");
+    setDescription(item.description);
+    setManualRate(item.rate.toString());
+    setQty(item.qty);
   }
 
   function selectPreset(id: string) {
