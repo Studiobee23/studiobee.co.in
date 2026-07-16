@@ -229,8 +229,8 @@ export function QuoteEditor({
       hide_pricing: hidePricing,
       line_item_view: viewMode,
       summary_label: viewMode === "summary" ? summaryLabel.trim() || null : null,
-      summary_qty: viewMode === "summary" ? summaryQty : viewMode === "grouped" ? 1 : null,
-      summary_rate: viewMode === "itemised" ? null : summaryRate ? Number(summaryRate) : nonGstTotal,
+      summary_qty: viewMode === "summary" ? summaryQty : null,
+      summary_rate: viewMode === "summary" ? (summaryRate ? Number(summaryRate) : nonGstTotal) : null,
       executor_id: executorId || null,
       manager_id: managerId || null,
       client_handler_id: clientHandlerId || null,
@@ -551,24 +551,6 @@ export function QuoteEditor({
                 </div>
               </div>
             )}
-            <div className="rounded-lg border border-border bg-muted/30 p-4 text-center">
-              <p className="text-xs text-muted-foreground">
-                Total shown on PDF (extra row after the group rows, non-GST total by default)
-              </p>
-              <Input
-                type="number"
-                className="mx-auto mt-2 w-40 text-center"
-                placeholder={nonGstTotal.toString()}
-                value={summaryRate}
-                onChange={(e) => setSummaryRate(e.target.value)}
-              />
-              <p className="mt-2 font-heading text-xl font-semibold">
-                ₹{(summaryRate ? Number(summaryRate) : nonGstTotal).toLocaleString("en-IN")}
-              </p>
-              <p className="mt-0.5 text-[10px] text-muted-foreground">
-                Actual document total (used for GST/accounting): ₹{totals.total.toLocaleString("en-IN")}
-              </p>
-            </div>
           </div>
         ) : (
           <div className="space-y-2">

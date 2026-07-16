@@ -178,7 +178,8 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   } else if (lineItemView === 'grouped') {
     // Each named group collapses to one row (its member amounts summed); items
     // with no group still render individually so nothing silently disappears
-    // from the invoice. A final manually-editable "Total" row caps the table.
+    // from the invoice. The Subtotal/GST/Discount/Total box below the table
+    // already shows the real total, so no extra "Total" row is added here.
     const order: string[] = [];
     const groupTotals = new Map<string, number>();
     const ungrouped: DisplayItem[] = [];
@@ -197,7 +198,6 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
     displayItems = [
       ...order.map((g) => ({ description: g, qty: 1, rate: groupTotals.get(g)!, amount: groupTotals.get(g)! })),
       ...ungrouped,
-      { description: 'Total', qty: summaryQty, rate: summaryRate, amount: Math.round(summaryQty * summaryRate * 100) / 100 },
     ];
   }
   const showQty = true;
