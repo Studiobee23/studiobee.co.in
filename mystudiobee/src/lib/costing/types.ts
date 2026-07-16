@@ -49,7 +49,10 @@ export type CostBreakdown = {
  * via a mode not captured here) simply have no `meta`, and edit falls back to Manual. */
 export type LineItemMeta =
   | { mode: "preset"; presetId: string; hours: Record<string, string>; overheadIds: string[]; markupPct: number }
-  | { mode: "manual" }
+  // baseCost/markupPct are optional so items saved before Manual had a markup field
+  // (just `{ mode: "manual" }`) still load — the edit dialog falls back to cost =
+  // the item's existing rate and markup = 0, reproducing the same rate exactly.
+  | { mode: "manual"; baseCost?: number; markupPct?: number }
   | { mode: "equipment"; equipmentId: string; days: number; units: number; markupPct: number }
   | { mode: "external_equipment"; name: string; rate: number; days: number; units: number; markupPct: number }
   | { mode: "external_hire"; name: string; rate: number; days: number; markupPct: number }

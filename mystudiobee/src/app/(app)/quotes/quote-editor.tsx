@@ -1048,7 +1048,8 @@ function LineItemFormDialog({
   const [hours, setHours] = useState<Record<string, string>>({});
   const [overheadIds, setOverheadIds] = useState<string[]>([]);
   const [markup, setMarkup] = useState(0);
-  const [manualRate, setManualRate] = useState("");
+  const [manualCost, setManualCost] = useState("");
+  const [manualMarkup, setManualMarkup] = useState(0);
   // equipment rental
   const [equipmentId, setEquipmentId] = useState("");
   const [equipmentDays, setEquipmentDays] = useState(1);
@@ -1091,7 +1092,8 @@ function LineItemFormDialog({
     if (meta?.mode === "manual") {
       setMode("manual");
       setDescription(item.description);
-      setManualRate(item.rate.toString());
+      setManualCost((meta.baseCost ?? item.rate).toString());
+      setManualMarkup(meta.markupPct ?? 0);
       setQty(item.qty);
       return;
     }
@@ -1163,10 +1165,12 @@ function LineItemFormDialog({
       setHireMarkup(cb.markup_pct);
       return;
     }
-    // No cost_breakdown at all — nothing to recover a markup from.
+    // No cost_breakdown at all — nothing to recover a markup from, so it starts at 0
+    // (cost = the existing rate reproduces the same amount unless changed).
     setMode("manual");
     setDescription(item.description);
-    setManualRate(item.rate.toString());
+    setManualCost(item.rate.toString());
+    setManualMarkup(0);
     setQty(item.qty);
   }
 
@@ -1194,10 +1198,11 @@ function LineItemFormDialog({
 
   async function handleSubmit() {
     if (mode === "manual") {
-      const rate = Number(manualRate);
+      const base = Number(manualCost);
+      const rate = withMarkup(base, manualMarkup);
       submitItem(
         { description, qty, cost_breakdown: null, rate, amount: Math.round(rate * qty * 100) / 100 },
-        { mode: "manual" },
+        { mode: "manual", baseCost: base, markupPct: manualMarkup },
       );
       return;
     }
@@ -1288,7 +1293,7 @@ function LineItemFormDialog({
   function isSubmitDisabled() {
     if (loading) return true;
     if (mode === "preset") return !description;
-    if (mode === "manual") return !description || !manualRate;
+    if (mode === "manual") return !description || !manualCost;
     if (mode === "equipment") return !equipmentId || equipmentUnits < 1 || equipmentDays < 1;
     if (mode === "external_equipment") return !extEqName || !extEqRate || extEqUnits < 1 || extEqDays < 1;
     if (mode === "external_hire") return !hireName || !hireRate;
@@ -1299,7 +1304,8 @@ function LineItemFormDialog({
 
   function resetFields() {
     setMode(presets.length > 0 ? "preset" : "manual");
-    setPresetId(""); setDescription(""); setQty(1); setHours({}); setOverheadIds([]); setMarkup(0); setManualRate("");
+    setPresetId(""); setDescription(""); setQty(1); setHours({}); setOverheadIds([]); setMarkup(0);
+    setManualCost(""); setManualMarkup(0);
     setEquipmentId(""); setEquipmentDays(1); setEquipmentUnits(1); setEquipmentMarkup(20);
     setExtEqName(""); setExtEqRate(""); setExtEqDays(1); setExtEqUnits(1); setExtEqMarkup(20);
     setHireName(""); setHireRate(""); setHireDays(1); setHireMarkup(0);
@@ -1405,16 +1411,26 @@ function LineItemFormDialog({
                 <Label>Description</Label>
                 <Input value={description} onChange={(e) => setDescription(e.target.value)} />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1.5">
-                  <Label>Rate (₹)</Label>
-                  <Input type="number" value={manualRate} onChange={(e) => setManualRate(e.target.value)} />
+                  <Label>Cost (₹)</Label>
+                  <Input type="number" value={manualCost} onChange={(e) => setManualCost(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Markup (%)</Label>
+                  <Input type="number" value={manualMarkup} onChange={(e) => setManualMarkup(Number(e.target.value))} />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Qty</Label>
                   <Input type="number" value={qty} onChange={(e) => setQty(Number(e.target.value))} />
                 </div>
               </div>
+              {manualCost && (
+                <p className="text-xs text-muted-foreground">
+                  Rate: ₹{withMarkup(Number(manualCost), manualMarkup)} × {qty} ={" "}
+                  <strong>₹{Math.round(withMarkup(Number(manualCost), manualMarkup) * qty * 100) / 100}</strong>
+                </p>
+              )}
             </>
           )}
 
