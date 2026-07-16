@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Eye, EyeOff, LayoutList, AlignLeft, Layers } from "lucide-react";
+import { Plus, Trash2, Pencil, Eye, EyeOff, LayoutList, AlignLeft, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -142,6 +142,7 @@ export function QuoteEditor({
   const selectedClient = clients.find((c) => c.id === clientId);
   const [emailForm, setEmailForm] = useState({ to: "", subject: "", message: "" });
   const [showCost, setShowCost] = useState<Record<number, boolean>>({});
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<"itemised" | "summary" | "grouped">(doc?.line_item_view ?? "itemised");
   const [hidePricing, setHidePricing] = useState(doc?.hide_pricing ?? false);
   const [summaryLabel, setSummaryLabel] = useState(doc?.summary_label ?? "");
@@ -204,6 +205,10 @@ export function QuoteEditor({
       setting
     );
   }, [canSeeCost, totals.subtotal, lineItems, category, splitSettings]);
+
+  function updateLineItem(idx: number, updated: LineItem) {
+    setLineItems((items) => items.map((it, i) => (i === idx ? updated : it)));
+  }
 
   function removeLineItem(idx: number) {
     setLineItems((items) => items.filter((_, i) => i !== idx));
@@ -572,6 +577,9 @@ export function QuoteEditor({
                       {showCost[idx] ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                     </button>
                   )}
+                  <Button variant="ghost" size="icon-sm" onClick={() => setEditingIdx(idx)}>
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
                   <Button variant="ghost" size="icon-sm" onClick={() => removeLineItem(idx)}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
@@ -894,6 +902,15 @@ export function QuoteEditor({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <EditLineItemDialog
+        item={editingIdx !== null ? lineItems[editingIdx] : null}
+        onClose={() => setEditingIdx(null)}
+        onSave={(item) => {
+          if (editingIdx !== null) updateLineItem(editingIdx, item);
+          setEditingIdx(null);
+        }}
+      />
     </div>
   );
 }
@@ -984,6 +1001,77 @@ function GroupCard({
         ))}
       </div>
     </div>
+  );
+}
+
+function EditLineItemDialog({
+  item,
+  onClose,
+  onSave,
+}: {
+  item: LineItem | null;
+  onClose: () => void;
+  onSave: (item: LineItem) => void;
+}) {
+  const [description, setDescription] = useState("");
+  const [qty, setQty] = useState(1);
+  const [rate, setRate] = useState("");
+
+  useEffect(() => {
+    if (item) {
+      setDescription(item.description);
+      setQty(item.qty);
+      setRate(item.rate.toString());
+    }
+  }, [item]);
+
+  function handleSave() {
+    if (!item) return;
+    const newRate = Number(rate);
+    onSave({
+      ...item,
+      description,
+      qty,
+      rate: newRate,
+      amount: Math.round(newRate * qty * 100) / 100,
+    });
+  }
+
+  return (
+    <Dialog open={item !== null} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit line item</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label>Description</Label>
+            <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label>Rate (₹)</Label>
+              <Input type="number" value={rate} onChange={(e) => setRate(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Qty</Label>
+              <Input type="number" value={qty} onChange={(e) => setQty(Number(e.target.value))} />
+            </div>
+          </div>
+          {item?.cost_breakdown && (
+            <p className="text-[10px] text-muted-foreground">
+              This item has a cost breakdown (role hours/overheads) used for profit-split — it's kept as-is;
+              only the description/qty/rate above are changed.
+            </p>
+          )}
+        </div>
+        <DialogFooter>
+          <Button onClick={handleSave} disabled={!description.trim() || !rate}>
+            Save
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
