@@ -76,6 +76,7 @@ export type QuoteDoc = {
   summary_label?: string | null;
   summary_qty?: number | null;
   summary_rate?: number | null;
+  scope_of_work?: Array<{ heading: string; body: string }>;
 };
 
 const STATUS_OPTIONS: Record<"quote" | "proforma" | "invoice" | "receipt", string[]> = {
@@ -148,6 +149,7 @@ export function QuoteEditor({
   const [summaryLabel, setSummaryLabel] = useState(doc?.summary_label ?? "");
   const [summaryQty, setSummaryQty] = useState(doc?.summary_qty ?? 1);
   const [summaryRate, setSummaryRate] = useState(doc?.summary_rate?.toString() ?? "");
+  const [scopeOfWork, setScopeOfWork] = useState<Array<{ heading: string; body: string }>>(doc?.scope_of_work ?? []);
   const [statusPending, startStatusTransition] = useTransition();
 
   const totals = useMemo(
@@ -244,6 +246,28 @@ export function QuoteEditor({
     setLineItems((items) => items.filter((_, i) => i !== idx));
   }
 
+  function addScopeSection() {
+    setScopeOfWork((items) => [...items, { heading: "", body: "" }]);
+  }
+
+  function updateScopeSection(idx: number, patch: Partial<{ heading: string; body: string }>) {
+    setScopeOfWork((items) => items.map((it, i) => (i === idx ? { ...it, ...patch } : it)));
+  }
+
+  function removeScopeSection(idx: number) {
+    setScopeOfWork((items) => items.filter((_, i) => i !== idx));
+  }
+
+  function moveScopeSection(idx: number, direction: "up" | "down") {
+    const swapWith = direction === "up" ? idx - 1 : idx + 1;
+    if (swapWith < 0 || swapWith >= scopeOfWork.length) return;
+    setScopeOfWork((items) => {
+      const next = [...items];
+      [next[idx], next[swapWith]] = [next[swapWith], next[idx]];
+      return next;
+    });
+  }
+
   function buildPayload() {
     return {
       client_id: clientId,
@@ -266,6 +290,9 @@ export function QuoteEditor({
       summary_label: viewMode === "summary" ? summaryLabel.trim() || null : null,
       summary_qty: viewMode === "summary" ? summaryQty : null,
       summary_rate: viewMode === "summary" ? (summaryRate ? Number(summaryRate) : nonGstTotal) : null,
+      scope_of_work: docType === "quote" || docType === "proforma"
+        ? scopeOfWork.filter((s) => s.heading.trim() || s.body.trim())
+        : [],
       executor_id: executorId || null,
       manager_id: managerId || null,
       client_handler_id: clientHandlerId || null,
@@ -838,6 +865,75 @@ export function QuoteEditor({
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {(docType === "quote" || docType === "proforma") && (
+        <div className="rounded-xl border border-border bg-card p-5 shadow-card">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Scope of work</Label>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Custom sections rendered on their own page, between Notes and Terms &amp; Conditions.
+              </p>
+            </div>
+            <Button type="button" variant="outline" size="sm" onClick={addScopeSection}>
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              Add section
+            </Button>
+          </div>
+          <div className="mt-3 space-y-3">
+            {scopeOfWork.map((section, idx) => (
+              <div key={idx} className="flex gap-2 rounded-lg border border-dashed border-border p-3">
+                <div className="flex flex-col items-center justify-center gap-0.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => moveScopeSection(idx, "up")}
+                    disabled={idx === 0}
+                    className="text-muted-foreground hover:text-foreground disabled:opacity-25 disabled:hover:text-muted-foreground"
+                    title="Move section up"
+                  >
+                    <ChevronUp className="h-3 w-3" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveScopeSection(idx, "down")}
+                    disabled={idx === scopeOfWork.length - 1}
+                    className="text-muted-foreground hover:text-foreground disabled:opacity-25 disabled:hover:text-muted-foreground"
+                    title="Move section down"
+                  >
+                    <ChevronDown className="h-3 w-3" />
+                  </button>
+                </div>
+                <div className="flex-1 space-y-2">
+                  <Input
+                    value={section.heading}
+                    onChange={(e) => updateScopeSection(idx, { heading: e.target.value })}
+                    placeholder="Section heading (e.g. Deliverables)"
+                  />
+                  <Textarea
+                    value={section.body}
+                    onChange={(e) => updateScopeSection(idx, { body: e.target.value })}
+                    rows={3}
+                    placeholder="Describe what's included..."
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeScopeSection(idx)}
+                  className="self-start text-muted-foreground hover:text-destructive"
+                  title="Remove section"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+            {scopeOfWork.length === 0 && (
+              <p className="text-xs text-muted-foreground">
+                No sections yet — add one to include a Scope of Work page on the PDF.
+              </p>
+            )}
+          </div>
         </div>
       )}
 

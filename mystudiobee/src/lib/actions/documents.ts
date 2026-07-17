@@ -73,6 +73,7 @@ export async function createQuote(input: {
   summary_label?: string | null;
   summary_qty?: number | null;
   summary_rate?: number | null;
+  scope_of_work?: Array<{ heading: string; body: string }>;
   project_id?: string | null;
   executor_id?: string | null;
   manager_id?: string | null;
@@ -117,6 +118,7 @@ export async function updateDocument(
     summary_label: string | null;
     summary_qty: number | null;
     summary_rate: number | null;
+    scope_of_work: Array<{ heading: string; body: string }>;
     project_id: string | null;
     executor_id: string | null;
     manager_id: string | null;

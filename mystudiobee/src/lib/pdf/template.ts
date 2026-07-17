@@ -103,6 +103,7 @@ export type PdfDocument = {
   summary_label?: string | null;
   summary_qty?: number | null;
   summary_rate?: number | null;
+  scope_of_work?: Array<{ heading: string; body: string }>;
 };
 
 export type PdfClient = {
@@ -134,6 +135,7 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   } = settings;
 
   const items = Array.isArray(doc.line_items) ? doc.line_items : [];
+  const scopeSections = Array.isArray(doc.scope_of_work) ? doc.scope_of_work : [];
   const label = TYPE_LABEL[doc.type] || 'Document';
 
   const gstRows = doc.gst_enabled
@@ -243,6 +245,23 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 794px; background: #fff; font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif; font-size: 13px; color: #333; }
 
+  .cover-page {
+    width: 794px; height: 1060px; box-sizing: border-box; page-break-after: always;
+    background:
+      radial-gradient(circle at 18% 12%, rgba(255,255,255,0.10), transparent 45%),
+      radial-gradient(circle at 88% 92%, rgba(255,255,255,0.07), transparent 50%),
+      #2F48DF;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px;
+  }
+  .cover-logo { height: 34px; width: auto; margin-bottom: 40px; }
+  .cover-rule { width: 44px; height: 2px; background: rgba(255,255,255,0.4); margin-bottom: 28px; }
+  .cover-title { font-size: 44px; font-weight: 600; color: #fff; letter-spacing: -0.01em; text-transform: uppercase; margin-bottom: 56px; text-align: center; }
+  .cover-meta { text-align: center; }
+  .cover-meta-row { margin-bottom: 16px; }
+  .cover-meta-row:last-child { margin-bottom: 0; }
+  .cover-meta-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(255,255,255,0.55); margin-bottom: 5px; }
+  .cover-meta-val { font-size: 16px; font-weight: 500; color: #fff; }
+
   .doc-header { background: #2F48DF; padding: 24px 40px; display: flex; justify-content: space-between; align-items: center; min-height: 80px; }
   .doc-logo { height: 28px; width: auto; display: block; }
   .doc-title-block { text-align: right; }
@@ -297,6 +316,15 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
 
   .notes-box { background: #f6f8ff; border-left: 3px solid #2F48DF; padding: 11px 15px; font-size: 12px; color: #555; margin-bottom: 24px; border-radius: 0 4px 4px 0; line-height: 1.6; }
 
+  .scope-page { page-break-before: always; padding: 40px; }
+  .scope-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+  .scope-title { font-size: 22px; font-weight: 600; color: #2F48DF; letter-spacing: -0.01em; white-space: nowrap; }
+  .scope-rule { flex: 1; height: 1px; background: #d8dcf5; }
+  .scope-section { margin-bottom: 22px; }
+  .scope-section:last-child { margin-bottom: 0; }
+  .scope-section strong { display: block; margin-bottom: 7px; color: #2F48DF; font-size: 12.5px; font-weight: 700; }
+  .scope-section p { font-size: 11.5px; color: #555; line-height: 1.6; white-space: pre-line; }
+
   .terms-page { page-break-before: always; padding: 40px; }
   .terms-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
   .terms-title { font-size: 22px; font-weight: 600; color: #2F48DF; letter-spacing: -0.01em; white-space: nowrap; }
@@ -310,6 +338,26 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
 </style>
 </head>
 <body>
+<div class="cover-page">
+  <img src="${LOGO_DATA_URI}" alt="StudioBee" class="cover-logo">
+  <div class="cover-rule"></div>
+  <div class="cover-title">${esc(label)}</div>
+  <div class="cover-meta">
+    <div class="cover-meta-row">
+      <div class="cover-meta-lbl">Prepared For</div>
+      <div class="cover-meta-val">${esc(client?.name || '—')}</div>
+    </div>
+    <div class="cover-meta-row">
+      <div class="cover-meta-lbl">${esc(label)}#</div>
+      <div class="cover-meta-val">${esc(doc.number)}</div>
+    </div>
+    <div class="cover-meta-row">
+      <div class="cover-meta-lbl">Date</div>
+      <div class="cover-meta-val">${esc(fmtDate(doc.created_at))}</div>
+    </div>
+  </div>
+</div>
+
 <div class="doc-header">
   <img src="${LOGO_DATA_URI}" alt="StudioBee" class="doc-logo">
   <div class="doc-title-block">
@@ -401,6 +449,19 @@ export function renderDocument(doc: PdfDocument, client: PdfClient, settings: Pd
   ${doc.notes ? `<div class="notes-box">${esc(doc.notes)}</div>` : ''}
 
 </div>
+
+${(doc.type === 'quote' || doc.type === 'proforma') && scopeSections.length > 0 ? `
+<div class="scope-page">
+  <div class="scope-header">
+    <div class="scope-title">Scope of Work</div>
+    <div class="scope-rule"></div>
+  </div>
+  ${scopeSections.map((section) => `
+  <div class="scope-section">
+    <strong>${esc(section.heading || 'Untitled Section')}</strong>
+    <p>${esc(section.body || '')}</p>
+  </div>`).join('')}
+</div>` : ''}
 
 ${doc.type === 'quote' || doc.type === 'proforma' ? `
 <div class="terms-page">

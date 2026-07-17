@@ -90,6 +90,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               summary_label: (doc as Record<string, unknown>).summary_label as string | null | undefined,
               summary_qty: (doc as Record<string, unknown>).summary_qty as number | null | undefined,
               summary_rate: (doc as Record<string, unknown>).summary_rate as number | null | undefined,
+              scope_of_work: (doc as Record<string, unknown>).scope_of_work as Array<{ heading: string; body: string }> | undefined,
             }}
           />
         </div>
