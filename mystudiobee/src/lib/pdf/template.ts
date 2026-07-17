@@ -81,41 +81,71 @@ function totalInWords(total: number): string {
 
 const TYPE_LABEL: Record<string, string> = { quote: 'Quote', proforma: 'Proforma Invoice', invoice: 'Invoice', receipt: 'Receipt' };
 
+type ScopeListItem = { text: string; nested: string };
+type ScopeListFrame = { level: number; items: ScopeListItem[] };
+
 /** Turns a Scope of Work section body into HTML: lines starting with "-" or "*"
  * become a real <ul><li> list (matching the Terms & Conditions page's bullet
- * style), consecutive plain lines become a <p> joined with <br>, and a blank
+ * style); the number of leading "*" sets nesting depth, so "**" nests as a
+ * sub-bullet under the "*"/"-" line above it (and "***" nests under that, and
+ * so on). Consecutive plain lines become a <p> joined with <br>, and a blank
  * line closes whatever block is open — a lightweight markdown-lite so users
- * typing in a plain textarea can still produce proper bullets in the PDF. */
+ * typing in a plain textarea can still produce proper (nested) bullets in the PDF. */
 function renderScopeBody(body: string): string {
   const lines = (body || '').split('\n');
   const blocks: string[] = [];
-  let list: string[] = [];
   let para: string[] = [];
+  const stack: ScopeListFrame[] = [];
 
-  const flushList = () => {
-    if (list.length) blocks.push(`<ul>${list.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>`);
-    list = [];
-  };
   const flushPara = () => {
     if (para.length) blocks.push(`<p>${para.map((l) => esc(l)).join('<br>')}</p>`);
     para = [];
   };
 
+  // Closes every open list level down to (but not including) `level` — each
+  // closed level's <ul> is folded into the still-open parent item above it
+  // (or pushed as a top-level block once nothing remains open), which is what
+  // lets "**" render nested *inside* the preceding "*" bullet's <li>.
+  const closeListsTo = (level: number) => {
+    while (stack.length && stack[stack.length - 1].level >= level) {
+      const frame = stack.pop()!;
+      const html = `<ul>${frame.items.map((it) => `<li>${esc(it.text)}${it.nested}</li>`).join('')}</ul>`;
+      if (stack.length) {
+        const parentItems = stack[stack.length - 1].items;
+        parentItems[parentItems.length - 1].nested += html;
+      } else {
+        blocks.push(html);
+      }
+    }
+  };
+  const closeAllLists = () => closeListsTo(0);
+
   for (const raw of lines) {
     const line = raw.trim();
-    const bullet = /^[-*]\s+(.*)$/.exec(line);
+    const bullet = /^(-|\*+)\s*(.*)$/.exec(line);
     if (bullet) {
       flushPara();
-      list.push(bullet[1]);
+      const level = bullet[1] === '-' ? 1 : bullet[1].length;
+      const text = bullet[2];
+      if (!stack.length || stack[stack.length - 1].level < level) {
+        stack.push({ level, items: [{ text, nested: '' }] });
+      } else {
+        closeListsTo(level + 1);
+        if (stack.length && stack[stack.length - 1].level === level) {
+          stack[stack.length - 1].items.push({ text, nested: '' });
+        } else {
+          stack.push({ level, items: [{ text, nested: '' }] });
+        }
+      }
     } else if (line === '') {
-      flushList();
+      closeAllLists();
       flushPara();
     } else {
-      flushList();
+      closeAllLists();
       para.push(line);
     }
   }
-  flushList();
+  closeAllLists();
   flushPara();
 
   return blocks.join('');
@@ -429,6 +459,7 @@ export function renderDocument(
   .scope-section ul { margin: 0 0 8px 14px; }
   .scope-section ul:last-child { margin-bottom: 0; }
   .scope-section li { font-size: 11.5px; color: #555; line-height: 1.6; margin-bottom: 4px; }
+  .scope-section li > ul { margin-top: 4px; margin-bottom: 0; }
 
   .terms-page { page-break-before: always; padding: 40px; }
   .terms-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
