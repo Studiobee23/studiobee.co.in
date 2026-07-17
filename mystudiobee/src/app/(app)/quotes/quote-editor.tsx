@@ -915,7 +915,7 @@ export function QuoteEditor({
                     value={section.body}
                     onChange={(e) => updateScopeSection(idx, { body: e.target.value })}
                     rows={3}
-                    placeholder="Describe what's included..."
+                    placeholder={"Describe what's included... start a line with \"- \" for a bullet point"}
                   />
                 </div>
                 <button

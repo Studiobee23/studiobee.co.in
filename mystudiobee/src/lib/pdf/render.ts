@@ -1,4 +1,5 @@
-import { renderDocument, renderFooterTemplate, FOOTER_HEIGHT_PX } from "@/lib/pdf/template";
+import { PDFDocument } from "pdf-lib";
+import { renderDocument, renderCoverDocument, renderFooterTemplate, FOOTER_HEIGHT_PX } from "@/lib/pdf/template";
 import { createClient } from "@/lib/supabase/server";
 
 // Local dev: reuse the same Chrome install the marketing site's screenshot.mjs already
@@ -20,6 +21,20 @@ async function launchBrowser() {
     executablePath: LOCAL_CHROME_PATH,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
+}
+
+/** Concatenates whole PDFs page-by-page into one file, in order. Used to stitch the
+ * footer-less cover page onto the front of the footered content pages — Puppeteer's
+ * displayHeaderFooter/margin options apply to an entire page.pdf() call, so a page
+ * without a footer has to come from a separate render pass, not a CSS trick. */
+async function mergePdfs(buffers: Buffer[]): Promise<Buffer> {
+  const merged = await PDFDocument.create();
+  for (const buf of buffers) {
+    const src = await PDFDocument.load(buf);
+    const pages = await merged.copyPages(src, src.getPageIndices());
+    for (const p of pages) merged.addPage(p);
+  }
+  return Buffer.from(await merged.save());
 }
 
 /** Fetches a document + its client and renders it to a PDF buffer. Shared by
@@ -51,23 +66,37 @@ export async function renderDocumentToPdf(docId: string) {
     studioPhone: process.env.STUDIO_PHONE,
     studioEmail: process.env.STUDIO_EMAIL,
   };
-  const html = renderDocument(doc, client, settings);
+  const coverHtml = renderCoverDocument(doc, client);
+  const contentHtml = renderDocument(doc, client, settings, { includeCover: false });
 
   let browser;
   try {
     browser = await launchBrowser();
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "load" });
-    const pdfBuffer = await page.pdf({
+
+    // Cover gets its own footer-less pass — no margin.bottom reserved, no footer
+    // template — since Puppeteer's header/footer + margin options apply to every
+    // page of a single page.pdf() call, not per-page.
+    await page.setContent(coverHtml, { waitUntil: "load" });
+    const coverBuffer = (await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: { top: "0px", right: "0px", bottom: "0px", left: "0px" },
+    })) as Buffer;
+
+    await page.setContent(contentHtml, { waitUntil: "load" });
+    const contentBuffer = (await page.pdf({
       format: "A4",
       printBackground: true,
       displayHeaderFooter: true,
       headerTemplate: "<span></span>",
       footerTemplate: renderFooterTemplate(doc),
       margin: { top: "0px", right: "0px", bottom: `${FOOTER_HEIGHT_PX}px`, left: "0px" },
-    });
+    })) as Buffer;
+
     await browser.close();
-    return { doc, client, pdfBuffer: pdfBuffer as Buffer };
+    const pdfBuffer = await mergePdfs([coverBuffer, contentBuffer]);
+    return { doc, client, pdfBuffer };
   } catch (e) {
     if (browser) await browser.close().catch(() => {});
     throw e;
