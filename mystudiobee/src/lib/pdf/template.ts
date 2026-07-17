@@ -92,6 +92,10 @@ function totalInWords(total: number): string {
 
 const TYPE_LABEL: Record<string, string> = { quote: 'Quote', proforma: 'Proforma Invoice', invoice: 'Invoice', receipt: 'Receipt' };
 
+// Mirrors src/lib/categories.ts's CATEGORY_LABELS — kept as a local literal (like
+// TYPE_LABEL above) since this module intentionally has no imports of its own.
+const CATEGORY_LABEL: Record<string, string> = { video: 'Video Production', web: 'Web', design: 'Design', retainer: 'Retainer' };
+
 type ScopeListItem = { text: string; nested: string };
 type ScopeListFrame = { level: number; items: ScopeListItem[] };
 
@@ -541,7 +545,7 @@ ${includeCover ? coverPageDiv(doc, client, label, true) : ''}
     ${doc.category ? `
     <div class="meta-item">
       <div class="meta-lbl">Category</div>
-      <div class="meta-val">${esc(capitalize(doc.category))}</div>
+      <div class="meta-val">${esc(CATEGORY_LABEL[doc.category] || capitalize(doc.category))}</div>
     </div>` : ''}
   </div>` : ''}
 

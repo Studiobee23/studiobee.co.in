@@ -24,8 +24,7 @@ import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { upsertProfitSplitSettings } from "@/lib/actions/profit-split";
 import type { ProfitSplitSettings, ProfitSplitTier } from "@/lib/profit-split/engine";
 import { toast } from "sonner";
-
-const CATEGORIES = ["video", "web", "design", "retainer"] as const;
+import { CATEGORIES, CATEGORY_LABELS } from "@/lib/categories";
 
 const DEFAULT_TIER: ProfitSplitTier = {
   max: null,
@@ -99,8 +98,8 @@ export function ProfitSplitClient({ settings }: { settings: ProfitSplitSettings[
         <Tabs defaultValue="video">
           <TabsList>
             {CATEGORIES.map((c) => (
-              <TabsTrigger key={c} value={c} className="capitalize">
-                {c}
+              <TabsTrigger key={c} value={c}>
+                {CATEGORY_LABELS[c]}
               </TabsTrigger>
             ))}
           </TabsList>

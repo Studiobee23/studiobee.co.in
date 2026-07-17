@@ -27,6 +27,7 @@ import {
 import type { ProfitSplitSettings } from "@/lib/profit-split/engine";
 import type { LineItem, LineItemMeta } from "@/lib/costing/types";
 import { createQuote, updateDocument, convertDocument, duplicateDocument, priceLineItem, deleteDocument, updateDocumentStatus } from "@/lib/actions/documents";
+import { CATEGORIES, CATEGORY_LABELS } from "@/lib/categories";
 
 type Client = { id: string; name: string; email?: string | null };
 type EquipmentItem = { id: string; name: string; daily_rental_cost: number | null; weekly_rental_cost: number | null };
@@ -100,11 +101,6 @@ const STATUS_OPTIONS: Record<"quote" | "proforma" | "invoice" | "receipt", strin
 };
 
 const NEXT_DOC_TYPE: Record<string, string> = { quote: "proforma", proforma: "invoice", invoice: "receipt" };
-
-// Matches the profit_split_settings categories exactly — category here is a lookup
-// key (computeProfitSplit does `settings.category === category`), so it can't be free
-// text without silently breaking the profit-split match on a typo.
-const CATEGORIES = ["video", "web", "design", "retainer"] as const;
 
 type ProjectOption = { id: string; name: string; client_id: string | null };
 
@@ -497,8 +493,8 @@ export function QuoteEditor({
               </SelectTrigger>
               <SelectContent>
                 {CATEGORIES.map((c) => (
-                  <SelectItem key={c} value={c} className="capitalize">
-                    {c}
+                  <SelectItem key={c} value={c}>
+                    {CATEGORY_LABELS[c]}
                   </SelectItem>
                 ))}
               </SelectContent>
