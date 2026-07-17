@@ -523,12 +523,15 @@ ${includeCover ? coverPageDiv(doc, client, label, true) : ''}
     <div class="bank-box">
       <div class="words-label">Bank Details</div>
       <table class="bank-table">
-        <tr><td>Beneficiary Name</td><td>StudioBee Media Pvt. Ltd.</td></tr>
-        <tr><td>Bank</td><td>Bank Name</td></tr>
-        <tr><td>A/c No</td><td>000000000000</td></tr>
-        <tr><td>IFSC</td><td>ABCD0123456</td></tr>
-        <tr><td>Branch</td><td>Branch Name, City</td></tr>
-        <tr><td>Swift Code</td><td>ABCDINBBXXX</td></tr>
+        <tr><td>Beneficiary Name</td><td>Mcbee Pvt. Ltd.</td></tr>
+        <tr><td>Bank</td><td>HDFC Bank Ltd.</td></tr>
+        <tr><td>A/c No</td><td>50200036093106</td></tr>
+        <tr><td>IFSC</td><td>HDFC0000557</td></tr>
+        <tr><td>Branch</td><td>Shop No. M-29, GK-II, New Delhi-110048</td></tr>
+        <tr><td>Swift Code</td><td>HDFCINBBDEL</td></tr>
+        <tr><td>GSTIN</td><td>07AALCM9895R1Z1</td></tr>
+        <tr><td>CIN</td><td>U51909DL2018PTC337055</td></tr>
+        <tr><td>UDYAM</td><td>UDYAM-DL-08-0010644</td></tr>
       </table>
     </div>
   </div>
