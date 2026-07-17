@@ -176,6 +176,38 @@ export async function convertDocument(id: string) {
   return { id: data.id as string, type: nextType };
 }
 
+/** Copies a document (same type — a quote duplicates to a new quote, not the next
+ * type in the chain, which is what convertDocument is for) as a fresh draft with a
+ * new number. The source document is left completely untouched. */
+export async function duplicateDocument(id: string) {
+  await requireBillingRole();
+  const supabase = await createClient();
+
+  const { data: src, error: fetchError } = await supabase
+    .from("documents")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (fetchError) throw new Error("Document not found.");
+
+  const docType = src.type as "quote" | "proforma" | "invoice" | "receipt";
+  const number = await nextDocNumber(docType);
+  const { id: _id, created_at: _ca, updated_at: _ua, number: _num, status: _st, converted_from: _cf, ...rest } = src;
+
+  const { data, error } = await supabase
+    .from("documents")
+    .insert({ ...rest, number, status: "draft", converted_from: null })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/quotes");
+  revalidatePath("/proformas");
+  revalidatePath("/invoices");
+  revalidatePath("/receipts");
+  return { id: data.id as string, type: docType };
+}
+
 const ALLOWED_STATUSES = ["draft", "sent", "paid", "accepted", "cancelled"] as const;
 type DocumentStatus = typeof ALLOWED_STATUSES[number];
 

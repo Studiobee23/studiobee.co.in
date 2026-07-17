@@ -26,7 +26,7 @@ import {
 } from "@/lib/profit-split/engine";
 import type { ProfitSplitSettings } from "@/lib/profit-split/engine";
 import type { LineItem, LineItemMeta } from "@/lib/costing/types";
-import { createQuote, updateDocument, convertDocument, priceLineItem, deleteDocument, updateDocumentStatus } from "@/lib/actions/documents";
+import { createQuote, updateDocument, convertDocument, duplicateDocument, priceLineItem, deleteDocument, updateDocumentStatus } from "@/lib/actions/documents";
 
 type Client = { id: string; name: string; email?: string | null };
 type EquipmentItem = { id: string; name: string; daily_rental_cost: number | null; weekly_rental_cost: number | null };
@@ -305,6 +305,17 @@ export function QuoteEditor({
       router.push(`/${type}s/${id}`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to convert");
+    }
+  }
+
+  async function handleDuplicate() {
+    if (!doc) return;
+    try {
+      const { id, type } = await duplicateDocument(doc.id);
+      toast.success(`Duplicated as new ${type}`);
+      router.push(`/${type}s/${id}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to duplicate");
     }
   }
 
@@ -852,6 +863,11 @@ export function QuoteEditor({
         {doc && NEXT_DOC_TYPE[docType] && doc.status !== "cancelled" && (
           <Button variant="outline" onClick={handleConvert}>
             Convert to {NEXT_DOC_TYPE[docType]}
+          </Button>
+        )}
+        {doc && (
+          <Button variant="outline" onClick={handleDuplicate}>
+            Duplicate
           </Button>
         )}
         {doc && (
