@@ -34,6 +34,17 @@ function validUntil(iso: string | null | undefined, days: number | null | undefi
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+/** doc_date/valid_until are directly editable overrides (see quote-editor.tsx);
+ * documents predating that feature have neither set, so both fall back to the
+ * original created_at/validity_days-derived values. */
+function displayDocDate(doc: PdfDocument): string {
+  return fmtDate(doc.doc_date || doc.created_at);
+}
+
+function displayValidUntil(doc: PdfDocument): string {
+  return doc.valid_until ? fmtDate(doc.valid_until) : validUntil(doc.created_at, doc.validity_days);
+}
+
 const ONES = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
   'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
 const TENS = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
@@ -163,7 +174,7 @@ const COVER_STYLE = `
   .cover-page.paginated { page-break-after: always; }
   .cover-logo { height: 34px; width: auto; margin-bottom: 40px; }
   .cover-rule { width: 44px; height: 2px; background: #d8dcf5; margin-bottom: 28px; }
-  .cover-title { font-size: 44px; font-weight: 600; color: #2F48DF; letter-spacing: -0.01em; text-transform: uppercase; margin-bottom: 56px; text-align: center; }
+  .cover-title { font-size: 20px; font-weight: 600; color: #2F48DF; letter-spacing: -0.01em; margin-bottom: 56px; text-align: center; }
   .cover-meta { text-align: center; }
   .cover-meta-row { margin-bottom: 16px; }
   .cover-meta-row:last-child { margin-bottom: 0; }
@@ -187,7 +198,7 @@ function coverPageDiv(doc: PdfDocument, client: PdfClient, label: string, pagina
     </div>
     <div class="cover-meta-row">
       <div class="cover-meta-lbl">Date</div>
-      <div class="cover-meta-val">${esc(fmtDate(doc.created_at))}</div>
+      <div class="cover-meta-val">${esc(displayDocDate(doc))}</div>
     </div>
   </div>
 </div>`;
@@ -222,6 +233,8 @@ export type PdfDocument = {
   type: 'quote' | 'proforma' | 'invoice' | 'receipt';
   number: string;
   created_at: string;
+  doc_date?: string | null;
+  valid_until?: string | null;
   project_name?: string;
   category?: string;
   line_items: Array<{ description?: string; detail?: string; qty: number; rate: number; amount: number; group?: string | null }>;
@@ -510,7 +523,7 @@ ${includeCover ? coverPageDiv(doc, client, label, true) : ''}
       <div class="party-label">${label} Info</div>
       <table class="quote-meta">
         <tr><td>${label}#</td><td>${esc(doc.number)}</td></tr>
-        <tr><td>${label} Date</td><td>${esc(fmtDate(doc.created_at))}</td></tr>
+        <tr><td>${label} Date</td><td>${esc(displayDocDate(doc))}</td></tr>
         ${doc.project_name ? `<tr><td>Project Name</td><td>${esc(doc.project_name)}</td></tr>` : ''}
       </table>
     </div>
@@ -523,7 +536,7 @@ ${includeCover ? coverPageDiv(doc, client, label, true) : ''}
     ${doc.type === 'quote' ? `
     <div class="meta-item">
       <div class="meta-lbl">Valid Until</div>
-      <div class="meta-val">${esc(validUntil(doc.created_at, doc.validity_days))}</div>
+      <div class="meta-val">${esc(displayValidUntil(doc))}</div>
     </div>` : ''}
     ${doc.category ? `
     <div class="meta-item">
@@ -689,7 +702,7 @@ export const FOOTER_HEIGHT_PX = 44;
  * Puppeteer's own template classes; it substitutes their text automatically. */
 export function renderFooterTemplate(doc: PdfDocument) {
   const validityNote = doc.type === 'quote' && doc.validity_days
-    ? esc(`Valid until ${validUntil(doc.created_at, doc.validity_days)}`) + ' &middot; studiobee.co.in'
+    ? esc(`Valid until ${displayValidUntil(doc)}`) + ' &middot; studiobee.co.in'
     : doc.type === 'receipt'
     ? '<span style="color:#6ee;font-weight:600;">Payment Received</span> &middot; studiobee.co.in'
     : 'studiobee.co.in';

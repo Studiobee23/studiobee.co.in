@@ -31,6 +31,16 @@ import { createQuote, updateDocument, convertDocument, duplicateDocument, priceL
 type Client = { id: string; name: string; email?: string | null };
 type EquipmentItem = { id: string; name: string; daily_rental_cost: number | null; weekly_rental_cost: number | null };
 
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function addDaysISO(iso: string, days: number) {
+  const d = new Date(iso + "T00:00:00");
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
 /** Weekly rate (if set) is applied to full weeks; remainder days bill at the daily rate. */
 function equipmentBaseCost(eq: EquipmentItem, days: number): number {
   if (eq.weekly_rental_cost && days >= 7) {
@@ -56,6 +66,9 @@ export type QuoteDoc = {
   id: string;
   number: string;
   status: string;
+  created_at?: string;
+  doc_date?: string | null;
+  valid_until?: string | null;
   client_id: string | null;
   project_id?: string | null;
   project_name: string;
@@ -133,6 +146,12 @@ export function QuoteEditor({
   const [discountType, setDiscountType] = useState<"flat" | "percent">(doc?.discount_type ?? "flat");
   const [notes, setNotes] = useState(doc?.notes ?? "");
   const [validityDays, setValidityDays] = useState(doc?.validity_days ?? 15);
+  const [docDate, setDocDate] = useState(
+    doc?.doc_date ?? (doc?.created_at ? doc.created_at.slice(0, 10) : todayISO())
+  );
+  const [validUntilDate, setValidUntilDate] = useState(
+    doc?.valid_until ?? addDaysISO(doc?.doc_date ?? (doc?.created_at ? doc.created_at.slice(0, 10) : todayISO()), doc?.validity_days ?? 15)
+  );
   const [executorId, setExecutorId] = useState(doc?.executor_id ?? "");
   const [managerId, setManagerId] = useState(doc?.manager_id ?? "");
   const [clientHandlerId, setClientHandlerId] = useState(doc?.client_handler_id ?? "");
@@ -285,6 +304,8 @@ export function QuoteEditor({
       total: totals.total,
       notes,
       validity_days: validityDays,
+      doc_date: docDate,
+      valid_until: docType === "quote" ? validUntilDate : null,
       hide_pricing: hidePricing,
       line_item_view: viewMode,
       summary_label: viewMode === "summary" ? summaryLabel.trim() || null : null,
@@ -483,6 +504,16 @@ export function QuoteEditor({
               </SelectContent>
             </Select>
           </div>
+          <div className="space-y-1.5">
+            <Label>Date</Label>
+            <Input type="date" value={docDate} onChange={(e) => setDocDate(e.target.value)} />
+          </div>
+          {docType === "quote" && (
+            <div className="space-y-1.5">
+              <Label>Valid until</Label>
+              <Input type="date" value={validUntilDate} onChange={(e) => setValidUntilDate(e.target.value)} />
+            </div>
+          )}
           {docType === "quote" && (
             <div className="space-y-1.5">
               <Label>Validity (days)</Label>
