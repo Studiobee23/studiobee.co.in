@@ -126,8 +126,14 @@ export async function updateDocument(
 ) {
   await requireBillingRole();
   const supabase = await createClient();
-  const { error } = await supabase.from("documents").update(input).eq("id", id);
+  // A blocked RLS write (e.g. a stale/expired session) returns success with zero
+  // rows affected, not an error — .select() lets us tell "updated" from "matched
+  // nothing" and fail loudly instead of silently discarding the edit.
+  const { data, error } = await supabase.from("documents").update(input).eq("id", id).select("id");
   if (error) throw new Error(error.message);
+  if (!data || data.length === 0) {
+    throw new Error("Save failed — nothing was written. You may have been signed out; refresh the page and try again.");
+  }
   revalidatePath("/quotes");
   revalidatePath("/proformas");
   revalidatePath("/invoices");
