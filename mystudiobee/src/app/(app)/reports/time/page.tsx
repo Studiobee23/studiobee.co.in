@@ -28,13 +28,15 @@ export default async function TimeReportPage({
 
   const { count: totalCount } = await supabase
     .from("time_entries")
-    .select("id", { count: "exact", head: true });
+    .select("id", { count: "exact", head: true })
+    .is("deleted_at", null);
 
   let query = supabase
     .from("time_entries")
     .select(
       "id, clocked_in_at, clocked_out_at, notes, employee_id, project_id, location_label, profiles!employee_id(display_name, email), projects(name)"
     )
+    .is("deleted_at", null)
     .order("clocked_in_at", { ascending: false });
 
   if (!showAll) query = query.limit(DEFAULT_LIMIT);

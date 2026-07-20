@@ -29,7 +29,7 @@ export default async function ProjectDetailPage({
     supabase.from("project_expenses").select("*").eq("project_id", id).order("expense_date", { ascending: false }).then((r) => r, () => ({ data: [] })),
     supabase.from("delivery_checklists").select("*").eq("project_id", id).order("sort_order").then((r) => r, () => ({ data: [] })),
     supabase.from("retainer_months").select("*").eq("project_id", id).order("month", { ascending: false }).then((r) => r, () => ({ data: [] })),
-    supabase.from("clients").select("id, name").order("name"),
+    supabase.from("clients").select("id, name").is("deleted_at", null).order("name"),
   ]);
 
   if (!project) notFound();

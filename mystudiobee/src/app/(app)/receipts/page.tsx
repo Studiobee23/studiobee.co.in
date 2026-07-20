@@ -13,6 +13,7 @@ export default async function ReceiptsPage() {
     .from("documents")
     .select("id, number, project_name, status, total, clients(name)")
     .eq("type", "receipt")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   return (

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { getCurrentProfile, isBillingRole, canSeeCost } from "@/lib/profile";
@@ -18,10 +19,10 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   const seeCost = canSeeCost(profile.role);
 
   const [{ data: clients }, { data: presets }, { data: equipmentItems }, { data: projects }] = await Promise.all([
-    supabase.from("clients").select("id, name, email").order("name"),
+    supabase.from("clients").select("id, name, email").is("deleted_at", null).order("name"),
     supabase.from("service_presets").select("*").order("category"),
     supabase.from("equipment").select("id, name, daily_rental_cost, weekly_rental_cost").eq("active", true).order("name"),
-    supabase.from("projects").select("id, name, client_id").order("name"),
+    supabase.from("projects").select("id, name, client_id").is("deleted_at", null).order("name"),
   ]);
 
   let roles: { id: string; name: string; hourly_rate: number }[] = [];
@@ -55,7 +56,16 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
     <>
       <DashboardHeader title={doc.number} backHref="/quotes" />
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-        <div className="animate-in-page mx-auto max-w-3xl">
+        <div className="animate-in-page mx-auto max-w-3xl space-y-4">
+          {(doc as Record<string, unknown>).deleted_at ? (
+            <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 text-xs text-amber-800">
+              This document&apos;s client is in the{" "}
+              <Link href="/bin" className="font-medium underline underline-offset-2">
+                Bin
+              </Link>
+              . Restore the client from there to make changes here.
+            </div>
+          ) : null}
           <QuoteEditor
             clients={clients ?? []}
             presets={presets ?? []}

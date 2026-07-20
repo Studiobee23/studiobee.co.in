@@ -22,6 +22,7 @@ export default async function ProjectsPage() {
   const { data: projects } = await supabase
     .from("projects")
     .select("id, name, type, status, category, est_hours, created_at, clients(name)")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   const sorted = [...(projects ?? [])].sort((a, b) => {

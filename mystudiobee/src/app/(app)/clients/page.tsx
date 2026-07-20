@@ -18,6 +18,7 @@ export default async function ClientsPage({
   let query = supabase
     .from("clients")
     .select("id, name, contact_person, email, phone, city, tags")
+    .is("deleted_at", null)
     .order("name");
   if (q) query = query.ilike("name", `%${q}%`);
 

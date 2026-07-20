@@ -85,6 +85,7 @@ type Project = {
   start_date: string | null;
   end_date: string | null;
   clients: { id: string; name: string } | null;
+  deleted_at?: string | null;
 };
 
 type Task = {
@@ -264,6 +265,15 @@ export function ProjectDetailClient({
         }}
       />
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+        {project.deleted_at && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 text-xs text-amber-800">
+            This project&apos;s client is in the{" "}
+            <Link href="/bin" className="font-medium underline underline-offset-2">
+              Bin
+            </Link>
+            . Restore the client from there to make changes here.
+          </div>
+        )}
 
         {/* Project meta + status */}
         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">

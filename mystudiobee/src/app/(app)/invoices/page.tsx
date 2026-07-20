@@ -13,6 +13,7 @@ export default async function InvoicesPage() {
     .from("documents")
     .select("id, number, project_name, status, total, clients(name)")
     .eq("type", "invoice")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   return (

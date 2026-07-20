@@ -12,6 +12,34 @@ async function requireBillingRole() {
   return profile;
 }
 
+async function requireOwnerOrAdmin() {
+  const profile = await getCurrentProfile();
+  if (!profile || (profile.role !== "owner" && profile.role !== "admin")) {
+    throw new Error("Only owner/admin can delete or restore clients.");
+  }
+  return profile;
+}
+
+function revalidateAffectedPaths() {
+  for (const path of [
+    "/",
+    "/clients",
+    "/projects",
+    "/tasks",
+    "/quotes",
+    "/proformas",
+    "/invoices",
+    "/receipts",
+    "/bin",
+    "/reports/pnl",
+    "/reports/time",
+    "/reports/hours",
+    "/clock",
+  ]) {
+    try { revalidatePath(path); } catch { /* ignore */ }
+  }
+}
+
 export type ClientInput = {
   id?: string;
   name: string;
@@ -57,4 +85,41 @@ export async function upsertClient(input: ClientInput) {
   if (!data) throw new Error("Insert/update returned no data — possible RLS SELECT block after write");
   try { revalidatePath("/clients"); } catch { /* ignore */ }
   return data.id as string;
+}
+
+/** Soft-deletes a client and every project/document/task/etc. under it.
+ * Recoverable from /bin for 30 days, after which pg_cron purges it for good. */
+export async function deleteClient(id: string) {
+  await requireOwnerOrAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("soft_delete_client", { p_client_id: id });
+  if (error) throw new Error(error.message);
+  revalidateAffectedPaths();
+}
+
+export async function restoreClient(id: string) {
+  await requireOwnerOrAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("restore_client", { p_client_id: id });
+  if (error) throw new Error(error.message);
+  revalidateAffectedPaths();
+}
+
+export type BinnedClient = {
+  id: string;
+  name: string;
+  city: string;
+  deleted_at: string;
+};
+
+export async function listBinnedClients(): Promise<BinnedClient[]> {
+  await requireOwnerOrAdmin();
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("clients")
+    .select("id, name, city, deleted_at")
+    .not("deleted_at", "is", null)
+    .order("deleted_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return (data ?? []) as BinnedClient[];
 }

@@ -21,6 +21,7 @@ export default async function PnlReportPage({
     .select("id, type, number, project_name, project_id, status, total, subtotal, line_items, created_at, clients(name)")
     .in("type", ["invoice", "receipt"])
     .in("status", ["paid", "accepted"])
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   const years = Array.from(

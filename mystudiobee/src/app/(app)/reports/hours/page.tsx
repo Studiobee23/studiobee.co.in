@@ -13,12 +13,14 @@ export default async function HoursReportPage() {
   const { data: projects } = await supabase
     .from("projects")
     .select("id, name, est_hours, status, clients(name)")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   const { data: docs } = await supabase
     .from("documents")
     .select("project_id, line_items")
-    .not("project_id", "is", null);
+    .not("project_id", "is", null)
+    .is("deleted_at", null);
 
   const consumedByProject: Record<string, number> = {};
   for (const doc of docs ?? []) {

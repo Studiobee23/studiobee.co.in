@@ -37,13 +37,13 @@ export default async function DashboardPage() {
     { data: invoiceDocs },
     { data: marginDocs },
   ] = await Promise.all([
-    supabase.from("clients").select("id, name, city, created_at").order("created_at", { ascending: false }).limit(5),
-    supabase.from("documents").select("id, number, project_name, status, total, created_at").eq("type", "quote").order("created_at", { ascending: false }).limit(5),
-    supabase.from("tasks").select("id, status, due_date, title, project_id, projects(name)").order("due_date", { ascending: true, nullsFirst: false }),
-    supabase.from("projects").select("id, name, status, type, clients(name)").eq("status", "active").order("created_at", { ascending: false }).limit(5),
-    supabase.from("documents").select("id, number, project_name, status, total, created_at, updated_at").eq("type", "invoice").order("created_at", { ascending: true }),
+    supabase.from("clients").select("id, name, city, created_at").is("deleted_at", null).order("created_at", { ascending: false }).limit(5),
+    supabase.from("documents").select("id, number, project_name, status, total, created_at").eq("type", "quote").is("deleted_at", null).order("created_at", { ascending: false }).limit(5),
+    supabase.from("tasks").select("id, status, due_date, title, project_id, projects(name)").is("deleted_at", null).order("due_date", { ascending: true, nullsFirst: false }),
+    supabase.from("projects").select("id, name, status, type, clients(name)").eq("status", "active").is("deleted_at", null).order("created_at", { ascending: false }).limit(5),
+    supabase.from("documents").select("id, number, project_name, status, total, created_at, updated_at").eq("type", "invoice").is("deleted_at", null).order("created_at", { ascending: true }),
     showMargin
-      ? supabase.from("documents").select("id, total, line_items, created_at").in("type", ["invoice", "receipt"]).in("status", ["paid", "accepted"])
+      ? supabase.from("documents").select("id, total, line_items, created_at").in("type", ["invoice", "receipt"]).in("status", ["paid", "accepted"]).is("deleted_at", null)
       : Promise.resolve({ data: null as { id: string; total: number; line_items: unknown; created_at: string }[] | null }),
   ]);
 

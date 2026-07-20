@@ -36,6 +36,7 @@ export default async function ClockPage() {
     .from("projects")
     .select("id, name")
     .eq("status", "active")
+    .is("deleted_at", null)
     .order("name");
 
   return (

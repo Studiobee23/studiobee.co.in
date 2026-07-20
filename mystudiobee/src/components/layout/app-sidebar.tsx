@@ -20,6 +20,7 @@ import {
   Clock,
   FileStack,
   Layers,
+  Trash2,
 } from "lucide-react";
 import {
   Sidebar,
@@ -61,6 +62,7 @@ const reportNav: NavEntry[] = [
   { title: "Reports", href: "/reports", icon: BarChart2 },
   { title: "Time Log", href: "/reports/time", icon: Clock },
 ];
+const binNav: NavEntry[] = [{ title: "Bin", href: "/bin", icon: Trash2 }];
 
 const GROUP_LABEL_CLASS =
   "mb-0 mt-1 px-3 h-4 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/30 leading-none";
@@ -153,6 +155,7 @@ export function AppSidebar({
         {isBilling && <Group label="Billing" items={billingNav} pathname={pathname} />}
         {isOwnerOrAdmin && <Group label="Admin" items={adminNav} pathname={pathname} />}
         {isOwnerOrAdmin && <Group label="Insights" items={reportNav} pathname={pathname} />}
+        {isOwnerOrAdmin && <Group items={binNav} pathname={pathname} />}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-white/8 px-3 py-1.5">

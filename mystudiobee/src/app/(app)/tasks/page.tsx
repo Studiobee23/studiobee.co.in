@@ -17,6 +17,7 @@ export default async function TasksPage({
   let query = supabase
     .from("tasks")
     .select("*, projects(name), profiles!assigned_to(display_name, email)")
+    .is("deleted_at", null)
     .order("due_date", { ascending: true, nullsFirst: false });
 
   if (isEmployee) {
@@ -30,6 +31,7 @@ export default async function TasksPage({
     .from("projects")
     .select("id, name")
     .eq("status", "active")
+    .is("deleted_at", null)
     .order("name");
 
   const { data: teamMembers } = await supabase

@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { ClientFormSheet, type ClientRecord } from "../client-form-sheet";
+import { deleteClient } from "@/lib/actions/clients";
 
 type Document = {
   id: string;
@@ -19,26 +21,74 @@ type Document = {
 export function ClientDetailClient({
   client,
   documents,
+  canDelete = false,
+  isBinned = false,
+  deletedAt,
 }: {
   client: ClientRecord & { id: string };
   documents: Document[];
+  canDelete?: boolean;
+  isBinned?: boolean;
+  deletedAt?: string | null;
 }) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  function handleDelete() {
+    if (
+      !window.confirm(
+        `Delete "${client.name}"? This also deletes all their projects, tasks and documents. Everything moves to the Bin and can be restored within 30 days.`
+      )
+    )
+      return;
+    startTransition(async () => {
+      try {
+        await deleteClient(client.id);
+        toast.success(`${client.name} moved to Bin`);
+        router.push("/clients");
+        router.refresh();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to delete");
+      }
+    });
+  }
 
   return (
     <div className="space-y-5">
+      {isBinned && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 text-xs text-amber-800">
+          This client was deleted{deletedAt ? ` on ${new Date(deletedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}` : ""} and is sitting in the{" "}
+          <Link href="/bin" className="font-medium underline underline-offset-2">
+            Bin
+          </Link>
+          . Restore it from there to make changes.
+        </div>
+      )}
       <div className="rounded-xl border border-border bg-card p-5 shadow-card">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="font-heading text-[11px] font-semibold uppercase tracking-[0.08em]">
             Client details
           </h3>
-          <button
-            onClick={() => setEditOpen(true)}
-            className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
-          >
-            <Pencil className="h-3 w-3" /> Edit
-          </button>
+          {!isBinned && (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setEditOpen(true)}
+                className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+              >
+                <Pencil className="h-3 w-3" /> Edit
+              </button>
+              {canDelete && (
+                <button
+                  onClick={handleDelete}
+                  disabled={pending}
+                  className="flex items-center gap-1 text-xs font-medium text-destructive hover:text-destructive/80 disabled:opacity-50"
+                >
+                  <Trash2 className="h-3 w-3" /> Delete
+                </button>
+              )}
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
           <Detail label="Contact person" value={client.contact_person} />
