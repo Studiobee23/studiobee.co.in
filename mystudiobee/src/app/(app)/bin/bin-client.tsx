@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, RotateCcw } from "lucide-react";
+import { Trash2, RotateCcw, X } from "lucide-react";
 import { toast } from "sonner";
-import { restoreClient } from "@/lib/actions/clients";
+import { restoreClient, purgeClient } from "@/lib/actions/clients";
 
 type BinnedClient = { id: string; name: string; city: string; deleted_at: string };
 
@@ -30,6 +30,28 @@ export function BinClient({ clients }: { clients: BinnedClient[] }) {
         router.refresh();
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Failed to restore");
+      } finally {
+        setPendingId(null);
+      }
+    });
+  }
+
+  function handlePurge(client: BinnedClient) {
+    const typed = window.prompt(
+      `This permanently deletes "${client.name}" and everything under it — no undo, skips the ${PURGE_AFTER_DAYS}-day grace period.\n\nType the client name to confirm:`
+    );
+    if (typed !== client.name) {
+      if (typed !== null) toast.error("Name didn't match — nothing was deleted.");
+      return;
+    }
+    setPendingId(client.id);
+    startTransition(async () => {
+      try {
+        await purgeClient(client.id);
+        toast.success(`${client.name} permanently deleted`);
+        router.refresh();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to delete");
       } finally {
         setPendingId(null);
       }
@@ -71,6 +93,13 @@ export function BinClient({ clients }: { clients: BinnedClient[] }) {
                   className="flex shrink-0 items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-muted disabled:opacity-50"
                 >
                   <RotateCcw className="h-3 w-3" /> Restore
+                </button>
+                <button
+                  onClick={() => handlePurge(c)}
+                  disabled={pending && pendingId === c.id}
+                  className="flex shrink-0 items-center gap-1 rounded-lg border border-destructive/30 px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10 disabled:opacity-50"
+                >
+                  <X className="h-3 w-3" /> Delete forever
                 </button>
               </div>
             ))}

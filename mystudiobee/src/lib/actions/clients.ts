@@ -105,6 +105,26 @@ export async function restoreClient(id: string) {
   revalidateAffectedPaths();
 }
 
+/** Permanently deletes a binned client (and everything under it) right now,
+ * skipping the 30-day grace period. Cannot be undone. Only works on clients
+ * that are already in the bin — won't touch an active client. */
+export async function purgeClient(id: string) {
+  await requireOwnerOrAdmin();
+  const supabase = await createClient();
+
+  const { data: client, error: fetchError } = await supabase
+    .from("clients")
+    .select("deleted_at")
+    .eq("id", id)
+    .maybeSingle();
+  if (fetchError) throw new Error(fetchError.message);
+  if (!client?.deleted_at) throw new Error("Client is not in the Bin.");
+
+  const { error } = await supabase.rpc("purge_client", { p_client_id: id });
+  if (error) throw new Error(error.message);
+  revalidateAffectedPaths();
+}
+
 export type BinnedClient = {
   id: string;
   name: string;
