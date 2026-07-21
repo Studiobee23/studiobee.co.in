@@ -15,6 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { upsertClient, type ClientInput } from "@/lib/actions/clients";
+import { ClientAvatar } from "@/components/clients/client-avatar";
+import { uploadAndSetClientAvatar } from "@/lib/clients/avatar-upload";
 
 export type ClientRecord = ClientInput & { id?: string };
 
@@ -43,15 +45,30 @@ export function ClientFormSheet({
   const [form, setForm] = useState<ClientRecord>({ name: "" });
   const [loading, setLoading] = useState(false);
   const [customLeadSource, setCustomLeadSource] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const next = client ?? { name: "" };
     setForm(next);
     setCustomLeadSource(!!next.lead_source && !LEAD_SOURCES.includes(next.lead_source));
+    setAvatarFile(null);
+    setAvatarPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
   }, [client, open]);
 
   function set<K extends keyof ClientRecord>(key: K, value: ClientRecord[K]) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  function handleAvatarFileSelected(file: File) {
+    setAvatarPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+    setAvatarFile(file);
   }
 
   async function handleSave() {
@@ -59,6 +76,13 @@ export function ClientFormSheet({
     setLoading(true);
     try {
       const id = await upsertClient(form);
+      if (avatarFile) {
+        try {
+          await uploadAndSetClientAvatar(id, avatarFile);
+        } catch (e) {
+          toast.error(e instanceof Error ? e.message : "Client saved, but the photo failed to upload");
+        }
+      }
       toast.success(client?.id ? "Client updated" : "Client added");
       onOpenChange(false);
       onSaved(id);
@@ -75,6 +99,15 @@ export function ClientFormSheet({
         <SheetHeader>
           <SheetTitle>{client?.id ? "Edit client" : "Add client"}</SheetTitle>
         </SheetHeader>
+        <div className="flex justify-center px-4 pt-2">
+          <ClientAvatar
+            name={form.name || "New Client"}
+            avatarUrl={avatarPreviewUrl ?? form.avatar_url ?? null}
+            size="lg"
+            editable
+            onFileSelected={handleAvatarFileSelected}
+          />
+        </div>
         <div className="space-y-3 px-4">
           <Field label="Name *">
             <Input value={form.name} onChange={(e) => set("name", e.target.value)} />

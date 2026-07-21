@@ -7,6 +7,8 @@ import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ClientFormSheet, type ClientRecord } from "../client-form-sheet";
 import { deleteClient } from "@/lib/actions/clients";
+import { ClientAvatar } from "@/components/clients/client-avatar";
+import { uploadAndSetClientAvatar } from "@/lib/clients/avatar-upload";
 
 type Document = {
   id: string;
@@ -34,6 +36,20 @@ export function ClientDetailClient({
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(client.avatar_url ?? null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
+  async function handleAvatarUpload(file: File) {
+    setUploadingAvatar(true);
+    try {
+      const url = await uploadAndSetClientAvatar(client.id, file);
+      setAvatarUrl(url);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to upload image");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
 
   function handleDelete() {
     if (
@@ -66,10 +82,21 @@ export function ClientDetailClient({
         </div>
       )}
       <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-heading text-[11px] font-semibold uppercase tracking-[0.08em]">
-            Client details
-          </h3>
+        <div className="mb-4 flex items-center gap-3">
+          <ClientAvatar
+            name={client.name}
+            avatarUrl={avatarUrl}
+            size="lg"
+            editable={!isBinned}
+            uploading={uploadingAvatar}
+            onFileSelected={handleAvatarUpload}
+          />
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-heading text-base font-semibold">{client.name}</p>
+            <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+              Client details
+            </p>
+          </div>
           {!isBinned && (
             <div className="flex items-center gap-3">
               <button

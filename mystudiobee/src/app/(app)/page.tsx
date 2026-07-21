@@ -14,6 +14,7 @@ import {
   PieChart,
 } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { ClientAvatar } from "@/components/clients/client-avatar";
 import { getCurrentProfile, isBillingRole, canSeeCost } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import { sumLaborCost, sumDirectCost } from "@/lib/profit-split/engine";
@@ -37,7 +38,7 @@ export default async function DashboardPage() {
     { data: invoiceDocs },
     { data: marginDocs },
   ] = await Promise.all([
-    supabase.from("clients").select("id, name, city, created_at").is("deleted_at", null).order("created_at", { ascending: false }).limit(5),
+    supabase.from("clients").select("id, name, city, avatar_url, created_at").is("deleted_at", null).order("created_at", { ascending: false }).limit(5),
     supabase.from("documents").select("id, number, project_name, status, total, created_at").eq("type", "quote").is("deleted_at", null).order("created_at", { ascending: false }).limit(5),
     supabase.from("tasks").select("id, status, due_date, title, project_id, projects(name)").is("deleted_at", null).order("due_date", { ascending: true, nullsFirst: false }),
     supabase.from("projects").select("id, name, status, type, clients(name)").eq("status", "active").is("deleted_at", null).order("created_at", { ascending: false }).limit(5),
@@ -344,18 +345,17 @@ export default async function DashboardPage() {
               {!recentClients?.length ? (
                 <EmptyState icon={Users} text="No clients yet" />
               ) : (
-                <div className="space-y-1">
+                <div className="grid grid-cols-3 gap-4 sm:grid-cols-4">
                   {recentClients.map((c) => (
                     <Link
                       key={c.id}
                       href={`/clients/${c.id}`}
-                      className="flex items-center gap-3 rounded-lg p-3 transition-colors duration-100 hover:bg-muted/60"
+                      className="flex flex-col items-center gap-1.5 rounded-lg p-2 text-center transition-colors duration-100 hover:bg-muted/60"
                     >
-                      <div className="min-w-0 flex-1">
+                      <ClientAvatar name={c.name} avatarUrl={c.avatar_url} size="md" />
+                      <div className="min-w-0 w-full">
                         <p className="truncate text-xs font-medium">{c.name}</p>
-                        <p className="mt-0.5 truncate text-[10px] text-muted-foreground">
-                          {c.city || "—"}
-                        </p>
+                        <p className="truncate text-[10px] text-muted-foreground">{c.city || "—"}</p>
                       </div>
                     </Link>
                   ))}

@@ -4,10 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Plus, Search } from "lucide-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ClientFormSheet } from "./client-form-sheet";
+import { ClientAvatar } from "@/components/clients/client-avatar";
+import { uploadAndSetClientAvatar } from "@/lib/clients/avatar-upload";
 
 type Client = {
   id: string;
@@ -17,6 +20,7 @@ type Client = {
   phone: string;
   city: string;
   tags: string[];
+  avatar_url: string | null;
 };
 
 export function ClientsClient({
@@ -31,10 +35,24 @@ export function ClientsClient({
   const router = useRouter();
   const [q, setQ] = useState(initialQuery);
   const [open, setOpen] = useState(openNewOnLoad);
+  const [avatars, setAvatars] = useState<Record<string, string>>({});
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     router.push(q ? `/clients?q=${encodeURIComponent(q)}` : "/clients");
+  }
+
+  async function handleAvatarUpload(clientId: string, file: File) {
+    setUploadingId(clientId);
+    try {
+      const url = await uploadAndSetClientAvatar(clientId, file);
+      setAvatars((a) => ({ ...a, [clientId]: url }));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to upload image");
+    } finally {
+      setUploadingId(null);
+    }
   }
 
   return (
@@ -60,19 +78,29 @@ export function ClientsClient({
         ) : (
           <div className="divide-y divide-border">
             {clients.map((c) => (
-              <Link
+              <div
                 key={c.id}
-                href={`/clients/${c.id}`}
-                className="flex items-center gap-4 px-5 py-3.5 transition-colors duration-100 hover:bg-muted/50"
+                className="relative flex items-center gap-4 px-5 py-3.5 transition-colors duration-100 hover:bg-muted/50"
               >
-                <div className="min-w-0 flex-1">
+                <Link href={`/clients/${c.id}`} className="absolute inset-0" aria-label={c.name} />
+                <div className="relative z-10">
+                  <ClientAvatar
+                    name={c.name}
+                    avatarUrl={avatars[c.id] ?? c.avatar_url}
+                    size="sm"
+                    editable
+                    uploading={uploadingId === c.id}
+                    onFileSelected={(file) => handleAvatarUpload(c.id, file)}
+                  />
+                </div>
+                <div className="relative z-10 min-w-0 flex-1">
                   <p className="truncate text-[13px] font-semibold leading-snug">{c.name}</p>
                   <p className="mt-0.5 truncate text-xs text-muted-foreground">
                     {c.contact_person || c.email || c.phone || "—"} {c.city ? `· ${c.city}` : ""}
                   </p>
                 </div>
                 {c.tags?.length > 0 && (
-                  <div className="flex gap-1">
+                  <div className="relative z-10 flex gap-1">
                     {c.tags.slice(0, 3).map((t) => (
                       <Badge key={t} variant="outline">
                         {t}
@@ -80,7 +108,7 @@ export function ClientsClient({
                     ))}
                   </div>
                 )}
-              </Link>
+              </div>
             ))}
           </div>
         )}

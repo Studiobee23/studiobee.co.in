@@ -53,6 +53,7 @@ export type ClientInput = {
   notes?: string;
   tags?: string[];
   lead_source?: string;
+  avatar_url?: string | null;
 };
 
 export async function upsertClient(input: ClientInput) {
@@ -85,6 +86,16 @@ export async function upsertClient(input: ClientInput) {
   if (!data) throw new Error("Insert/update returned no data — possible RLS SELECT block after write");
   try { revalidatePath("/clients"); } catch { /* ignore */ }
   return data.id as string;
+}
+
+export async function updateClientAvatar(id: string, avatarUrl: string) {
+  await requireBillingRole();
+  const supabase = await createClient();
+  const { error } = await supabase.from("clients").update({ avatar_url: avatarUrl }).eq("id", id);
+  if (error) throw new Error(error.message);
+  try { revalidatePath("/"); } catch { /* ignore */ }
+  try { revalidatePath("/clients"); } catch { /* ignore */ }
+  try { revalidatePath(`/clients/${id}`); } catch { /* ignore */ }
 }
 
 /** Soft-deletes a client and every project/document/task/etc. under it.
