@@ -4,10 +4,7 @@ import {
   FileText,
   Users,
   Plus,
-  Clock,
   AlertTriangle,
-  CheckCircle2,
-  CircleDot,
   Wallet,
   TrendingUp,
   ArrowUpRight,
@@ -211,30 +208,18 @@ export default async function DashboardPage() {
           {/* Task stats */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Link href="/tasks?status=pending" className="rounded-xl border border-primary/15 bg-primary/10 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/50 text-primary">
-                <Clock className="h-4 w-4" />
-              </span>
               <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Pending</p>
               <p className="mt-1 font-heading text-2xl font-semibold">{taskCounts.pending}</p>
             </Link>
             <Link href="/tasks?status=in_progress" className="rounded-xl border border-primary/15 bg-primary/10 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/50 text-primary">
-                <CircleDot className="h-4 w-4" />
-              </span>
               <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">In Progress</p>
               <p className="mt-1 font-heading text-2xl font-semibold">{taskCounts.in_progress}</p>
             </Link>
             <Link href="/tasks?status=delayed" className="rounded-xl border border-primary/15 bg-primary/10 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/50 text-primary">
-                <AlertTriangle className="h-4 w-4" />
-              </span>
               <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Delayed</p>
               <p className="mt-1 font-heading text-2xl font-semibold">{taskCounts.delayed}</p>
             </Link>
             <Link href="/tasks?status=completed" className="rounded-xl border border-primary/15 bg-primary/10 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/50 text-primary">
-                <CheckCircle2 className="h-4 w-4" />
-              </span>
               <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Completed</p>
               <p className="mt-1 font-heading text-2xl font-semibold">{taskCounts.completed}</p>
             </Link>
