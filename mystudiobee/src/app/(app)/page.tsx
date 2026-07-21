@@ -88,38 +88,83 @@ export default async function DashboardPage() {
   return (
     <>
       <DashboardHeader title="Dashboard" />
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+      <div
+        className="flex-1 overflow-y-auto p-4 sm:p-6"
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(47,72,223,0.05) 0%, transparent 60%)",
+        }}
+      >
         <div className="animate-in-page mx-auto max-w-6xl space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-heading text-2xl font-semibold tracking-tight">
-              Welcome back, {profile.display_name || profile.email}
-            </h2>
-            <div className="flex gap-2">
-              <Link
-                href="/clients?new=1"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium shadow-card hover:bg-muted transition-colors duration-100"
-              >
-                <Plus className="h-3.5 w-3.5" /> Client
-              </Link>
-              <Link
-                href="/projects/new"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium shadow-card hover:bg-muted transition-colors duration-100"
-              >
-                <Plus className="h-3.5 w-3.5" /> Project
-              </Link>
-              <Link
-                href="/quotes/new"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors duration-100"
-              >
-                <Plus className="h-3.5 w-3.5" /> Quote
-              </Link>
+          <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A] px-5 py-6 text-white shadow-elevated sm:px-7 sm:py-7">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                backgroundImage:
+                  "radial-gradient(ellipse 70% 100% at 100% 0%, rgba(47,72,223,0.55) 0%, transparent 60%), radial-gradient(ellipse 60% 80% at 0% 100%, rgba(79,100,255,0.25) 0%, transparent 60%)",
+              }}
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 opacity-[0.05]"
+              style={{
+                backgroundImage:
+                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")",
+              }}
+            />
+            <div className="relative flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/50">
+                  {now.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}
+                </p>
+                <h2 className="mt-1 font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Welcome back, {profile.display_name || profile.email}
+                </h2>
+              </div>
+              <div className="flex gap-2">
+                <Link
+                  href="/clients?new=1"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-100 hover:bg-white/10"
+                >
+                  <Plus className="h-3.5 w-3.5" /> Client
+                </Link>
+                <Link
+                  href="/projects/new"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-100 hover:bg-white/10"
+                >
+                  <Plus className="h-3.5 w-3.5" /> Project
+                </Link>
+                <Link
+                  href="/quotes/new"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors duration-100"
+                >
+                  <Plus className="h-3.5 w-3.5" /> Quote
+                </Link>
+              </div>
             </div>
           </div>
 
           {/* Finance snapshot */}
           <div className="stagger-children grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="relative overflow-hidden rounded-xl bg-primary p-4 text-primary-foreground shadow-card">
-              <div className="flex items-center justify-between">
+            <div className="relative overflow-hidden rounded-xl bg-primary p-4 text-primary-foreground shadow-elevated">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(ellipse 90% 70% at 100% 0%, rgba(123,143,255,0.55) 0%, transparent 60%), radial-gradient(ellipse 70% 60% at 0% 100%, rgba(15,30,160,0.5) 0%, transparent 55%)",
+                }}
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 opacity-[0.05]"
+                style={{
+                  backgroundImage:
+                    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")",
+                }}
+              />
+              <div className="relative flex items-center justify-between">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
                   <Wallet className="h-4 w-4" />
                 </span>
@@ -130,44 +175,44 @@ export default async function DashboardPage() {
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
-              <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.06em] text-primary-foreground/70">
+              <p className="relative mt-3 text-[11px] font-semibold uppercase tracking-[0.06em] text-primary-foreground/70">
                 Outstanding
               </p>
-              <p className="mt-1 font-heading text-2xl font-semibold tracking-tight">
+              <p className="relative mt-1 font-heading text-2xl font-semibold tracking-tight">
                 ₹{outstandingTotal.toLocaleString("en-IN")}
               </p>
-              <p className="mt-1 text-[11px] text-primary-foreground/60">
+              <p className="relative mt-1 text-[11px] text-primary-foreground/60">
                 {sentInvoices.length} unpaid invoice{sentInvoices.length === 1 ? "" : "s"}
               </p>
             </div>
 
-            <div className="rounded-xl border border-border bg-card p-4 shadow-card">
+            <div className="rounded-xl bg-[#0A0A0A] p-4 text-white shadow-elevated">
               <div className="flex items-center justify-between">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
                   <AlertTriangle className="h-4 w-4" />
                 </span>
               </div>
-              <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+              <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.06em] text-white/60">
                 Overdue
               </p>
-              <p className="mt-1 font-heading text-2xl font-semibold tracking-tight text-red-600">
+              <p className="mt-1 font-heading text-2xl font-semibold tracking-tight">
                 ₹{overdueTotal.toLocaleString("en-IN")}
               </p>
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-1 text-[11px] text-white/50">
                 {overdueInvoices.length} invoice{overdueInvoices.length === 1 ? "" : "s"} unpaid 30+ days
               </p>
             </div>
 
             <div className="rounded-xl border border-border bg-card p-4 shadow-card">
               <div className="flex items-center justify-between">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <TrendingUp className="h-4 w-4" />
                 </span>
               </div>
               <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
                 Collected this month
               </p>
-              <p className="mt-1 font-heading text-2xl font-semibold tracking-tight text-emerald-600">
+              <p className="mt-1 font-heading text-2xl font-semibold tracking-tight text-primary">
                 ₹{collectedThisMonth.toLocaleString("en-IN")}
               </p>
               <p className="mt-1 text-[11px] text-muted-foreground">
@@ -178,52 +223,56 @@ export default async function DashboardPage() {
 
           {/* Task stats */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Link href="/tasks?status=pending" className="group rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                <Clock className="h-3.5 w-3.5" />
-                <span className="text-[11px] font-semibold uppercase tracking-[0.06em]">Pending</span>
-              </div>
-              <p className="font-heading text-2xl font-semibold">{taskCounts.pending}</p>
+            <Link href="/tasks?status=pending" className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+              <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-muted-foreground/30" />
+              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                <Clock className="h-4 w-4" />
+              </span>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Pending</p>
+              <p className="mt-1 font-heading text-2xl font-semibold">{taskCounts.pending}</p>
             </Link>
-            <Link href="/tasks?status=in_progress" className="group rounded-xl border border-blue-200 bg-blue-50/50 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <div className="flex items-center gap-2 text-blue-600 mb-1">
-                <CircleDot className="h-3.5 w-3.5" />
-                <span className="text-[11px] font-semibold uppercase tracking-[0.06em]">In Progress</span>
-              </div>
-              <p className="font-heading text-2xl font-semibold text-blue-700">{taskCounts.in_progress}</p>
+            <Link href="/tasks?status=in_progress" className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+              <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-primary" />
+              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                <CircleDot className="h-4 w-4" />
+              </span>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">In Progress</p>
+              <p className="mt-1 font-heading text-2xl font-semibold text-primary">{taskCounts.in_progress}</p>
             </Link>
-            <Link href="/tasks?status=delayed" className="group rounded-xl border border-red-200 bg-red-50/50 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <div className="flex items-center gap-2 text-red-600 mb-1">
-                <AlertTriangle className="h-3.5 w-3.5" />
-                <span className="text-[11px] font-semibold uppercase tracking-[0.06em]">Delayed</span>
-              </div>
-              <p className="font-heading text-2xl font-semibold text-red-700">{taskCounts.delayed}</p>
+            <Link href="/tasks?status=delayed" className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+              <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-[#0A0A0A]" />
+              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-[#0A0A0A] text-white">
+                <AlertTriangle className="h-4 w-4" />
+              </span>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Delayed</p>
+              <p className="mt-1 font-heading text-2xl font-semibold">{taskCounts.delayed}</p>
             </Link>
-            <Link href="/tasks?status=completed" className="group rounded-xl border border-green-200 bg-green-50/50 p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <div className="flex items-center gap-2 text-green-600 mb-1">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                <span className="text-[11px] font-semibold uppercase tracking-[0.06em]">Completed</span>
-              </div>
-              <p className="font-heading text-2xl font-semibold text-green-700">{taskCounts.completed}</p>
+            <Link href="/tasks?status=completed" className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+              <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-primary/40" />
+              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <CheckCircle2 className="h-4 w-4" />
+              </span>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Completed</p>
+              <p className="mt-1 font-heading text-2xl font-semibold">{taskCounts.completed}</p>
             </Link>
           </div>
 
           {/* Overdue tasks alert */}
           {overdueTasks.length > 0 && (
-            <div className="rounded-xl border border-red-200 bg-red-50/60 p-4">
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-red-600">
-                ⚠ Overdue Tasks ({overdueTasks.length})
+            <div className="rounded-xl bg-[#0A0A0A] p-4 shadow-elevated">
+              <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-white/70">
+                <AlertTriangle className="h-3 w-3" /> Overdue Tasks ({overdueTasks.length})
               </p>
               <div className="space-y-1">
                 {overdueTasks.slice(0, 5).map((t) => (
                   <Link
                     key={t.id}
                     href={`/projects/${t.project_id}`}
-                    className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-red-100/60 transition-colors duration-100"
+                    className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-white/10 transition-colors duration-100"
                   >
-                    <span className="min-w-0 flex-1 truncate text-xs font-medium text-red-800">{t.title}</span>
-                    <span className="shrink-0 text-[10px] text-red-500">Due {t.due_date}</span>
-                    <span className="shrink-0 text-[10px] text-red-400">
+                    <span className="min-w-0 flex-1 truncate text-xs font-medium text-white">{t.title}</span>
+                    <span className="shrink-0 text-[10px] text-white/50">Due {t.due_date}</span>
+                    <span className="shrink-0 text-[10px] text-white/40">
                       {(t.projects as unknown as { name: string } | null)?.name}
                     </span>
                   </Link>
@@ -234,24 +283,24 @@ export default async function DashboardPage() {
 
           {/* Overdue invoices alert */}
           {overdueInvoices.length > 0 && (
-            <div className="rounded-xl border border-red-200 bg-red-50/60 p-4">
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-red-600">
-                ⚠ Overdue Invoices ({overdueInvoices.length})
+            <div className="rounded-xl bg-[#0A0A0A] p-4 shadow-elevated">
+              <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-white/70">
+                <AlertTriangle className="h-3 w-3" /> Overdue Invoices ({overdueInvoices.length})
               </p>
               <div className="space-y-1">
                 {overdueInvoices.slice(0, 5).map((d) => (
                   <Link
                     key={d.id}
                     href={`/invoices/${d.id}`}
-                    className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-red-100/60 transition-colors duration-100"
+                    className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-white/10 transition-colors duration-100"
                   >
-                    <span className="min-w-0 flex-1 truncate text-xs font-medium text-red-800">
+                    <span className="min-w-0 flex-1 truncate text-xs font-medium text-white">
                       {d.number} · {d.project_name || "Untitled"}
                     </span>
-                    <span className="shrink-0 text-[10px] text-red-500">
+                    <span className="shrink-0 text-[10px] text-white/50">
                       ₹{(d.total ?? 0).toLocaleString("en-IN")}
                     </span>
-                    <span className="shrink-0 text-[10px] text-red-400">
+                    <span className="shrink-0 text-[10px] text-white/40">
                       Sent {new Date(d.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                     </span>
                   </Link>
@@ -288,7 +337,7 @@ export default async function DashboardPage() {
                           {p.type === "retainer" ? " · Retainer" : ""}
                         </p>
                       </div>
-                      <span className="shrink-0 rounded-full bg-green-500/10 px-2 py-0.5 text-[10px] font-medium text-green-600">
+                      <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
                         Active
                       </span>
                     </Link>
@@ -386,14 +435,14 @@ export default async function DashboardPage() {
                           cy="50"
                           r="40"
                           fill="none"
-                          stroke={marginPct >= 0 ? "var(--primary)" : "#e5484d"}
+                          stroke={marginPct >= 0 ? "var(--primary)" : "var(--foreground)"}
                           strokeWidth="10"
                           strokeLinecap="round"
                           strokeDasharray={`${marginDash} ${marginCircumference}`}
                         />
                       </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className={`font-heading text-xl font-semibold tracking-tight ${marginPct < 0 ? "text-red-600" : ""}`}>
+                        <span className="font-heading text-xl font-semibold tracking-tight">
                           {marginPct}%
                         </span>
                         <span className="text-[9px] uppercase tracking-[0.06em] text-muted-foreground">margin</span>
