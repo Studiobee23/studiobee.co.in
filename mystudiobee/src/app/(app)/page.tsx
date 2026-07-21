@@ -96,42 +96,29 @@ export default async function DashboardPage() {
         }}
       >
         <div className="animate-in-page mx-auto max-w-6xl space-y-6">
-          <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A] px-5 py-6 text-white shadow-elevated sm:px-7 sm:py-7">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0"
-              style={{
-                backgroundImage:
-                  "radial-gradient(ellipse 70% 100% at 100% 0%, rgba(47,72,223,0.55) 0%, transparent 60%), radial-gradient(ellipse 60% 80% at 0% 100%, rgba(79,100,255,0.25) 0%, transparent 60%)",
-              }}
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 opacity-[0.05]"
-              style={{
-                backgroundImage:
-                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E\")",
-              }}
-            />
+          <div
+            className="relative overflow-hidden rounded-2xl bg-cover bg-center px-5 py-6 shadow-elevated sm:px-7 sm:py-7"
+            style={{ backgroundImage: "url('/bg.png')" }}
+          >
             <div className="relative flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/50">
+              <div style={{ textShadow: "0 1px 4px rgba(10,10,10,0.25)" }}>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/80">
                   {now.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}
                 </p>
-                <h2 className="mt-1 font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+                <h2 className="mt-1 font-heading text-2xl font-semibold tracking-tight text-white sm:text-3xl">
                   Welcome back, {profile.display_name || profile.email}
                 </h2>
               </div>
               <div className="flex gap-2">
                 <Link
                   href="/clients?new=1"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-100 hover:bg-white/10"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-black/5 bg-white/80 px-3 py-1.5 text-sm font-medium text-foreground backdrop-blur-sm transition-colors duration-100 hover:bg-white"
                 >
                   <Plus className="h-3.5 w-3.5" /> Client
                 </Link>
                 <Link
                   href="/projects/new"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-100 hover:bg-white/10"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-black/5 bg-white/80 px-3 py-1.5 text-sm font-medium text-foreground backdrop-blur-sm transition-colors duration-100 hover:bg-white"
                 >
                   <Plus className="h-3.5 w-3.5" /> Project
                 </Link>
@@ -223,33 +210,29 @@ export default async function DashboardPage() {
 
           {/* Task stats */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Link href="/tasks?status=pending" className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-muted-foreground/30" />
-              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+            <Link href="/tasks?status=pending" className="rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/50 text-primary">
                 <Clock className="h-4 w-4" />
               </span>
               <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Pending</p>
               <p className="mt-1 font-heading text-2xl font-semibold">{taskCounts.pending}</p>
             </Link>
-            <Link href="/tasks?status=in_progress" className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-primary" />
-              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Link href="/tasks?status=in_progress" className="rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/50 text-primary">
                 <CircleDot className="h-4 w-4" />
               </span>
               <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">In Progress</p>
-              <p className="mt-1 font-heading text-2xl font-semibold text-primary">{taskCounts.in_progress}</p>
+              <p className="mt-1 font-heading text-2xl font-semibold">{taskCounts.in_progress}</p>
             </Link>
-            <Link href="/tasks?status=delayed" className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-[#0A0A0A]" />
-              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-[#0A0A0A] text-white">
+            <Link href="/tasks?status=delayed" className="rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/50 text-primary">
                 <AlertTriangle className="h-4 w-4" />
               </span>
               <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Delayed</p>
               <p className="mt-1 font-heading text-2xl font-semibold">{taskCounts.delayed}</p>
             </Link>
-            <Link href="/tasks?status=completed" className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
-              <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-primary/40" />
-              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Link href="/tasks?status=completed" className="rounded-xl border border-border bg-card p-4 shadow-card hover:shadow-card-hover transition-shadow duration-100">
+              <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/50 text-primary">
                 <CheckCircle2 className="h-4 w-4" />
               </span>
               <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Completed</p>
