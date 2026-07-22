@@ -8,7 +8,11 @@ export type OverheadItem = {
   id: string;
   name: string;
   cost: number;
-  type: "per-project" | "monthly";
+  // Optional: not selected by every caller (the pricing engine only ever needs
+  // id/name/cost), but present when the admin UI fetches full rows.
+  costing_type?: "purchase" | "recurring" | "per_project";
+  purchase_cost?: number | null;
+  useful_life_months?: number | null;
 };
 
 export type RoleHoursInput = {

@@ -14,8 +14,8 @@ const roles: CostRole[] = [
 ];
 
 const overheads: OverheadItem[] = [
-  { id: "o1", name: "Equipment Depreciation", cost: 50, type: "per-project" },
-  { id: "o2", name: "Travel", cost: 30, type: "per-project" },
+  { id: "o1", name: "Equipment Depreciation", cost: 50, costing_type: "per_project" },
+  { id: "o2", name: "Travel", cost: 30, costing_type: "per_project" },
 ];
 
 describe("computeCostBreakdown", () => {

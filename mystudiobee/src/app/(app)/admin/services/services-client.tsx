@@ -19,7 +19,13 @@ import { Label } from "@/components/ui/label";
 import { upsertServicePreset, deleteServicePreset } from "@/lib/actions/cost-model";
 
 type CostRole = { id: string; name: string; hourly_rate: number; active: boolean };
-type OverheadItem = { id: string; name: string; cost: number; type: "per-project" | "monthly"; active: boolean };
+type OverheadItem = {
+  id: string;
+  name: string;
+  cost: number;
+  costing_type: "purchase" | "recurring" | "per_project";
+  active: boolean;
+};
 type ServicePreset = {
   id: string;
   category: string;
@@ -141,7 +147,7 @@ export function ServicesClient({
               </div>
 
               <div className="space-y-1.5">
-                <Label>Default overheads</Label>
+                <Label>Default internal costing</Label>
                 <div className="space-y-2 rounded-lg border border-border p-3">
                   {overheads.map((o) => (
                     <label key={o.id} className="flex items-center gap-2 text-xs">

@@ -45,3 +45,50 @@ export async function setEquipmentActive(id: string, active: boolean) {
   if (error) throw new Error(error.message);
   revalidatePath("/admin/equipment");
 }
+
+// ── Internal costing items ("Overhead Items" table, relocated from Cost Model) ──
+export async function upsertOverheadItem(input: {
+  id?: string;
+  name: string;
+  cost: number;
+  costing_type: "purchase" | "recurring" | "per_project";
+  purchase_cost?: number | null;
+  useful_life_months?: number | null;
+}) {
+  const profile = await getCurrentProfile();
+  if (!profile) throw new Error("Not authenticated");
+  requireOwnerOrAdmin(profile.role);
+  const supabase = createAdminClient();
+  const payload = {
+    name: input.name,
+    cost: input.cost,
+    costing_type: input.costing_type,
+    purchase_cost: input.purchase_cost ?? null,
+    useful_life_months: input.useful_life_months ?? null,
+  };
+  const { error } = input.id
+    ? await supabase.from("overhead_items").update(payload).eq("id", input.id)
+    : await supabase.from("overhead_items").insert(payload);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/equipment");
+}
+
+export async function setOverheadItemActive(id: string, active: boolean) {
+  const profile = await getCurrentProfile();
+  if (!profile) throw new Error("Not authenticated");
+  requireOwnerOrAdmin(profile.role);
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("overhead_items").update({ active }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/equipment");
+}
+
+export async function deleteOverheadItem(id: string) {
+  const profile = await getCurrentProfile();
+  if (!profile) throw new Error("Not authenticated");
+  requireOwnerOrAdmin(profile.role);
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("overhead_items").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/equipment");
+}

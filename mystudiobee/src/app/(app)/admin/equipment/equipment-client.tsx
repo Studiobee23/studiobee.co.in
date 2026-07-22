@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -144,12 +143,15 @@ export function EquipmentClient({ items }: { items: EquipmentItem[] }) {
 
   return (
     <>
-      <DashboardHeader title="Equipment Inventory">
-        <Button size="sm" onClick={openNew}>
-          + Add Equipment
-        </Button>
-      </DashboardHeader>
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+      <div className="rounded-xl border border-border bg-card p-5 shadow-card">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="font-heading text-[11px] font-semibold uppercase tracking-[0.08em]">
+            Equipment Inventory
+          </h3>
+          <Button size="sm" onClick={openNew}>
+            + Add Equipment
+          </Button>
+        </div>
         <div className="rounded-xl border border-border overflow-hidden">
           <Table>
             <TableHeader>

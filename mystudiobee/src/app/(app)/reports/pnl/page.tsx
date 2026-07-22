@@ -82,13 +82,15 @@ export default async function PnlReportPage({
     { revenue: 0, cost: 0, expenses: 0, profit: 0 }
   );
 
-  // Monthly overheads (rent, salaries, subscriptions, etc.) apply company-wide, not
-  // per-document — deduct them separately so "Net Profit" reflects true profitability,
-  // not just gross margin on billed work.
+  // Recurring/amortized internal costing items (subscriptions, amortized purchases
+  // like laptops, etc.) apply company-wide, not per-document — deduct them separately
+  // so "Net Profit" reflects true profitability, not just gross margin on billed work.
+  // Per-project items are excluded: their cost is already captured on the documents
+  // that use them.
   const { data: monthlyOverheads } = await supabase
     .from("overhead_items")
     .select("id, name, cost")
-    .eq("type", "monthly")
+    .in("costing_type", ["recurring", "purchase"])
     .eq("active", true);
 
   const monthsInPeriod = selectedYear

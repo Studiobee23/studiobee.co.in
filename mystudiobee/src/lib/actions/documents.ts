@@ -38,7 +38,7 @@ export async function priceLineItem(input: {
 
   const [{ data: roles }, { data: overheads }] = await Promise.all([
     admin.from("cost_roles").select("id, name, hourly_rate"),
-    admin.from("overhead_items").select("id, name, cost, type"),
+    admin.from("overhead_items").select("id, name, cost"),
   ]);
 
   const breakdown = computeCostBreakdown(input.cost, roles ?? [], overheads ?? []);

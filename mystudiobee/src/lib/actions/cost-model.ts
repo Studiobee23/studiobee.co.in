@@ -31,33 +31,6 @@ export async function setCostRoleActive(id: string, active: boolean) {
   revalidatePath("/admin/cost-model");
 }
 
-// ── Overhead items ───────────────────────────────────────────────────────
-export async function upsertOverheadItem(input: {
-  id?: string;
-  name: string;
-  cost: number;
-  type: "per-project" | "monthly";
-}) {
-  await requireOwnerOrAdmin();
-  const supabase = await createClient();
-  const { error } = input.id
-    ? await supabase
-        .from("overhead_items")
-        .update({ name: input.name, cost: input.cost, type: input.type })
-        .eq("id", input.id)
-    : await supabase.from("overhead_items").insert({ name: input.name, cost: input.cost, type: input.type });
-  if (error) throw new Error(error.message);
-  revalidatePath("/admin/cost-model");
-}
-
-export async function setOverheadItemActive(id: string, active: boolean) {
-  await requireOwnerOrAdmin();
-  const supabase = await createClient();
-  const { error } = await supabase.from("overhead_items").update({ active }).eq("id", id);
-  if (error) throw new Error(error.message);
-  revalidatePath("/admin/cost-model");
-}
-
 // ── Service presets ──────────────────────────────────────────────────────
 export async function upsertServicePreset(input: {
   id?: string;
@@ -95,14 +68,6 @@ export async function deleteCostRole(id: string) {
   await requireOwnerOrAdmin();
   const supabase = await createClient();
   const { error } = await supabase.from("cost_roles").delete().eq("id", id);
-  if (error) throw new Error(error.message);
-  revalidatePath("/admin/cost-model");
-}
-
-export async function deleteOverheadItem(id: string) {
-  await requireOwnerOrAdmin();
-  const supabase = await createClient();
-  const { error } = await supabase.from("overhead_items").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/cost-model");
 }
