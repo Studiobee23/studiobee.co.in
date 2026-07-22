@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { updateTaskStatus, updateTaskAssignee, createTask } from "@/lib/actions/tasks";
+import { Plus, Trash2 } from "lucide-react";
+import { updateTaskStatus, updateTaskAssignee, createTask, deleteTask } from "@/lib/actions/tasks";
 import { toast } from "sonner";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -84,6 +84,18 @@ export function TasksClient({
         router.refresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Failed to add task");
+      }
+    });
+  }
+
+  function removeTask(id: string, projectId: string | null) {
+    if (!confirm("Delete this task? This cannot be undone.")) return;
+    startTransition(async () => {
+      try {
+        await deleteTask(id, projectId);
+        router.refresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Failed to delete task");
       }
     });
   }
@@ -325,6 +337,14 @@ export function TasksClient({
                       <SelectItem value="completed">Completed</SelectItem>
                     </SelectContent>
                   </Select>
+                  <button
+                    className="text-muted-foreground hover:text-destructive transition-colors"
+                    onClick={() => removeTask(t.id, t.project_id)}
+                    disabled={pending}
+                    aria-label="Delete task"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               ))}
             </div>

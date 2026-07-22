@@ -21,6 +21,8 @@ import {
   FileStack,
   Layers,
   Trash2,
+  Truck,
+  Contact,
 } from "lucide-react";
 import {
   Sidebar,
@@ -57,6 +59,8 @@ const adminNav: NavEntry[] = [
   { title: "Cost Model", href: "/admin/cost-model", icon: Calculator },
   { title: "Profit Split", href: "/admin/profit-split", icon: PieChart },
   { title: "Equipment", href: "/admin/equipment", icon: Package },
+  { title: "Equipment Vendors", href: "/admin/vendors", icon: Truck },
+  { title: "External Hires", href: "/admin/hires", icon: Contact },
 ];
 const reportNav: NavEntry[] = [
   { title: "Reports", href: "/reports", icon: BarChart2 },

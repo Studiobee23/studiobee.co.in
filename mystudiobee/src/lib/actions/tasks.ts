@@ -48,3 +48,11 @@ export async function updateTaskAssignee(id: string, assignedTo: string | null) 
   if (error) throw new Error(error.message);
   revalidatePath("/tasks");
 }
+
+export async function deleteTask(id: string, project_id?: string | null) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("tasks").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/tasks");
+  if (project_id) revalidatePath(`/projects/${project_id}`);
+}

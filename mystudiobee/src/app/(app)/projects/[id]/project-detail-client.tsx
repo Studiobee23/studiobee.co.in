@@ -29,6 +29,9 @@ import {
   upsertRetainerMonth,
 } from "@/lib/actions/projects";
 import { createTask, updateTaskStatus } from "@/lib/actions/tasks";
+import { linkVendorToProject, unlinkVendorFromProject } from "@/lib/actions/vendors";
+import { linkHireToProject, unlinkHireFromProject } from "@/lib/actions/hires";
+import { StarRatingDisplay } from "@/components/ui/star-rating";
 import { toast } from "sonner";
 
 const LIFECYCLE_STAGES = [
@@ -111,6 +114,17 @@ type Expense = {
 };
 type ChecklistItem = { id: string; item: string; completed: boolean; sort_order: number };
 type RetainerMonth = { id: string; month: string; status: string; notes: string };
+type ProjectVendorLink = {
+  id: string;
+  notes: string | null;
+  equipment_vendors: { id: string; name: string; overall_rating: number | null } | null;
+};
+type ProjectHireLink = {
+  id: string;
+  role_on_shoot: string | null;
+  notes: string | null;
+  external_hires: { id: string; name: string; overall_rating: number | null } | null;
+};
 
 export function ProjectDetailClient({
   project,
@@ -122,6 +136,10 @@ export function ProjectDetailClient({
   checklist,
   retainerMonths,
   clients,
+  projectVendors,
+  projectHires,
+  vendors,
+  hires,
 }: {
   project: Project;
   stages: Stage[];
@@ -132,6 +150,10 @@ export function ProjectDetailClient({
   checklist: ChecklistItem[];
   retainerMonths: RetainerMonth[];
   clients: Array<{ id: string; name: string }>;
+  projectVendors: ProjectVendorLink[];
+  projectHires: ProjectHireLink[];
+  vendors: Array<{ id: string; name: string }>;
+  hires: Array<{ id: string; name: string }>;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -160,6 +182,8 @@ export function ProjectDetailClient({
     expense_date: "",
   });
   const [newChecklistItem, setNewChecklistItem] = useState("");
+  const [selectedVendorId, setSelectedVendorId] = useState("");
+  const [selectedHireId, setSelectedHireId] = useState("");
 
   function run(fn: () => Promise<void>) {
     startTransition(async () => {
@@ -236,6 +260,22 @@ export function ProjectDetailClient({
     run(async () => {
       await createChecklistItem(project.id, newChecklistItem, checklist.length);
       setNewChecklistItem("");
+    });
+  }
+
+  function addVendorLink() {
+    if (!selectedVendorId) return;
+    run(async () => {
+      await linkVendorToProject({ project_id: project.id, vendor_id: selectedVendorId });
+      setSelectedVendorId("");
+    });
+  }
+
+  function addHireLink() {
+    if (!selectedHireId) return;
+    run(async () => {
+      await linkHireToProject({ project_id: project.id, hire_id: selectedHireId });
+      setSelectedHireId("");
     });
   }
 
@@ -503,6 +543,81 @@ export function ProjectDetailClient({
               </button>
             </div>
           ))}
+        </div>
+
+        {/* Vendors & Crew */}
+        <div className="rounded-xl border border-border bg-card p-4 space-y-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Vendors &amp; Crew</p>
+
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">Equipment Vendors</p>
+            {projectVendors.length === 0 && <p className="text-xs text-muted-foreground">No vendors linked yet.</p>}
+            {projectVendors.map((pv) => (
+              <div key={pv.id} className="flex items-center gap-3 rounded-lg border border-border px-3 py-2">
+                <Link
+                  href="/admin/vendors"
+                  className="min-w-0 flex-1 truncate text-sm font-medium hover:underline"
+                >
+                  {pv.equipment_vendors?.name ?? "Unknown vendor"}
+                </Link>
+                <StarRatingDisplay value={pv.equipment_vendors?.overall_rating} showValue size={12} />
+                <button
+                  className="text-muted-foreground hover:text-destructive transition-colors"
+                  onClick={() => run(() => unlinkVendorFromProject(pv.id, project.id))}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+            <div className="flex gap-2">
+              <Select value={selectedVendorId} onValueChange={setSelectedVendorId}>
+                <SelectTrigger className="flex-1"><SelectValue placeholder="Select a vendor to link..." /></SelectTrigger>
+                <SelectContent>
+                  {vendors
+                    .filter((v) => !projectVendors.some((pv) => pv.equipment_vendors?.id === v.id))
+                    .map((v) => (
+                      <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <Button size="sm" onClick={addVendorLink} disabled={pending || !selectedVendorId}>Add</Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">External Hires</p>
+            {projectHires.length === 0 && <p className="text-xs text-muted-foreground">No external hires linked yet.</p>}
+            {projectHires.map((ph) => (
+              <div key={ph.id} className="flex items-center gap-3 rounded-lg border border-border px-3 py-2">
+                <Link
+                  href="/admin/hires"
+                  className="min-w-0 flex-1 truncate text-sm font-medium hover:underline"
+                >
+                  {ph.external_hires?.name ?? "Unknown hire"}
+                </Link>
+                <StarRatingDisplay value={ph.external_hires?.overall_rating} showValue size={12} />
+                <button
+                  className="text-muted-foreground hover:text-destructive transition-colors"
+                  onClick={() => run(() => unlinkHireFromProject(ph.id, project.id))}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+            <div className="flex gap-2">
+              <Select value={selectedHireId} onValueChange={setSelectedHireId}>
+                <SelectTrigger className="flex-1"><SelectValue placeholder="Select a hire to link..." /></SelectTrigger>
+                <SelectContent>
+                  {hires
+                    .filter((h) => !projectHires.some((ph) => ph.external_hires?.id === h.id))
+                    .map((h) => (
+                      <SelectItem key={h.id} value={h.id}>{h.name}</SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <Button size="sm" onClick={addHireLink} disabled={pending || !selectedHireId}>Add</Button>
+            </div>
+          </div>
         </div>
 
         {/* Delivery Checklist */}

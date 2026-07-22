@@ -20,6 +20,10 @@ export default async function ProjectDetailPage({
     { data: checklist },
     { data: retainerMonths },
     { data: clients },
+    { data: projectVendors },
+    { data: projectHires },
+    { data: vendors },
+    { data: hires },
   ] = await Promise.all([
     supabase.from("projects").select("*, clients(id, name)").eq("id", id).single(),
     supabase.from("project_stages").select("*").eq("project_id", id).order("created_at"),
@@ -30,6 +34,10 @@ export default async function ProjectDetailPage({
     supabase.from("delivery_checklists").select("*").eq("project_id", id).order("sort_order").then((r) => r, () => ({ data: [] })),
     supabase.from("retainer_months").select("*").eq("project_id", id).order("month", { ascending: false }).then((r) => r, () => ({ data: [] })),
     supabase.from("clients").select("id, name").is("deleted_at", null).order("name"),
+    supabase.from("project_vendors").select("id, notes, equipment_vendors(id, name, overall_rating)").eq("project_id", id).order("created_at"),
+    supabase.from("project_hires").select("id, role_on_shoot, notes, external_hires(id, name, overall_rating)").eq("project_id", id).order("created_at"),
+    supabase.from("equipment_vendors").select("id, name").eq("active", true).order("overall_rating", { ascending: false, nullsFirst: false }),
+    supabase.from("external_hires").select("id, name").eq("active", true).order("overall_rating", { ascending: false, nullsFirst: false }),
   ]);
 
   if (!project) notFound();
@@ -45,6 +53,10 @@ export default async function ProjectDetailPage({
       checklist={(checklist as never[]) ?? []}
       retainerMonths={(retainerMonths as never[]) ?? []}
       clients={clients ?? []}
+      projectVendors={(projectVendors as never[]) ?? []}
+      projectHires={(projectHires as never[]) ?? []}
+      vendors={vendors ?? []}
+      hires={hires ?? []}
     />
   );
 }
