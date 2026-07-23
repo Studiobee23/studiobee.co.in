@@ -13,6 +13,8 @@ export type OverheadItem = {
   costing_type?: "purchase" | "recurring" | "per_project";
   purchase_cost?: number | null;
   useful_life_months?: number | null;
+  billing_period?: "monthly" | "quarterly" | "annual" | null;
+  recurring_amount?: number | null;
 };
 
 export type RoleHoursInput = {

@@ -54,6 +54,8 @@ export async function upsertOverheadItem(input: {
   costing_type: "purchase" | "recurring" | "per_project";
   purchase_cost?: number | null;
   useful_life_months?: number | null;
+  billing_period?: "monthly" | "quarterly" | "annual" | null;
+  recurring_amount?: number | null;
 }) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
@@ -65,6 +67,8 @@ export async function upsertOverheadItem(input: {
     costing_type: input.costing_type,
     purchase_cost: input.purchase_cost ?? null,
     useful_life_months: input.useful_life_months ?? null,
+    billing_period: input.billing_period ?? null,
+    recurring_amount: input.recurring_amount ?? null,
   };
   const { error } = input.id
     ? await supabase.from("overhead_items").update(payload).eq("id", input.id)

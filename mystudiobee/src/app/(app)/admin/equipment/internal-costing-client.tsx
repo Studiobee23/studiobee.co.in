@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { upsertOverheadItem, setOverheadItemActive, deleteOverheadItem } from "@/lib/actions/equipment";
 
 type CostingType = "purchase" | "recurring" | "per_project";
+type BillingPeriod = "monthly" | "quarterly" | "annual";
 
 type InternalCostingItem = {
   id: string;
@@ -29,6 +30,8 @@ type InternalCostingItem = {
   costing_type: CostingType;
   purchase_cost: number | null;
   useful_life_months: number | null;
+  billing_period: BillingPeriod | null;
+  recurring_amount: number | null;
   active: boolean;
 };
 
@@ -38,13 +41,32 @@ const TYPE_LABEL: Record<CostingType, string> = {
   per_project: "Per-project flat fee",
 };
 
+const PERIOD_LABEL: Record<BillingPeriod, string> = {
+  monthly: "Monthly",
+  quarterly: "Quarterly",
+  annual: "Annual",
+};
+
+// Months per billing cycle — divides the entered amount down to a monthly-equivalent.
+const PERIOD_MONTHS: Record<BillingPeriod, number> = {
+  monthly: 1,
+  quarterly: 3,
+  annual: 12,
+};
+
 // monthly cost = purchase_cost / useful_life_months, same pattern as
 // Equipment's daily-rate auto-fill (equipment-client.tsx deriveRates()).
-function deriveMonthlyCost(purchaseCost: string, lifeMonths: string) {
+function deriveMonthlyFromPurchase(purchaseCost: string, lifeMonths: string) {
   const cost = parseFloat(purchaseCost);
   const months = parseFloat(lifeMonths);
   if (!cost || !months) return null;
   return Math.round((cost / months) * 100) / 100;
+}
+
+function deriveMonthlyFromRecurring(amount: string, period: BillingPeriod) {
+  const val = parseFloat(amount);
+  if (!val) return null;
+  return Math.round((val / PERIOD_MONTHS[period]) * 100) / 100;
 }
 
 const EMPTY_FORM = {
@@ -54,6 +76,8 @@ const EMPTY_FORM = {
   costing_type: "recurring" as CostingType,
   purchase_cost: "",
   useful_life_months: "",
+  billing_period: "monthly" as BillingPeriod,
+  recurring_amount: "",
 };
 
 export function InternalCostingClient({ items }: { items: InternalCostingItem[] }) {
@@ -74,6 +98,8 @@ export function InternalCostingClient({ items }: { items: InternalCostingItem[] 
       costing_type: item.costing_type,
       purchase_cost: item.purchase_cost?.toString() ?? "",
       useful_life_months: item.useful_life_months?.toString() ?? "",
+      billing_period: item.billing_period ?? "monthly",
+      recurring_amount: item.recurring_amount?.toString() ?? "",
     });
     setOpen(true);
   }
@@ -82,7 +108,11 @@ export function InternalCostingClient({ items }: { items: InternalCostingItem[] 
     setForm((f) => {
       const next = { ...f, [field]: val } as typeof f;
       if (next.costing_type === "purchase" && (field === "purchase_cost" || field === "useful_life_months")) {
-        const monthly = deriveMonthlyCost(next.purchase_cost, next.useful_life_months);
+        const monthly = deriveMonthlyFromPurchase(next.purchase_cost, next.useful_life_months);
+        if (monthly != null) next.cost = monthly.toString();
+      }
+      if (next.costing_type === "recurring" && (field === "recurring_amount" || field === "billing_period")) {
+        const monthly = deriveMonthlyFromRecurring(next.recurring_amount, next.billing_period);
         if (monthly != null) next.cost = monthly.toString();
       }
       return next;
@@ -99,6 +129,9 @@ export function InternalCostingClient({ items }: { items: InternalCostingItem[] 
         purchase_cost: form.costing_type === "purchase" && form.purchase_cost ? Number(form.purchase_cost) : null,
         useful_life_months:
           form.costing_type === "purchase" && form.useful_life_months ? Number(form.useful_life_months) : null,
+        billing_period: form.costing_type === "recurring" ? form.billing_period : null,
+        recurring_amount:
+          form.costing_type === "recurring" && form.recurring_amount ? Number(form.recurring_amount) : null,
       });
       toast.success(form.id ? "Internal costing item updated" : "Internal costing item added");
       setOpen(false);
@@ -172,10 +205,40 @@ export function InternalCostingClient({ items }: { items: InternalCostingItem[] 
                 </div>
               )}
 
+              {form.costing_type === "recurring" && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Amount (₹)</Label>
+                    <Input
+                      type="number"
+                      value={form.recurring_amount}
+                      onChange={(e) => set("recurring_amount", e.target.value)}
+                      placeholder="e.g. 6000"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Billed</Label>
+                    <Select
+                      value={form.billing_period}
+                      onValueChange={(v) => set("billing_period", v as BillingPeriod)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="monthly">{PERIOD_LABEL.monthly}</SelectItem>
+                        <SelectItem value="quarterly">{PERIOD_LABEL.quarterly}</SelectItem>
+                        <SelectItem value="annual">{PERIOD_LABEL.annual}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-1.5">
-                <Label>{form.costing_type === "purchase" ? "Monthly cost (₹)" : "Cost (₹)"}</Label>
+                <Label>{form.costing_type === "per_project" ? "Cost (₹)" : "Monthly cost (₹)"}</Label>
                 <Input type="number" value={form.cost} onChange={(e) => set("cost", e.target.value)} />
-                {form.costing_type === "purchase" && (
+                {form.costing_type !== "per_project" && (
                   <p className="text-[11px] text-muted-foreground">Auto-calculated, editable</p>
                 )}
               </div>
@@ -210,7 +273,14 @@ export function InternalCostingClient({ items }: { items: InternalCostingItem[] 
             <TableRow key={o.id}>
               <TableCell className="font-medium">{o.name}</TableCell>
               <TableCell>{TYPE_LABEL[o.costing_type]}</TableCell>
-              <TableCell>₹{o.cost}</TableCell>
+              <TableCell>
+                ₹{o.cost}
+                {o.costing_type === "recurring" && o.billing_period && o.billing_period !== "monthly" && (
+                  <span className="ml-1 text-[11px] text-muted-foreground">
+                    (from ₹{o.recurring_amount}/{o.billing_period === "annual" ? "yr" : "qtr"})
+                  </span>
+                )}
+              </TableCell>
               <TableCell>
                 <Switch
                   checked={o.active}
