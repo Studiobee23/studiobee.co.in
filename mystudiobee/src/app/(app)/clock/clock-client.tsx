@@ -2,9 +2,12 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Timer, Play, Square, ChevronDown } from "lucide-react";
+import { Timer, Square, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
-import { clockIn, clockOut, attachClockInLocation } from "@/lib/actions/time";
+import { clockOut } from "@/lib/actions/time";
+import { getCurrentLocation } from "@/lib/clock/geolocation";
+import { formatTimeIST, formatDateIST, formatDuration } from "@/lib/datetime";
+import { ClockCameraCapture } from "./clock-camera-capture";
 
 type Project = { id: string; name: string };
 type ActiveEntry = {
@@ -13,7 +16,7 @@ type ActiveEntry = {
   project_id: string | null;
   notes: string | null;
   projects: unknown;
-  location_label: string | null;
+  clock_in_location_label: string | null;
 };
 type RecentEntry = {
   id: string;
@@ -22,51 +25,13 @@ type RecentEntry = {
   notes: string | null;
   project_id: string | null;
   projects: unknown;
-  location_label: string | null;
+  clock_in_location_label: string | null;
+  clock_out_location_label: string | null;
 };
-
-function getCurrentLocation(): Promise<{ latitude?: number; longitude?: number; location_label?: string }> {
-  return new Promise((resolve) => {
-    if (!("geolocation" in navigator)) return resolve({});
-    navigator.geolocation.getCurrentPosition(
-      (pos) =>
-        resolve({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          location_label: `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`,
-        }),
-      () => resolve({}),
-      { timeout: 5000, maximumAge: 60_000 }
-    );
-  });
-}
 
 function projectName(projects: unknown): string {
   const p = projects as { name: string } | null;
   return p?.name ?? "No project";
-}
-
-function formatDuration(ms: number): string {
-  const totalSeconds = Math.floor(ms / 1000);
-  const h = Math.floor(totalSeconds / 3600);
-  const m = Math.floor((totalSeconds % 3600) / 60);
-  const s = totalSeconds % 60;
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-}
-
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-  });
 }
 
 export function ClockClient({
@@ -85,6 +50,7 @@ export function ClockClient({
   const [elapsed, setElapsed] = useState(0);
   const [selectedProject, setSelectedProject] = useState("");
   const [notes, setNotes] = useState("");
+  const [showCamera, setShowCamera] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Live timer when clocked in
@@ -114,18 +80,19 @@ export function ClockClient({
     });
   }
 
-  const handleClockIn = () =>
+  const handleClockOut = () =>
     run(async () => {
-      const entryId = await clockIn({ project_id: selectedProject || undefined, notes: notes || undefined });
-      // Fire-and-forget: never block the clock-in button on the geolocation
-      // permission prompt/timeout — attach location once (if) it resolves.
-      getCurrentLocation().then((location) => {
-        if (location.latitude) attachClockInLocation(entryId, location);
-      });
+      const location = await getCurrentLocation();
+      if (!location) {
+        throw new Error("Location access is required to clock out. Please enable location and try again.");
+      }
+      await clockOut(activeEntry!.id, location);
     });
 
-  const handleClockOut = () =>
-    run(() => clockOut(activeEntry!.id));
+  function handleCameraSuccess() {
+    setShowCamera(false);
+    router.refresh();
+  }
 
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6">
@@ -147,8 +114,8 @@ export function ClockClient({
 
           {activeEntry && (
             <p className="mt-2 text-xs text-muted-foreground">
-              Since {formatTime(activeEntry.clocked_in_at)} · {projectName(activeEntry.projects)}
-              {activeEntry.location_label ? ` · 📍 ${activeEntry.location_label}` : ""}
+              Since {formatTimeIST(activeEntry.clocked_in_at)} · {projectName(activeEntry.projects)}
+              {activeEntry.clock_in_location_label ? ` · 📍 ${activeEntry.clock_in_location_label}` : ""}
             </p>
           )}
 
@@ -179,7 +146,7 @@ export function ClockClient({
 
           {/* Action button */}
           <button
-            onClick={activeEntry ? handleClockOut : handleClockIn}
+            onClick={activeEntry ? handleClockOut : () => setShowCamera(true)}
             disabled={isPending}
             className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl px-6 py-4 text-base font-semibold transition-opacity duration-150 disabled:opacity-60 ${
               activeEntry
@@ -187,12 +154,10 @@ export function ClockClient({
                 : "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
             }`}
           >
-            {isPending ? (
-              activeEntry ? "Clocking out…" : "Clocking in…"
-            ) : activeEntry ? (
-              <><Square className="h-5 w-5 fill-current" /> Clock Out</>
+            {activeEntry ? (
+              isPending ? "Clocking out…" : <><Square className="h-5 w-5 fill-current" /> Clock Out</>
             ) : (
-              <><Play className="h-5 w-5 fill-current" /> Clock In</>
+              <>📷 Take Photo &amp; Clock In</>
             )}
           </button>
         </div>
@@ -218,9 +183,14 @@ export function ClockClient({
                         {projectName(e.projects)}
                       </p>
                       <p className="text-[10px] text-muted-foreground">
-                        {formatDate(e.clocked_in_at)} · {formatTime(e.clocked_in_at)} – {formatTime(e.clocked_out_at)}
-                        {e.location_label ? ` · 📍 ${e.location_label}` : ""}
+                        {formatDateIST(e.clocked_in_at)} · {formatTimeIST(e.clocked_in_at)} – {formatTimeIST(e.clocked_out_at)}
                       </p>
+                      {(e.clock_in_location_label || e.clock_out_location_label) && (
+                        <p className="truncate text-[10px] text-muted-foreground">
+                          {e.clock_in_location_label ? `📍 In: ${e.clock_in_location_label}` : ""}
+                          {e.clock_out_location_label ? ` · Out: ${e.clock_out_location_label}` : ""}
+                        </p>
+                      )}
                     </div>
                     <span className="shrink-0 font-heading text-sm font-semibold tabular-nums text-foreground">
                       {formatDuration(durationMs)}
@@ -232,6 +202,16 @@ export function ClockClient({
           </div>
         )}
       </div>
+
+      {showCamera && (
+        <ClockCameraCapture
+          employeeId={profile.id}
+          projectId={selectedProject || null}
+          notes={notes || null}
+          onSuccess={handleCameraSuccess}
+          onCancel={() => setShowCamera(false)}
+        />
+      )}
     </div>
   );
 }

@@ -3,14 +3,15 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile, isBillingRole } from "@/lib/profile";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { formatDuration } from "@/lib/datetime";
+import { TimeLogClient } from "./time-log-client";
 
 const DEFAULT_LIMIT = 200;
+const PHOTO_URL_TTL_SECONDS = 3600;
+const DELETED_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
-function formatDuration(ms: number): string {
-  const totalSeconds = Math.floor(ms / 1000);
-  const h = Math.floor(totalSeconds / 3600);
-  const m = Math.floor((totalSeconds % 3600) / 60);
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+function deletedWindowCutoffISO(): string {
+  return new Date(Date.now() - DELETED_WINDOW_MS).toISOString();
 }
 
 export default async function TimeReportPage({
@@ -20,6 +21,7 @@ export default async function TimeReportPage({
 }) {
   const profile = await getCurrentProfile();
   if (!profile || !isBillingRole(profile.role)) redirect("/clock");
+  const isAdmin = profile.role === "admin";
 
   const { all } = await searchParams;
   const showAll = all === "1";
@@ -34,24 +36,59 @@ export default async function TimeReportPage({
   let query = supabase
     .from("time_entries")
     .select(
-      "id, clocked_in_at, clocked_out_at, notes, employee_id, project_id, location_label, profiles!employee_id(display_name, email), projects(name)"
+      "id, clocked_in_at, clocked_out_at, notes, employee_id, project_id, clock_in_location_label, clock_out_location_label, clock_in_photo_path, profiles!employee_id(display_name, email), projects(name)"
     )
     .is("deleted_at", null)
     .order("clocked_in_at", { ascending: false });
 
   if (!showAll) query = query.limit(DEFAULT_LIMIT);
 
-  const { data: entries } = await query;
+  const { data: rawEntries } = await query;
+  const entries = rawEntries ?? [];
 
-  const totalMs = (entries ?? [])
+  // Batch-sign photo URLs — the bucket is private, so a plain path isn't viewable.
+  const photoPaths = entries
+    .map((e) => e.clock_in_photo_path)
+    .filter((p): p is string => !!p);
+
+  const photoUrlByPath = new Map<string, string>();
+  if (photoPaths.length > 0) {
+    const { data: signed } = await supabase.storage
+      .from("clock-in-selfies")
+      .createSignedUrls(photoPaths, PHOTO_URL_TTL_SECONDS);
+    for (const s of signed ?? []) {
+      if (s.path && s.signedUrl) photoUrlByPath.set(s.path, s.signedUrl);
+    }
+  }
+
+  const entriesWithPhotoUrl = entries.map((e) => ({
+    ...e,
+    clock_in_photo_url: e.clock_in_photo_path ? photoUrlByPath.get(e.clock_in_photo_path) ?? null : null,
+  }));
+
+  const totalMs = entries
     .filter((e) => e.clocked_out_at)
     .reduce(
       (sum, e) =>
         sum +
-        (new Date(e.clocked_out_at!).getTime() -
-          new Date(e.clocked_in_at).getTime()),
+        (new Date(e.clocked_out_at!).getTime() - new Date(e.clocked_in_at).getTime()),
       0
     );
+
+  // Admin only: entries soft-deleted within the last 30 days, restorable
+  // before purge_expired_bin() permanently removes them.
+  let deletedEntries: typeof entries = [];
+  if (isAdmin) {
+    const { data } = await supabase
+      .from("time_entries")
+      .select(
+        "id, clocked_in_at, clocked_out_at, notes, employee_id, project_id, clock_in_location_label, clock_out_location_label, clock_in_photo_path, profiles!employee_id(display_name, email), projects(name)"
+      )
+      .not("deleted_at", "is", null)
+      .gte("deleted_at", deletedWindowCutoffISO())
+      .order("clocked_in_at", { ascending: false });
+    deletedEntries = data ?? [];
+  }
 
   return (
     <>
@@ -70,7 +107,7 @@ export default async function TimeReportPage({
               href="/reports/time?all=1"
               className="text-xs font-medium text-muted-foreground hover:text-foreground hover:underline"
             >
-              Showing {entries?.length ?? 0} of {totalCount} entries — view full history
+              Showing {entries.length} of {totalCount} entries — view full history
             </Link>
           )}
           {showAll && (
@@ -83,70 +120,11 @@ export default async function TimeReportPage({
           )}
         </div>
 
-        {/* Table */}
-        <div className="rounded-xl border border-border overflow-hidden overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              <tr>
-                {["Employee", "Project", "Date", "In", "Out", "Duration", "Location", "Notes"].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {!(entries ?? []).length && (
-                <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-sm text-muted-foreground">
-                    No time entries yet.
-                  </td>
-                </tr>
-              )}
-              {(entries ?? []).map((e) => {
-                const emp = e.profiles as unknown as { display_name: string; email: string } | null;
-                const proj = e.projects as unknown as { name: string } | null;
-                const durationMs = e.clocked_out_at
-                  ? new Date(e.clocked_out_at).getTime() - new Date(e.clocked_in_at).getTime()
-                  : null;
-                const inDate = new Date(e.clocked_in_at);
-                return (
-                  <tr key={e.id} className="bg-card hover:bg-muted/30">
-                    <td className="px-4 py-3 font-medium text-[13px]">
-                      {emp?.display_name || emp?.email || "—"}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {proj?.name ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground text-xs">
-                      {inDate.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                    </td>
-                    <td className="px-4 py-3 text-xs tabular-nums">
-                      {inDate.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })}
-                    </td>
-                    <td className="px-4 py-3 text-xs tabular-nums text-muted-foreground">
-                      {e.clocked_out_at
-                        ? new Date(e.clocked_out_at).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })
-                        : <span className="text-primary font-medium">Active</span>}
-                    </td>
-                    <td className="px-4 py-3 font-heading font-semibold text-xs tabular-nums">
-                      {durationMs !== null ? formatDuration(durationMs) : "—"}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">
-                      {e.location_label ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground max-w-[160px] truncate">
-                      {e.notes ?? "—"}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <TimeLogClient
+          entries={entriesWithPhotoUrl}
+          deletedEntries={deletedEntries}
+          isAdmin={isAdmin}
+        />
       </div>
     </>
   );
