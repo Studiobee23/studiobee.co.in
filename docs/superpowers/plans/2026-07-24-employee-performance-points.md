@@ -2100,39 +2100,23 @@ Expected: build succeeds with no type or lint errors.
 
 Run: `cd mystudiobee && npm run dev` (background)
 
-- [ ] **Step 3: Manual smoke test — super_admin**
+- [ ] **Step 3: RLS-level role verification (executed instead of literal browser logins)**
 
-Log in as `arora.nikhil@studiobee.co.in`. Confirm:
-- Sidebar shows Admin, Insights, Bin, Billing, CRM, and Performance groups.
-- `/performance` shows three tabs: Team Scores, Point Reasons, Profit Split.
-- Point Reasons tab: add a new reason, edit an existing one, toggle active/inactive.
-- Profit Split tab: shows the existing 4 categories (video/web/design/retainer) with correct percentages — same data that was on the old `/admin/profit-split` page.
-- Team Scores tab: shows the `role = 'employee'` roster with scores; "Log event" works for any employee.
-- `/admin/team`: role dropdown includes "super_admin"; "Reports To" dropdown lists manager/admin/super_admin profiles.
-- Visiting `/admin/profit-split` directly returns a 404 (route deleted).
+**Deviation from plan:** the 3 real accounts belong to actual people and their passwords aren't available (and shouldn't be reset without consent just to drive a browser session). Instead, verified the exact same access-control surface directly against Postgres: wrapped role reassignments + test inserts/selects in a transaction, exercised each policy as each role via `set_config('request.jwt.claims', ...)`, then `rollback` so nothing persisted. This exercises the actual enforcement layer (RLS) more rigorously than clicking through a UI would, since the UI can only be as strict as the underlying policies anyway.
 
-- [ ] **Step 4: Manual smoke test — admin**
+Results (all as expected):
+1. Manager inserting a point_events row for their own report → succeeded.
+2. Manager inserting a point_events row for a non-report → rejected (`insufficient_privilege`).
+3. Employee attempting to self-insert a point_events row → rejected.
+4. Employee reading point_events → sees only their own row (1 visible), zero visibility into others'.
+5. Employee attempting to write point_reasons → rejected.
+6. Employee reading profit_split_settings → 0 rows visible.
+7. Super_admin reading profit_split_settings → 4 rows visible (the video/web/design/retainer categories).
 
-Log in as one of the other two admin accounts (`laishram.rajib@studiobee.co.in` or `pal.aakash@studiobee.co.in`). Confirm:
-- `/performance` shows Team Scores only (no Point Reasons / Profit Split tabs).
-- Can log a point event for any employee.
-- Cannot access super_admin-only actions (attempting to call `upsertPointReason`/`upsertProfitSplitSettings` via the UI is impossible since the tabs aren't rendered — this confirms the UI gate; the RLS gate was already verified structurally in Task 1).
+(Test methodology note: the first pass mis-tested 6/7 using `perform ... exception when insufficient_privilege` — RLS silently filters rows on SELECT rather than raising an exception, so that pattern can't detect row-hiding. Corrected to a `select count(*)` comparison, which caught the real answer.)
 
-- [ ] **Step 5: Manual smoke test — manager and employee**
+Post-test verification confirmed the rollback left zero trace: all 3 profiles' `role`/`manager_id` unchanged, `point_events` count back to 0, `point_reasons` back to exactly the 2 seeded rows.
 
-Using the Team page, temporarily set one employee's role to `manager` and assign a second employee's `manager_id` to that manager (revert both after the test). Log in as the manager:
-- `/performance` shows Team Scores for all employees, but "Log event" only appears on the row for their assigned report.
-- Attempting to log for a non-report (if somehow triggered) is rejected server-side with "You can only log points for your own reports."
+- [ ] **Step 4: App-layer UI verification (handed to the user)**
 
-Log in as an employee:
-- Sidebar shows only Dashboard/Projects/Tasks/Time/Performance (no CRM/Billing/Admin/Insights/Bin).
-- `/performance` shows only their own score + history, no roster, no logging UI.
-- Visiting `/admin/team` or `/reports` directly redirects to `/`.
-
-- [ ] **Step 6: Revert the temporary manager/report assignment from Step 5**
-
-Use the Team page UI to set the temporary manager's role back to `employee` and clear the `manager_id` set in Step 5, restoring the pre-test state.
-
-- [ ] **Step 7: Final commit (if Step 6 needed a code-level revert — otherwise skip, Step 6 is data-only via the UI)**
-
-No commit needed — Step 6 only touched database rows via the app UI, not code.
+The browser-driven parts of this task — confirming the sidebar shows the right nav groups per role, the three super_admin tabs render, the Team page's role/Reports-To dropdowns work, etc. — require signing in as each real account, which only the user can do. Recommend the user do a quick pass through `/performance`, `/admin/team`, and the sidebar as their own super_admin account, since the RLS layer (the actual security boundary) is now verified independently.
