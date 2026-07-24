@@ -5,7 +5,7 @@ import { VendorsClient } from "./vendors-client";
 
 export default async function VendorsPage() {
   const profile = await getCurrentProfile();
-  if (!profile || (profile.role !== "owner" && profile.role !== "admin")) {
+  if (!profile || profile.role !== "admin") {
     redirect("/");
   }
   const supabase = createAdminClient();

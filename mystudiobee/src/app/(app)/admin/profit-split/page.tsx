@@ -5,7 +5,7 @@ import { ProfitSplitClient } from "./profit-split-client";
 
 export default async function ProfitSplitPage() {
   const profile = await getCurrentProfile();
-  if (!profile || (profile.role !== "owner" && profile.role !== "admin")) {
+  if (!profile || profile.role !== "admin") {
     redirect("/");
   }
   const settings = await getProfitSplitSettings();

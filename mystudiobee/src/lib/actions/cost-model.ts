@@ -4,17 +4,17 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/profile";
 
-async function requireOwnerOrAdmin() {
+async function requireAdmin() {
   const profile = await getCurrentProfile();
-  if (!profile || (profile.role !== "owner" && profile.role !== "admin")) {
-    throw new Error("Not authorized — owner/admin only.");
+  if (!profile || profile.role !== "admin") {
+    throw new Error("Not authorized — admin only.");
   }
   return profile;
 }
 
 // ── Cost roles ───────────────────────────────────────────────────────────
 export async function upsertCostRole(input: { id?: string; name: string; hourly_rate: number }) {
-  await requireOwnerOrAdmin();
+  await requireAdmin();
   const supabase = await createClient();
   const { error } = input.id
     ? await supabase.from("cost_roles").update({ name: input.name, hourly_rate: input.hourly_rate }).eq("id", input.id)
@@ -24,7 +24,7 @@ export async function upsertCostRole(input: { id?: string; name: string; hourly_
 }
 
 export async function setCostRoleActive(id: string, active: boolean) {
-  await requireOwnerOrAdmin();
+  await requireAdmin();
   const supabase = await createClient();
   const { error } = await supabase.from("cost_roles").update({ active }).eq("id", id);
   if (error) throw new Error(error.message);
@@ -40,7 +40,7 @@ export async function upsertServicePreset(input: {
   default_overhead_ids: string[];
   default_markup_pct: number;
 }) {
-  await requireOwnerOrAdmin();
+  await requireAdmin();
   const supabase = await createClient();
   const payload = {
     category: input.category,
@@ -57,7 +57,7 @@ export async function upsertServicePreset(input: {
 }
 
 export async function deleteServicePreset(id: string) {
-  await requireOwnerOrAdmin();
+  await requireAdmin();
   const supabase = await createClient();
   const { error } = await supabase.from("service_presets").delete().eq("id", id);
   if (error) throw new Error(error.message);
@@ -65,7 +65,7 @@ export async function deleteServicePreset(id: string) {
 }
 
 export async function deleteCostRole(id: string) {
-  await requireOwnerOrAdmin();
+  await requireAdmin();
   const supabase = await createClient();
   const { error } = await supabase.from("cost_roles").delete().eq("id", id);
   if (error) throw new Error(error.message);

@@ -6,7 +6,7 @@ import { CostModelClient } from "./cost-model-client";
 
 export default async function CostModelPage() {
   const profile = await getCurrentProfile();
-  if (!profile || (profile.role !== "owner" && profile.role !== "admin")) redirect("/");
+  if (!profile || profile.role !== "admin") redirect("/");
 
   const supabase = await createClient();
   const { data: roles } = await supabase.from("cost_roles").select("*").order("name");

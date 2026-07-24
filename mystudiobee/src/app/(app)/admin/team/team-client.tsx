@@ -23,11 +23,10 @@ import type { Role } from "@/lib/profile";
 
 type Employee = { id: string; email: string; display_name: string; role: Role; active: boolean };
 
-const ROLES: Role[] = ["owner", "admin", "manager", "employee"];
+const ROLES: Role[] = ["admin", "manager", "employee"];
 
 const ROLE_PERMISSIONS: Record<Role, string> = {
-  owner: "Full access — billing, cost visibility, admin settings, team management.",
-  admin: "Same as owner except can't be removed/demoted by another admin.",
+  admin: "Full access — billing, cost visibility, admin settings, team management.",
   manager: "Clients, projects, quotes/invoices/receipts — no cost breakdowns or admin settings.",
   employee: "Tasks and Clock In only. No billing or client access.",
 };
@@ -144,7 +143,7 @@ export function TeamClient({
                 </TableCell>
                 <TableCell className="text-muted-foreground">{emp.email}</TableCell>
                 <TableCell>
-                  <div title={isSelf ? "You can't change your own role — ask another owner/admin." : ROLE_PERMISSIONS[emp.role]}>
+                  <div title={isSelf ? "You can't change your own role — ask another admin." : ROLE_PERMISSIONS[emp.role]}>
                     <Select
                       value={emp.role}
                       disabled={isSelf}
@@ -205,7 +204,7 @@ export function TeamClient({
         </TableBody>
       </Table>
       <p className="mt-3 text-[11px] text-muted-foreground">
-        <strong>Owner/Admin:</strong> {ROLE_PERMISSIONS.owner} <strong>Manager:</strong> {ROLE_PERMISSIONS.manager} <strong>Employee:</strong> {ROLE_PERMISSIONS.employee}
+        <strong>Admin:</strong> {ROLE_PERMISSIONS.admin} <strong>Manager:</strong> {ROLE_PERMISSIONS.manager} <strong>Employee:</strong> {ROLE_PERMISSIONS.employee}
       </p>
     </div>
   );

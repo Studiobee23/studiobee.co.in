@@ -59,7 +59,7 @@ export async function updateSession(request: NextRequest) {
     }
 
     const isAdminOnly = ADMIN_ONLY_PREFIXES.some((p) => pathname.startsWith(p));
-    if (isAdminOnly && profile.role !== "owner" && profile.role !== "admin") {
+    if (isAdminOnly && profile.role !== "admin") {
       const url = request.nextUrl.clone();
       url.pathname = "/";
       url.search = "";

@@ -12,10 +12,10 @@ async function requireBillingRole() {
   return profile;
 }
 
-async function requireOwnerOrAdmin() {
+async function requireAdmin() {
   const profile = await getCurrentProfile();
-  if (!profile || (profile.role !== "owner" && profile.role !== "admin")) {
-    throw new Error("Only owner/admin can delete or restore clients.");
+  if (!profile || profile.role !== "admin") {
+    throw new Error("Only admin can delete or restore clients.");
   }
   return profile;
 }
@@ -101,7 +101,7 @@ export async function updateClientAvatar(id: string, avatarUrl: string) {
 /** Soft-deletes a client and every project/document/task/etc. under it.
  * Recoverable from /bin for 30 days, after which pg_cron purges it for good. */
 export async function deleteClient(id: string) {
-  await requireOwnerOrAdmin();
+  await requireAdmin();
   const supabase = await createClient();
   const { error } = await supabase.rpc("soft_delete_client", { p_client_id: id });
   if (error) throw new Error(error.message);
@@ -109,7 +109,7 @@ export async function deleteClient(id: string) {
 }
 
 export async function restoreClient(id: string) {
-  await requireOwnerOrAdmin();
+  await requireAdmin();
   const supabase = await createClient();
   const { error } = await supabase.rpc("restore_client", { p_client_id: id });
   if (error) throw new Error(error.message);
@@ -120,7 +120,7 @@ export async function restoreClient(id: string) {
  * skipping the 30-day grace period. Cannot be undone. Only works on clients
  * that are already in the bin — won't touch an active client. */
 export async function purgeClient(id: string) {
-  await requireOwnerOrAdmin();
+  await requireAdmin();
   const supabase = await createClient();
 
   const { data: client, error: fetchError } = await supabase
@@ -144,7 +144,7 @@ export type BinnedClient = {
 };
 
 export async function listBinnedClients(): Promise<BinnedClient[]> {
-  await requireOwnerOrAdmin();
+  await requireAdmin();
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("clients")

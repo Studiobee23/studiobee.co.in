@@ -11,7 +11,7 @@ export default async function PnlReportPage({
   searchParams: Promise<{ year?: string }>;
 }) {
   const profile = await getCurrentProfile();
-  if (!profile || (profile.role !== "owner" && profile.role !== "admin")) {
+  if (!profile || profile.role !== "admin") {
     redirect("/");
   }
 

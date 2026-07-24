@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 
-export type Role = "owner" | "admin" | "manager" | "employee";
+export type Role = "admin" | "manager" | "employee";
 
 export type Profile = {
   id: string;
@@ -29,9 +29,9 @@ export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
 });
 
 export function canSeeCost(role: Role) {
-  return role === "owner" || role === "admin";
+  return role === "admin";
 }
 
 export function isBillingRole(role: Role) {
-  return role === "owner" || role === "admin" || role === "manager";
+  return role === "admin" || role === "manager";
 }

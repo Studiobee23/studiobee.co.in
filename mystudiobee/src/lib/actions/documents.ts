@@ -219,7 +219,7 @@ type DocumentStatus = typeof ALLOWED_STATUSES[number];
 
 export async function updateDocumentStatus(id: string, status: DocumentStatus) {
   if (!ALLOWED_STATUSES.includes(status)) throw new Error("Invalid status");
-  // Any billing role (owner/admin/manager) may update status — documents are shared
+  // Any billing role (admin/manager) may update status — documents are shared
   // across the team, not just editable by whoever originally created them.
   await requireBillingRole();
   const supabase = await createClient();
@@ -238,8 +238,8 @@ export async function updateDocumentStatus(id: string, status: DocumentStatus) {
 
 export async function deleteDocument(id: string) {
   const profile = await requireBillingRole();
-  if (profile.role !== "owner" && profile.role !== "admin") {
-    throw new Error("Only owner/admin can delete documents");
+  if (profile.role !== "admin") {
+    throw new Error("Only admin can delete documents");
   }
   const supabase = await createClient();
   const { error } = await supabase.from("documents").delete().eq("id", id);

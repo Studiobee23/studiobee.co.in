@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/lib/profile";
 
-function requireOwnerOrAdmin(role: string) {
-  if (role !== "owner" && role !== "admin") throw new Error("Unauthorised");
+function requireAdmin(role: string) {
+  if (role !== "admin") throw new Error("Unauthorised");
 }
 
 export async function upsertHire(input: {
@@ -22,7 +22,7 @@ export async function upsertHire(input: {
 }) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireOwnerOrAdmin(profile.role);
+  requireAdmin(profile.role);
   const supabase = createAdminClient();
   const { id, ...rest } = input;
   const { error } = id
@@ -35,7 +35,7 @@ export async function upsertHire(input: {
 export async function setHireActive(id: string, active: boolean) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireOwnerOrAdmin(profile.role);
+  requireAdmin(profile.role);
   const supabase = createAdminClient();
   const { error } = await supabase.from("external_hires").update({ active }).eq("id", id);
   if (error) throw new Error(error.message);
@@ -45,7 +45,7 @@ export async function setHireActive(id: string, active: boolean) {
 export async function linkHireToProject(input: { project_id: string; hire_id: string; role_on_shoot?: string; notes?: string }) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireOwnerOrAdmin(profile.role);
+  requireAdmin(profile.role);
   const supabase = createAdminClient();
   const { error } = await supabase.from("project_hires").insert(input);
   if (error) throw new Error(error.message);
@@ -55,7 +55,7 @@ export async function linkHireToProject(input: { project_id: string; hire_id: st
 export async function unlinkHireFromProject(id: string, projectId: string) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireOwnerOrAdmin(profile.role);
+  requireAdmin(profile.role);
   const supabase = createAdminClient();
   const { error } = await supabase.from("project_hires").delete().eq("id", id);
   if (error) throw new Error(error.message);

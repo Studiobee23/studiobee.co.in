@@ -20,7 +20,7 @@ export function round2(value: number): number {
  * Resolves a preset/manual cost input into a snapshotted breakdown + cost subtotal.
  * Pure function: no I/O, no randomness — same input always produces the same output.
  * `costRoles`/`overheadItems` are the live rows (only ever read server-side by an
- * owner/admin session, or inside the server action that computes prices for managers).
+ * admin session, or inside the server action that computes prices for managers).
  */
 export function computeCostBreakdown(
   input: LineItemCostInput,

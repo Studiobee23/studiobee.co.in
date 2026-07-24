@@ -6,7 +6,7 @@ import { BinClient } from "./bin-client";
 
 export default async function BinPage() {
   const profile = await getCurrentProfile();
-  if (!profile || (profile.role !== "owner" && profile.role !== "admin")) redirect("/");
+  if (!profile || profile.role !== "admin") redirect("/");
 
   const supabase = await createClient();
   const { data: clients } = await supabase

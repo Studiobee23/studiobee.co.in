@@ -5,7 +5,7 @@ import { DashboardHeader } from "@/components/layout/dashboard-header";
 
 export default async function ReportsPage() {
   const profile = await getCurrentProfile();
-  if (!profile || (profile.role !== "owner" && profile.role !== "admin")) {
+  if (!profile || profile.role !== "admin") {
     redirect("/");
   }
 

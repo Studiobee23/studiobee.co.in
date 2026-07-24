@@ -5,16 +5,16 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile, type Role } from "@/lib/profile";
 
-async function requireOwnerOrAdmin() {
+async function requireAdmin() {
   const profile = await getCurrentProfile();
-  if (!profile || (profile.role !== "owner" && profile.role !== "admin")) {
-    throw new Error("Not authorized — owner/admin only.");
+  if (!profile || profile.role !== "admin") {
+    throw new Error("Not authorized — admin only.");
   }
   return profile;
 }
 
 export async function inviteEmployee(input: { email: string; role: Role }) {
-  await requireOwnerOrAdmin();
+  await requireAdmin();
   const admin = createAdminClient();
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -35,7 +35,7 @@ export async function inviteEmployee(input: { email: string; role: Role }) {
 }
 
 export async function updateEmployeeRole(id: string, role: Role) {
-  const profile = await requireOwnerOrAdmin();
+  const profile = await requireAdmin();
   if (id === profile.id) throw new Error("You can't change your own role.");
   const supabase = await createClient();
   const { error } = await supabase.from("profiles").update({ role }).eq("id", id);
@@ -44,7 +44,7 @@ export async function updateEmployeeRole(id: string, role: Role) {
 }
 
 export async function setEmployeeActive(id: string, active: boolean) {
-  const profile = await requireOwnerOrAdmin();
+  const profile = await requireAdmin();
   if (id === profile.id) throw new Error("You can't deactivate your own account.");
   const supabase = await createClient();
   const { error } = await supabase.from("profiles").update({ active }).eq("id", id);
@@ -57,7 +57,7 @@ export async function setEmployeeActive(id: string, active: boolean) {
  * attribution afterward. Prefer setEmployeeActive() for "they left"; this is
  * for correcting a mistaken invite or a genuine data-removal request. */
 export async function deleteEmployee(id: string) {
-  const profile = await requireOwnerOrAdmin();
+  const profile = await requireAdmin();
   if (id === profile.id) throw new Error("You can't delete your own account.");
   const admin = createAdminClient();
   const { error: profileError } = await admin.from("profiles").delete().eq("id", id);

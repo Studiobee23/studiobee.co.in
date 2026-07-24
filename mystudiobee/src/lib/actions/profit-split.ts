@@ -5,8 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/lib/profile";
 import type { ProfitSplitTier } from "@/lib/profit-split/engine";
 
-function requireOwnerOrAdmin(role: string) {
-  if (role !== "owner" && role !== "admin") throw new Error("Unauthorised");
+function requireAdmin(role: string) {
+  if (role !== "admin") throw new Error("Unauthorised");
 }
 
 export async function upsertProfitSplitSettings(input: {
@@ -17,7 +17,7 @@ export async function upsertProfitSplitSettings(input: {
 }) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireOwnerOrAdmin(profile.role);
+  requireAdmin(profile.role);
   const supabase = createAdminClient();
   const { error } = await supabase
     .from("profit_split_settings")
@@ -29,7 +29,7 @@ export async function upsertProfitSplitSettings(input: {
 export async function getProfitSplitSettings() {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireOwnerOrAdmin(profile.role);
+  requireAdmin(profile.role);
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("profit_split_settings")

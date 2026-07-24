@@ -22,7 +22,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
   if (!client) notFound();
 
-  const canDelete = profile.role === "owner" || profile.role === "admin";
+  const canDelete = profile.role === "admin";
 
   return (
     <>

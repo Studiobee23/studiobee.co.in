@@ -5,7 +5,7 @@ import { HiresClient } from "./hires-client";
 
 export default async function HiresPage() {
   const profile = await getCurrentProfile();
-  if (!profile || (profile.role !== "owner" && profile.role !== "admin")) {
+  if (!profile || profile.role !== "admin") {
     redirect("/");
   }
   const supabase = createAdminClient();

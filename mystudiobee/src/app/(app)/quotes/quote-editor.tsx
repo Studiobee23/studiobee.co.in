@@ -788,7 +788,7 @@ export function QuoteEditor({
         </div>
       </div>
 
-      {/* Team assignment + profit split (owner/admin only) */}
+      {/* Team assignment + profit split (admin only) */}
       {canSeeCost && teamMembers.length > 0 && (
         <div className="rounded-xl border border-border bg-card p-5 shadow-card space-y-4">
           <h3 className="font-heading text-[11px] font-semibold uppercase tracking-[0.08em]">
