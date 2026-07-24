@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { isAdminTier, type Role } from "@/lib/profile";
+import { isAdminTier, type Role } from "@/lib/role";
 
 const PUBLIC_PATHS = ["/login", "/accept-invite", "/auth/callback"];
 const ADMIN_ONLY_PREFIXES = ["/admin"];

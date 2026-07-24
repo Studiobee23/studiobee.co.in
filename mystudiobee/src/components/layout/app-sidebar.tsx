@@ -38,7 +38,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { createClient } from "@/lib/supabase/client";
-import { isAdminTier, type Role } from "@/lib/profile";
+import { isAdminTier, type Role } from "@/lib/role";
 
 type NavEntry = { title: string; href: string; icon: React.ComponentType<{ className?: string }> };
 

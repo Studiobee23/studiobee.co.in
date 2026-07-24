@@ -2058,6 +2058,35 @@ git commit -m "feat(mystudiobee): add /performance page, relocate profit-split e
 
 ---
 
+### Task 13.5: Fix client-bundle break from importing isAdminTier into a client component (found during execution)
+
+`npx tsc --noEmit` stayed clean through every prior task because it only checks types, but `npm run build` failed: `app-sidebar.tsx` is a `"use client"` component, and importing the *value* `isAdminTier` from `@/lib/profile` drags the whole module — including `getCurrentProfile`'s `createClient` from `@/lib/supabase/server`, which imports `next/headers` — into the browser bundle. Next.js correctly rejects that (`next/headers` cannot run client-side). `type`-only imports elsewhere (team-client.tsx, performance-client.tsx, team-scores.tsx) were unaffected since TypeScript type imports are erased at compile time and never reach the bundler.
+
+Root cause confirmed via `grep`: only `app-sidebar.tsx` (client) and `proxy.ts` (middleware, same class of bundling boundary) imported `isAdminTier` as a value from `@/lib/profile`.
+
+**Files:**
+- Create: `mystudiobee/src/lib/role.ts` — the pure `Role` type + `isAdminTier`/`isSuperAdmin`/`canSeeCost`/`isBillingRole`, zero imports.
+- Modify: `mystudiobee/src/lib/profile.ts` — re-exports `@/lib/role` (`export * from "@/lib/role";`), keeps `Profile` type and `getCurrentProfile` (the only things that actually need `next/headers`). Every existing server-side consumer that does `import { getCurrentProfile, isAdminTier } from "@/lib/profile"` continues to work unchanged via the re-export — no need to touch the ~20 files from Tasks 3-4.
+- Modify: `mystudiobee/src/components/layout/app-sidebar.tsx` — import `isAdminTier`/`Role` from `@/lib/role` instead of `@/lib/profile`.
+- Modify: `mystudiobee/src/lib/supabase/proxy.ts` — same import change.
+
+- [ ] **Step 1: Typecheck, test, and build all pass**
+
+```
+npx tsc --noEmit        # exit 0
+npx vitest run          # 27 passed (profile.test.ts still passes via the re-export)
+npm run build           # ✓ Compiled successfully, /performance listed, /admin/profit-split gone
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add mystudiobee/src/lib/role.ts mystudiobee/src/lib/profile.ts mystudiobee/src/components/layout/app-sidebar.tsx mystudiobee/src/lib/supabase/proxy.ts
+git commit -m "fix(mystudiobee): split pure role helpers out of profile.ts to unbreak client bundle"
+```
+
+---
+
 ### Task 14: Full build + manual role-based smoke test
 
 **Files:** none (verification only)
