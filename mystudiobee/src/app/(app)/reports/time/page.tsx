@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile, isBillingRole } from "@/lib/profile";
+import { getCurrentProfile, isBillingRole, isAdminTier } from "@/lib/profile";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { formatDuration } from "@/lib/datetime";
 import { TimeLogClient } from "./time-log-client";
@@ -21,7 +21,7 @@ export default async function TimeReportPage({
 }) {
   const profile = await getCurrentProfile();
   if (!profile || !isBillingRole(profile.role)) redirect("/clock");
-  const isAdmin = profile.role === "admin";
+  const isAdmin = isAdminTier(profile.role);
 
   const { all } = await searchParams;
   const showAll = all === "1";

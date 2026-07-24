@@ -704,6 +704,8 @@ Expected: exit code 0.
 Run: `cd mystudiobee && grep -rn 'role !== "admin"\|role === "admin"' src/app src/components`
 Expected: no matches.
 
+**Addendum (found during execution):** `reports/time/page.tsx` also had a `profile.role === "admin"` check that wasn't in this task's file list — it never used the word "owner" during the earlier owner→admin merge, so it never surfaced in that history-based grep. Fixed the same way (`isAdminTier(profile.role)`), added to this task's commit.
+
 - [ ] **Step 9: Commit**
 
 ```bash

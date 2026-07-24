@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { getCurrentProfile } from "@/lib/profile";
+import { getCurrentProfile, isAdminTier } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import { BinClient } from "./bin-client";
 
 export default async function BinPage() {
   const profile = await getCurrentProfile();
-  if (!profile || profile.role !== "admin") redirect("/");
+  if (!profile || !isAdminTier(profile.role)) redirect("/");
 
   const supabase = await createClient();
   const { data: clients } = await supabase

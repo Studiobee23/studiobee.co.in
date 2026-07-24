@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentProfile } from "@/lib/profile";
+import { getCurrentProfile, isAdminTier } from "@/lib/profile";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,7 +8,7 @@ import { InternalCostingClient } from "./internal-costing-client";
 
 export default async function EquipmentPage() {
   const profile = await getCurrentProfile();
-  if (!profile || profile.role !== "admin") {
+  if (!profile || !isAdminTier(profile.role)) {
     redirect("/");
   }
   const supabase = createAdminClient();

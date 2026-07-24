@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { getCurrentProfile } from "@/lib/profile";
+import { getCurrentProfile, isAdminTier } from "@/lib/profile";
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 
 export default async function ReportsPage() {
   const profile = await getCurrentProfile();
-  if (!profile || profile.role !== "admin") {
+  if (!profile || !isAdminTier(profile.role)) {
     redirect("/");
   }
 

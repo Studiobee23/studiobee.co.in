@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { getCurrentProfile, isBillingRole } from "@/lib/profile";
+import { getCurrentProfile, isBillingRole, isAdminTier } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import { ClientDetailClient } from "./client-detail-client";
 
@@ -22,7 +22,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
   if (!client) notFound();
 
-  const canDelete = profile.role === "admin";
+  const canDelete = isAdminTier(profile.role);
 
   return (
     <>

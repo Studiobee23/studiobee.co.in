@@ -15,7 +15,6 @@ import {
   FolderOpen,
   CheckSquare,
   BarChart2,
-  PieChart,
   Package,
   Clock,
   FileStack,
@@ -23,6 +22,7 @@ import {
   Trash2,
   Truck,
   Contact,
+  Award,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,7 +38,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { createClient } from "@/lib/supabase/client";
-import type { Role } from "@/lib/profile";
+import { isAdminTier, type Role } from "@/lib/profile";
 
 type NavEntry = { title: string; href: string; icon: React.ComponentType<{ className?: string }> };
 
@@ -57,7 +57,6 @@ const adminNav: NavEntry[] = [
   { title: "Team", href: "/admin/team", icon: UserCog },
   { title: "Services", href: "/admin/services", icon: Layers },
   { title: "Cost Model", href: "/admin/cost-model", icon: Calculator },
-  { title: "Profit Split", href: "/admin/profit-split", icon: PieChart },
   { title: "Equipment", href: "/admin/equipment", icon: Package },
   { title: "Equipment Vendors", href: "/admin/vendors", icon: Truck },
   { title: "External Hires", href: "/admin/hires", icon: Contact },
@@ -67,6 +66,7 @@ const reportNav: NavEntry[] = [
   { title: "Time Log", href: "/reports/time", icon: Clock },
 ];
 const binNav: NavEntry[] = [{ title: "Bin", href: "/bin", icon: Trash2 }];
+const performanceNav: NavEntry[] = [{ title: "Performance", href: "/performance", icon: Award }];
 
 const GROUP_LABEL_CLASS =
   "mb-0 mt-1 px-3 h-4 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/30 leading-none";
@@ -130,8 +130,8 @@ export function AppSidebar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isAdmin = role === "admin";
-  const isBilling = isAdmin || role === "manager";
+  const isAdminTierRole = isAdminTier(role);
+  const isBilling = isAdminTierRole || role === "manager";
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -156,10 +156,11 @@ export function AppSidebar({
         <Group label="Projects" items={projectNav} pathname={pathname} />
         <Group label="Tasks" items={taskNav} pathname={pathname} />
         <Group label="Time" items={clockNav} pathname={pathname} />
+        <Group label="Performance" items={performanceNav} pathname={pathname} />
         {isBilling && <Group label="Billing" items={billingNav} pathname={pathname} />}
-        {isAdmin && <Group label="Admin" items={adminNav} pathname={pathname} />}
-        {isAdmin && <Group label="Insights" items={reportNav} pathname={pathname} />}
-        {isAdmin && <Group items={binNav} pathname={pathname} />}
+        {isAdminTierRole && <Group label="Admin" items={adminNav} pathname={pathname} />}
+        {isAdminTierRole && <Group label="Insights" items={reportNav} pathname={pathname} />}
+        {isAdminTierRole && <Group items={binNav} pathname={pathname} />}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-white/8 px-3 py-1.5">

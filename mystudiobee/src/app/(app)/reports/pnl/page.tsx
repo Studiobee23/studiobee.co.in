@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/lib/profile";
+import { getCurrentProfile, isAdminTier } from "@/lib/profile";
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { sumLaborCost, sumDirectCost } from "@/lib/profit-split/engine";
@@ -11,7 +11,7 @@ export default async function PnlReportPage({
   searchParams: Promise<{ year?: string }>;
 }) {
   const profile = await getCurrentProfile();
-  if (!profile || profile.role !== "admin") {
+  if (!profile || !isAdminTier(profile.role)) {
     redirect("/");
   }
 
