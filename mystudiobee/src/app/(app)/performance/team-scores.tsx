@@ -198,29 +198,29 @@ export function TeamScores({
       </Dialog>
 
       <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>History — {historyTarget?.display_name}</DialogTitle>
           </DialogHeader>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Reason</TableHead>
-                <TableHead>Points</TableHead>
+                <TableHead className="w-24">Date</TableHead>
+                <TableHead className="w-40">Reason</TableHead>
+                <TableHead className="w-16">Points</TableHead>
                 <TableHead>Note</TableHead>
-                <TableHead />
+                <TableHead className="w-16" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {history.map((e) => (
                 <TableRow key={e.id}>
-                  <TableCell>{new Date(e.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell className="whitespace-nowrap">{new Date(e.created_at).toLocaleDateString()}</TableCell>
                   <TableCell>{e.reason_label}</TableCell>
                   <TableCell className={e.points < 0 ? "text-destructive" : "text-emerald-600"}>
                     {e.points > 0 ? `+${e.points}` : e.points}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{e.note || "—"}</TableCell>
+                  <TableCell className="text-muted-foreground break-words whitespace-normal">{e.note || "—"}</TableCell>
                   <TableCell className="flex gap-2 justify-end">
                     {canModify(e) && (
                       <>
