@@ -1,3 +1,5 @@
+import type { Role } from "@/lib/role";
+
 export type PointReason = {
   id: string;
   label: string;
@@ -20,6 +22,7 @@ export type EmployeeScore = {
   id: string;
   display_name: string;
   email: string;
+  role: Role;
   manager_id: string | null;
   score: number;
 };

@@ -129,6 +129,7 @@ export function TeamScores({
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
+            <TableHead>Role</TableHead>
             <TableHead>Score</TableHead>
             <TableHead />
           </TableRow>
@@ -138,6 +139,7 @@ export function TeamScores({
             <TableRow key={emp.id}>
               <TableCell className="font-medium">{emp.display_name || "—"}</TableCell>
               <TableCell className="text-muted-foreground">{emp.email}</TableCell>
+              <TableCell className="capitalize text-muted-foreground">{emp.role}</TableCell>
               <TableCell className={emp.score < 0 ? "text-destructive" : ""}>{emp.score}</TableCell>
               <TableCell className="flex gap-2 justify-end">
                 <Button variant="outline" size="sm" onClick={() => openHistory(emp)}>
@@ -153,8 +155,8 @@ export function TeamScores({
           ))}
           {scores.length === 0 && (
             <TableRow>
-              <TableCell colSpan={4} className="text-center text-muted-foreground py-6">
-                No employees yet.
+              <TableCell colSpan={5} className="text-center text-muted-foreground py-6">
+                No team members yet.
               </TableCell>
             </TableRow>
           )}

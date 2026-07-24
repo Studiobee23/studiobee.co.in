@@ -50,8 +50,12 @@ export async function getEmployeeScores(): Promise<EmployeeScore[]> {
   if (!profile) throw new Error("Not authenticated");
   const supabase = await createClient();
 
+  // super_admin sees everyone below them (admin/manager/employee); admin/manager only
+  // ever see the employee roster — peers scoring peers doesn't make sense here.
+  const rosterRoles = isSuperAdmin(profile.role) ? ["admin", "manager", "employee"] : ["employee"];
+
   const [{ data: employees, error: empError }, { data: events, error: evError }] = await Promise.all([
-    supabase.from("profiles").select("id, display_name, email, manager_id").eq("role", "employee").eq("active", true),
+    supabase.from("profiles").select("id, display_name, email, role, manager_id").in("role", rosterRoles).eq("active", true),
     supabase.from("point_events").select("employee_id, points"),
   ]);
   if (empError) throw new Error(empError.message);
@@ -66,6 +70,7 @@ export async function getEmployeeScores(): Promise<EmployeeScore[]> {
     id: e.id,
     display_name: e.display_name,
     email: e.email,
+    role: e.role,
     manager_id: e.manager_id,
     score: scoreByEmployee.get(e.id) ?? 0,
   }));
@@ -102,11 +107,14 @@ export async function logPointEvent(input: { employeeId: string; reasonId: strin
   if (!profile) throw new Error("Not authenticated");
   const supabase = await createClient();
 
+  const { data: target } = await supabase.from("profiles").select("role, manager_id").eq("id", input.employeeId).maybeSingle();
+
   if (profile.role === "manager") {
-    const { data: employee } = await supabase.from("profiles").select("manager_id").eq("id", input.employeeId).maybeSingle();
-    if (employee?.manager_id !== profile.id) throw new Error("You can only log points for your own reports.");
+    if (target?.manager_id !== profile.id) throw new Error("You can only log points for your own reports.");
   } else if (!isAdminTier(profile.role)) {
     throw new Error("Unauthorised");
+  } else if (target?.role !== "employee" && !isSuperAdmin(profile.role)) {
+    throw new Error("Only super_admin can log points for non-employee roles.");
   }
 
   const { data: reason, error: reasonError } = await supabase.from("point_reasons").select("points").eq("id", input.reasonId).single();
@@ -131,6 +139,16 @@ export async function updatePointEvent(id: string, note: string) {
   if (!isAdminTier(profile.role)) {
     const { data: existing } = await supabase.from("point_events").select("logged_by").eq("id", id).maybeSingle();
     if (existing?.logged_by !== profile.id) throw new Error("You can only edit events you logged.");
+  } else {
+    const { data: existing } = await supabase
+      .from("point_events")
+      .select("profiles!employee_id(role)")
+      .eq("id", id)
+      .maybeSingle();
+    const targetRole = (existing?.profiles as unknown as { role: string } | null)?.role;
+    if (targetRole !== "employee" && !isSuperAdmin(profile.role)) {
+      throw new Error("Only super_admin can modify points for non-employee roles.");
+    }
   }
 
   const { error } = await supabase.from("point_events").update({ note }).eq("id", id);
@@ -146,6 +164,16 @@ export async function deletePointEvent(id: string) {
   if (!isAdminTier(profile.role)) {
     const { data: existing } = await supabase.from("point_events").select("logged_by").eq("id", id).maybeSingle();
     if (existing?.logged_by !== profile.id) throw new Error("You can only delete events you logged.");
+  } else {
+    const { data: existing } = await supabase
+      .from("point_events")
+      .select("profiles!employee_id(role)")
+      .eq("id", id)
+      .maybeSingle();
+    const targetRole = (existing?.profiles as unknown as { role: string } | null)?.role;
+    if (targetRole !== "employee" && !isSuperAdmin(profile.role)) {
+      throw new Error("Only super_admin can modify points for non-employee roles.");
+    }
   }
 
   const { error } = await supabase.from("point_events").delete().eq("id", id);
