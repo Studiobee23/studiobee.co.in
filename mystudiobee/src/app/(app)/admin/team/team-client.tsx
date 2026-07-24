@@ -35,15 +35,21 @@ const ROLE_PERMISSIONS: Record<Role, string> = {
 export function TeamClient({
   employees,
   currentUserId,
+  viewerRole,
 }: {
   employees: Employee[];
   currentUserId: string;
+  viewerRole: Role;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Role>("employee");
   const [loading, setLoading] = useState(false);
+  const viewerIsSuperAdmin = viewerRole === "super_admin";
+  // Only super_admin can grant/see super_admin as an assignable target — matches
+  // the server-side guard in updateEmployeeRole/inviteEmployee.
+  const assignableRoles = viewerIsSuperAdmin ? ROLES : ROLES.filter((r) => r !== "super_admin");
 
   async function handleDelete(emp: Employee) {
     if (
@@ -105,7 +111,7 @@ export function TeamClient({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {ROLES.map((r) => (
+                    {assignableRoles.map((r) => (
                       <SelectItem key={r} value={r} className="capitalize">
                         {r.replace("_", " ")}
                       </SelectItem>
@@ -137,6 +143,14 @@ export function TeamClient({
         <TableBody>
           {employees.map((emp) => {
             const isSelf = emp.id === currentUserId;
+            const targetIsSuperAdmin = emp.role === "super_admin";
+            const superAdminLocked = targetIsSuperAdmin && !viewerIsSuperAdmin;
+            const roleLocked = isSelf || superAdminLocked;
+            const roleLockedTitle = isSelf
+              ? "You can't change your own role — ask another admin."
+              : targetIsSuperAdmin && !viewerIsSuperAdmin
+                ? "Only super_admin can change a super_admin's role."
+                : ROLE_PERMISSIONS[emp.role];
             return (
               <TableRow key={emp.id}>
                 <TableCell className="font-medium">
@@ -145,10 +159,10 @@ export function TeamClient({
                 </TableCell>
                 <TableCell className="text-muted-foreground">{emp.email}</TableCell>
                 <TableCell>
-                  <div title={isSelf ? "You can't change your own role — ask another admin." : ROLE_PERMISSIONS[emp.role]}>
+                  <div title={roleLockedTitle}>
                     <Select
                       value={emp.role}
-                      disabled={isSelf}
+                      disabled={roleLocked}
                       onValueChange={async (v) => {
                         try {
                           await updateEmployeeRole(emp.id, v as Role);
@@ -163,7 +177,7 @@ export function TeamClient({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {ROLES.map((r) => (
+                        {(targetIsSuperAdmin ? ROLES : assignableRoles).map((r) => (
                           <SelectItem key={r} value={r} className="capitalize" title={ROLE_PERMISSIONS[r]}>
                             {r.replace("_", " ")}
                           </SelectItem>
@@ -201,10 +215,20 @@ export function TeamClient({
                   </Select>
                 </TableCell>
                 <TableCell>
-                  <div title={isSelf ? "You can't deactivate your own account." : emp.active ? "Deactivate to revoke access if this person leaves — their history (tasks, time logs, documents) is kept." : "Inactive — can't sign in."}>
+                  <div
+                    title={
+                      isSelf
+                        ? "You can't deactivate your own account."
+                        : superAdminLocked
+                          ? "Only super_admin can deactivate a super_admin."
+                          : emp.active
+                            ? "Deactivate to revoke access if this person leaves — their history (tasks, time logs, documents) is kept."
+                            : "Inactive — can't sign in."
+                    }
+                  >
                     <Switch
                       checked={emp.active}
-                      disabled={isSelf}
+                      disabled={isSelf || superAdminLocked}
                       onCheckedChange={async (v) => {
                         try {
                           await setEmployeeActive(emp.id, v);
@@ -218,7 +242,7 @@ export function TeamClient({
                   </div>
                 </TableCell>
                 <TableCell>
-                  {!isSelf && (
+                  {!isSelf && !superAdminLocked && (
                     <button
                       onClick={() => handleDelete(emp)}
                       className="text-muted-foreground hover:text-destructive transition-colors"

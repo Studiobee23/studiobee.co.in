@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCurrentProfile, isAdminTier, type Role } from "@/lib/profile";
+import { getCurrentProfile, isAdminTier, isSuperAdmin, type Role } from "@/lib/profile";
 
 async function requireAdminTier() {
   const profile = await getCurrentProfile();
@@ -13,8 +13,30 @@ async function requireAdminTier() {
   return profile;
 }
 
+/** Only super_admin can grant super_admin, or change/deactivate/delete an existing
+ * super_admin — otherwise any admin could promote a colleague (or get promoted by
+ * one) to bypass the whole point of the tier. */
+async function requireSuperAdminIfTargetIsOrBecomesSuperAdmin(
+  callerRole: Role,
+  targetId: string,
+  newRole?: Role,
+) {
+  if (isSuperAdmin(callerRole)) return;
+  if (newRole === "super_admin") {
+    throw new Error("Only super_admin can grant the super_admin role.");
+  }
+  const supabase = await createClient();
+  const { data: target } = await supabase.from("profiles").select("role").eq("id", targetId).maybeSingle();
+  if (target?.role === "super_admin") {
+    throw new Error("Only super_admin can change another super_admin's account.");
+  }
+}
+
 export async function inviteEmployee(input: { email: string; role: Role }) {
-  await requireAdminTier();
+  const profile = await requireAdminTier();
+  if (input.role === "super_admin" && !isSuperAdmin(profile.role)) {
+    throw new Error("Only super_admin can invite a new super_admin.");
+  }
   const admin = createAdminClient();
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -37,6 +59,7 @@ export async function inviteEmployee(input: { email: string; role: Role }) {
 export async function updateEmployeeRole(id: string, role: Role) {
   const profile = await requireAdminTier();
   if (id === profile.id) throw new Error("You can't change your own role.");
+  await requireSuperAdminIfTargetIsOrBecomesSuperAdmin(profile.role, id, role);
   const supabase = await createClient();
   const { error } = await supabase.from("profiles").update({ role }).eq("id", id);
   if (error) throw new Error(error.message);
@@ -54,6 +77,7 @@ export async function updateEmployeeManager(id: string, managerId: string | null
 export async function setEmployeeActive(id: string, active: boolean) {
   const profile = await requireAdminTier();
   if (id === profile.id) throw new Error("You can't deactivate your own account.");
+  await requireSuperAdminIfTargetIsOrBecomesSuperAdmin(profile.role, id);
   const supabase = await createClient();
   const { error } = await supabase.from("profiles").update({ active }).eq("id", id);
   if (error) throw new Error(error.message);
@@ -67,6 +91,7 @@ export async function setEmployeeActive(id: string, active: boolean) {
 export async function deleteEmployee(id: string) {
   const profile = await requireAdminTier();
   if (id === profile.id) throw new Error("You can't delete your own account.");
+  await requireSuperAdminIfTargetIsOrBecomesSuperAdmin(profile.role, id);
   const admin = createAdminClient();
   const { error: profileError } = await admin.from("profiles").delete().eq("id", id);
   if (profileError) throw new Error(profileError.message);
