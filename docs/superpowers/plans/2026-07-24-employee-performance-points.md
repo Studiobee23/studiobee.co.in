@@ -2120,3 +2120,74 @@ Post-test verification confirmed the rollback left zero trace: all 3 profiles' `
 - [ ] **Step 4: App-layer UI verification (handed to the user)**
 
 The browser-driven parts of this task — confirming the sidebar shows the right nav groups per role, the three super_admin tabs render, the Team page's role/Reports-To dropdowns work, etc. — require signing in as each real account, which only the user can do. Recommend the user do a quick pass through `/performance`, `/admin/team`, and the sidebar as their own super_admin account, since the RLS layer (the actual security boundary) is now verified independently.
+
+---
+
+### Task 15: Fix privilege escalation to/against super_admin (found via post-push security review)
+
+A background security review of the pushed commits flagged that `team.ts`'s `requireAdminTier()` guard doesn't distinguish *caller* tier from *target* tier: any plain `admin` could call `updateEmployeeRole(colleagueId, 'super_admin')` to grant the tier to anyone (or themselves via a colleague), demote/deactivate/delete an *existing* super_admin, or invite a brand-new user directly as super_admin via `inviteEmployee`. This defeats the entire premise of the tier ("this adjusting feature will be limited to a new role" — not if any admin can hand it out).
+
+**Files:**
+- Modify: `mystudiobee/src/lib/actions/team.ts` — new `requireSuperAdminIfTargetIsOrBecomesSuperAdmin()` helper, called from `updateEmployeeRole`, `setEmployeeActive`, `deleteEmployee`; `inviteEmployee` gets an inline check blocking a non-super-admin from inviting a new `super_admin`.
+- Modify: `mystudiobee/src/app/(app)/admin/team/team-client.tsx` — hides `super_admin` from the invite dialog's role options and a target row's role dropdown when the viewer isn't super_admin; disables the role/active toggle and hides the delete button for a row that's already `super_admin` when the viewer isn't one.
+- Modify: `mystudiobee/src/app/(app)/admin/team/page.tsx` — passes `profile.role` to `TeamClient` as the new `viewerRole` prop.
+- Create: `mystudiobee/supabase/migrations/0034_protect_super_admin_profiles.sql` — the app-layer guard alone isn't enough, since `updateEmployeeRole`/`setEmployeeActive` use the RLS-respecting client (not the service-role one) — narrows `profiles`' UPDATE/INSERT policies so RLS itself blocks a non-super-admin from writing a row that is (or would become) `super_admin`, closing the gap for direct API access too.
+
+- [ ] **Step 1: Apply migration 0034, verify with the same rolled-back-transaction technique used in Task 14**
+
+**Important tooling finding:** this technique is *not reliably safe* on this connection-pooled database. During verification, a `begin ... rollback` block from an earlier test left 2 profiles' `role`/`manager_id` corrupted (both flipped to `employee` reporting to the super_admin) and 2 stray `point_events` rows persisted, despite every individual test session showing correct rolled-back state immediately afterward. Root cause not fully diagnosed (suspected: Supabase's connection pooler not guaranteeing one physical connection for a whole multi-statement string, so `BEGIN`/`ROLLBACK` don't reliably bracket the same session as the writes). **Do not reuse this transaction-simulation technique for future RLS verification on this project** — prefer static policy-text review (`select * from pg_policies`) plus real logged-in clicks, or a disposable seed/staging project if dynamic policy testing is needed again.
+
+Both corrupted profiles and the 2 stray `point_events` were caught (via a fresh, non-transactional state check) and manually restored/deleted immediately: `laishram.rajib`/`pal.aakash` back to `role='admin', manager_id=null`; `point_events` back to 0 rows. Final row counts confirmed clean: 3 profiles, 0 point_events, 2 point_reasons (legitimate seed data), 4 profit_split_settings.
+
+- [ ] **Step 2: Typecheck, test, build**
+
+```
+npx tsc --noEmit     # exit 0
+npx vitest run        # 27 passed
+npm run build         # ✓ Compiled successfully
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add mystudiobee/src/lib/actions/team.ts "mystudiobee/src/app/(app)/admin/team/team-client.tsx" "mystudiobee/src/app/(app)/admin/team/page.tsx" mystudiobee/supabase/migrations/0034_protect_super_admin_profiles.sql
+git commit -m "fix(mystudiobee): prevent admin-tier privilege escalation to/against super_admin"
+```
+
+---
+
+### Task 16: Expand super_admin's scoreable roster to admin + manager (user-requested scope change)
+
+User clarified after Task 15 landed: "the super admin should be able to give points to everyone since everyone comes under super admin basically." The v1 scope (spec + Task 14) deliberately limited the roster to `role = 'employee'` — this widens it for `super_admin` specifically while leaving `admin`/`manager` viewers unchanged (they still only ever see the employee roster; peers scoring peers doesn't make sense).
+
+**Files:**
+- Modify: `mystudiobee/src/lib/performance/types.ts` — `EmployeeScore` gains a `role: Role` field.
+- Modify: `mystudiobee/src/lib/actions/performance.ts`:
+  - `getEmployeeScores()`: roster query becomes role-dependent — `["admin","manager","employee"]` for a `super_admin` caller, `["employee"]` otherwise.
+  - `logPointEvent()`: now fetches the target's `role` alongside `manager_id`; a non-super-admin admin-tier caller is rejected if the target's role isn't `employee`.
+  - `updatePointEvent()`/`deletePointEvent()`: admin-tier callers now also fetch the target row's `profiles!employee_id(role)` and are rejected (unless super_admin) if that role isn't `employee`.
+- Create: `mystudiobee/supabase/migrations/0035_super_admin_scores_everyone.sql` — narrows the 3 "admin tier ... any point_events" RLS policies (insert/update/delete) so a non-super-admin admin-tier caller is confined to `employee` targets, matching the app-layer guards.
+- Modify: `mystudiobee/src/app/(app)/performance/team-scores.tsx` — adds a Role column to the scores table (roster is no longer employee-only for super_admin, so the role needs to be visible); "No employees yet" → "No team members yet".
+
+- [ ] **Step 1: Apply migration 0035**
+
+Verify via static policy inspection only (per the Task 15 tooling finding — no more transaction-simulation testing on this database):
+```sql
+select policyname, cmd, qual, with_check from pg_policies where tablename = 'point_events' and policyname like 'admin tier%' order by policyname;
+```
+Expected: all 3 policies' `qual`/`with_check` contain `is_super_admin() OR exists(... e.role = 'employee')`.
+
+- [ ] **Step 2: Typecheck, test, build**
+
+```
+npx tsc --noEmit     # exit 0
+npx vitest run        # 27 passed
+npm run build         # ✓ Compiled successfully
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add mystudiobee/src/lib/performance/types.ts mystudiobee/src/lib/actions/performance.ts "mystudiobee/src/app/(app)/performance/team-scores.tsx" mystudiobee/supabase/migrations/0035_super_admin_scores_everyone.sql
+git commit -m "feat(mystudiobee): let super_admin score admins and managers, not just employees"
+```
