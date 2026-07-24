@@ -739,6 +739,8 @@ function requireSuperAdmin(role: Role) {
 ```
 Add `import { type Role, isSuperAdmin } from "@/lib/profile";` to the top imports. Replace both `requireAdmin(profile.role)` call sites (in `upsertProfitSplitSettings` and `getProfitSplitSettings`) with `requireSuperAdmin(profile.role)`.
 
+**Addendum (found during execution):** also changed both `revalidatePath("/admin/profit-split")` calls to `revalidatePath("/performance")`, since Task 13 deletes the old route — revalidating a path that won't exist is harmless but pointless, and this was cheap to fix while already in the file.
+
 - [ ] **Step 2: Typecheck**
 
 Run: `cd mystudiobee && npx tsc --noEmit`
