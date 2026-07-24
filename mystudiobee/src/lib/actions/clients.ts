@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile, isBillingRole } from "@/lib/profile";
+import { getCurrentProfile, isBillingRole, isAdminTier } from "@/lib/profile";
 
 async function requireBillingRole() {
   const profile = await getCurrentProfile();
@@ -12,9 +12,9 @@ async function requireBillingRole() {
   return profile;
 }
 
-async function requireAdmin() {
+async function requireAdminTier() {
   const profile = await getCurrentProfile();
-  if (!profile || profile.role !== "admin") {
+  if (!profile || !isAdminTier(profile.role)) {
     throw new Error("Only admin can delete or restore clients.");
   }
   return profile;
@@ -101,7 +101,7 @@ export async function updateClientAvatar(id: string, avatarUrl: string) {
 /** Soft-deletes a client and every project/document/task/etc. under it.
  * Recoverable from /bin for 30 days, after which pg_cron purges it for good. */
 export async function deleteClient(id: string) {
-  await requireAdmin();
+  await requireAdminTier();
   const supabase = await createClient();
   const { error } = await supabase.rpc("soft_delete_client", { p_client_id: id });
   if (error) throw new Error(error.message);
@@ -109,7 +109,7 @@ export async function deleteClient(id: string) {
 }
 
 export async function restoreClient(id: string) {
-  await requireAdmin();
+  await requireAdminTier();
   const supabase = await createClient();
   const { error } = await supabase.rpc("restore_client", { p_client_id: id });
   if (error) throw new Error(error.message);
@@ -120,7 +120,7 @@ export async function restoreClient(id: string) {
  * skipping the 30-day grace period. Cannot be undone. Only works on clients
  * that are already in the bin — won't touch an active client. */
 export async function purgeClient(id: string) {
-  await requireAdmin();
+  await requireAdminTier();
   const supabase = await createClient();
 
   const { data: client, error: fetchError } = await supabase
@@ -144,7 +144,7 @@ export type BinnedClient = {
 };
 
 export async function listBinnedClients(): Promise<BinnedClient[]> {
-  await requireAdmin();
+  await requireAdminTier();
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("clients")

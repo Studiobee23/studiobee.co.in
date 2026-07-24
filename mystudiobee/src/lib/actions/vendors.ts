@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCurrentProfile } from "@/lib/profile";
+import { getCurrentProfile, isAdminTier, type Role } from "@/lib/profile";
 
-function requireAdmin(role: string) {
-  if (role !== "admin") throw new Error("Unauthorised");
+function requireAdminTier(role: Role) {
+  if (!isAdminTier(role)) throw new Error("Unauthorised");
 }
 
 export async function upsertVendor(input: {
@@ -21,7 +21,7 @@ export async function upsertVendor(input: {
 }) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireAdmin(profile.role);
+  requireAdminTier(profile.role);
   const supabase = createAdminClient();
   const { id, ...rest } = input;
   const { error } = id
@@ -34,7 +34,7 @@ export async function upsertVendor(input: {
 export async function setVendorActive(id: string, active: boolean) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireAdmin(profile.role);
+  requireAdminTier(profile.role);
   const supabase = createAdminClient();
   const { error } = await supabase.from("equipment_vendors").update({ active }).eq("id", id);
   if (error) throw new Error(error.message);
@@ -44,7 +44,7 @@ export async function setVendorActive(id: string, active: boolean) {
 export async function linkVendorToProject(input: { project_id: string; vendor_id: string; notes?: string }) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireAdmin(profile.role);
+  requireAdminTier(profile.role);
   const supabase = createAdminClient();
   const { error } = await supabase.from("project_vendors").insert(input);
   if (error) throw new Error(error.message);
@@ -54,7 +54,7 @@ export async function linkVendorToProject(input: { project_id: string; vendor_id
 export async function unlinkVendorFromProject(id: string, projectId: string) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireAdmin(profile.role);
+  requireAdminTier(profile.role);
   const supabase = createAdminClient();
   const { error } = await supabase.from("project_vendors").delete().eq("id", id);
   if (error) throw new Error(error.message);

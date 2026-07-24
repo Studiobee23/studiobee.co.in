@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCurrentProfile } from "@/lib/profile";
+import { getCurrentProfile, isAdminTier, type Role } from "@/lib/profile";
 
-function requireAdmin(role: string) {
-  if (role !== "admin") throw new Error("Unauthorised");
+function requireAdminTier(role: Role) {
+  if (!isAdminTier(role)) throw new Error("Unauthorised");
 }
 
 export async function upsertEquipment(input: {
@@ -23,7 +23,7 @@ export async function upsertEquipment(input: {
 }) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireAdmin(profile.role);
+  requireAdminTier(profile.role);
   const supabase = createAdminClient();
   const { id, ...rest } = input;
   const { error } = id
@@ -36,7 +36,7 @@ export async function upsertEquipment(input: {
 export async function setEquipmentActive(id: string, active: boolean) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireAdmin(profile.role);
+  requireAdminTier(profile.role);
   const supabase = createAdminClient();
   const { error } = await supabase
     .from("equipment")
@@ -59,7 +59,7 @@ export async function upsertOverheadItem(input: {
 }) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireAdmin(profile.role);
+  requireAdminTier(profile.role);
   const supabase = createAdminClient();
   const payload = {
     name: input.name,
@@ -80,7 +80,7 @@ export async function upsertOverheadItem(input: {
 export async function setOverheadItemActive(id: string, active: boolean) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireAdmin(profile.role);
+  requireAdminTier(profile.role);
   const supabase = createAdminClient();
   const { error } = await supabase.from("overhead_items").update({ active }).eq("id", id);
   if (error) throw new Error(error.message);
@@ -90,7 +90,7 @@ export async function setOverheadItemActive(id: string, active: boolean) {
 export async function deleteOverheadItem(id: string) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  requireAdmin(profile.role);
+  requireAdminTier(profile.role);
   const supabase = createAdminClient();
   const { error } = await supabase.from("overhead_items").delete().eq("id", id);
   if (error) throw new Error(error.message);

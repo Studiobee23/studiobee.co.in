@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCurrentProfile, isBillingRole, canSeeCost } from "@/lib/profile";
+import { getCurrentProfile, isBillingRole, canSeeCost, isAdminTier } from "@/lib/profile";
 import { computeCostBreakdown, priceFromBreakdown, redactCostBreakdown } from "@/lib/costing/engine";
 import type { LineItemCostInput, LineItem } from "@/lib/costing/types";
 
@@ -238,7 +238,7 @@ export async function updateDocumentStatus(id: string, status: DocumentStatus) {
 
 export async function deleteDocument(id: string) {
   const profile = await requireBillingRole();
-  if (profile.role !== "admin") {
+  if (!isAdminTier(profile.role)) {
     throw new Error("Only admin can delete documents");
   }
   const supabase = await createClient();

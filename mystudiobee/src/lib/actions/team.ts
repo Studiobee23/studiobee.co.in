@@ -3,18 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCurrentProfile, type Role } from "@/lib/profile";
+import { getCurrentProfile, isAdminTier, type Role } from "@/lib/profile";
 
-async function requireAdmin() {
+async function requireAdminTier() {
   const profile = await getCurrentProfile();
-  if (!profile || profile.role !== "admin") {
+  if (!profile || !isAdminTier(profile.role)) {
     throw new Error("Not authorized — admin only.");
   }
   return profile;
 }
 
 export async function inviteEmployee(input: { email: string; role: Role }) {
-  await requireAdmin();
+  await requireAdminTier();
   const admin = createAdminClient();
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -35,7 +35,7 @@ export async function inviteEmployee(input: { email: string; role: Role }) {
 }
 
 export async function updateEmployeeRole(id: string, role: Role) {
-  const profile = await requireAdmin();
+  const profile = await requireAdminTier();
   if (id === profile.id) throw new Error("You can't change your own role.");
   const supabase = await createClient();
   const { error } = await supabase.from("profiles").update({ role }).eq("id", id);
@@ -44,7 +44,7 @@ export async function updateEmployeeRole(id: string, role: Role) {
 }
 
 export async function setEmployeeActive(id: string, active: boolean) {
-  const profile = await requireAdmin();
+  const profile = await requireAdminTier();
   if (id === profile.id) throw new Error("You can't deactivate your own account.");
   const supabase = await createClient();
   const { error } = await supabase.from("profiles").update({ active }).eq("id", id);
@@ -57,7 +57,7 @@ export async function setEmployeeActive(id: string, active: boolean) {
  * attribution afterward. Prefer setEmployeeActive() for "they left"; this is
  * for correcting a mistaken invite or a genuine data-removal request. */
 export async function deleteEmployee(id: string) {
-  const profile = await requireAdmin();
+  const profile = await requireAdminTier();
   if (id === profile.id) throw new Error("You can't delete your own account.");
   const admin = createAdminClient();
   const { error: profileError } = await admin.from("profiles").delete().eq("id", id);

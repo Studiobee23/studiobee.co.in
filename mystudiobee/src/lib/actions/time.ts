@@ -3,7 +3,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/lib/profile";
+import { getCurrentProfile, isAdminTier } from "@/lib/profile";
 import { reverseGeocode } from "@/lib/geocode";
 
 export async function clockIn(input: {
@@ -88,7 +88,7 @@ export async function clockOut(entryId: string, location: { latitude: number; lo
 export async function deleteTimeEntry(entryId: string) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  if (profile.role !== "admin") {
+  if (!isAdminTier(profile.role)) {
     throw new Error("Only admin can delete time entries");
   }
 
@@ -106,7 +106,7 @@ export async function deleteTimeEntry(entryId: string) {
 export async function restoreTimeEntry(entryId: string) {
   const profile = await getCurrentProfile();
   if (!profile) throw new Error("Not authenticated");
-  if (profile.role !== "admin") {
+  if (!isAdminTier(profile.role)) {
     throw new Error("Only admin can restore time entries");
   }
 

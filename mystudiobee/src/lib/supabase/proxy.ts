@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAdminTier, type Role } from "@/lib/profile";
 
 const PUBLIC_PATHS = ["/login", "/accept-invite", "/auth/callback"];
 const ADMIN_ONLY_PREFIXES = ["/admin"];
@@ -59,7 +60,7 @@ export async function updateSession(request: NextRequest) {
     }
 
     const isAdminOnly = ADMIN_ONLY_PREFIXES.some((p) => pathname.startsWith(p));
-    if (isAdminOnly && profile.role !== "admin") {
+    if (isAdminOnly && !isAdminTier(profile.role as Role)) {
       const url = request.nextUrl.clone();
       url.pathname = "/";
       url.search = "";
@@ -77,7 +78,8 @@ export async function updateSession(request: NextRequest) {
         pathname.startsWith("/account") ||
         pathname.startsWith("/tasks") ||
         pathname.startsWith("/clock") ||
-        pathname.startsWith("/projects");
+        pathname.startsWith("/projects") ||
+        pathname.startsWith("/performance");
       if (!allowed) {
         const url = request.nextUrl.clone();
         url.pathname = "/";
