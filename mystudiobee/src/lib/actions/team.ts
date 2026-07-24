@@ -43,6 +43,14 @@ export async function updateEmployeeRole(id: string, role: Role) {
   revalidatePath("/admin/team");
 }
 
+export async function updateEmployeeManager(id: string, managerId: string | null) {
+  await requireAdminTier();
+  const supabase = await createClient();
+  const { error } = await supabase.from("profiles").update({ manager_id: managerId }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/team");
+}
+
 export async function setEmployeeActive(id: string, active: boolean) {
   const profile = await requireAdminTier();
   if (id === profile.id) throw new Error("You can't deactivate your own account.");
