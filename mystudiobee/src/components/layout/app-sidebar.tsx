@@ -172,7 +172,7 @@ export function AppSidebar({
             <p className="truncate text-[12px] font-medium leading-tight text-white/85">
               {displayName || email}
             </p>
-            <p className="truncate text-[10px] capitalize leading-tight text-white/30">{role}</p>
+            <p className="truncate text-[10px] capitalize leading-tight text-white/30">{role.replace("_", " ")}</p>
           </div>
           <button
             onClick={handleSignOut}

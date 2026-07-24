@@ -18,14 +18,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { inviteEmployee, updateEmployeeRole, setEmployeeActive, deleteEmployee } from "@/lib/actions/team";
+import { inviteEmployee, updateEmployeeRole, updateEmployeeManager, setEmployeeActive, deleteEmployee } from "@/lib/actions/team";
 import type { Role } from "@/lib/profile";
 
-type Employee = { id: string; email: string; display_name: string; role: Role; active: boolean };
+type Employee = { id: string; email: string; display_name: string; role: Role; active: boolean; manager_id: string | null };
 
-const ROLES: Role[] = ["admin", "manager", "employee"];
+const ROLES: Role[] = ["super_admin", "admin", "manager", "employee"];
 
 const ROLE_PERMISSIONS: Record<Role, string> = {
+  super_admin: "Everything admin has, plus profit-split percentages and point-reason management.",
   admin: "Full access — billing, cost visibility, admin settings, team management.",
   manager: "Clients, projects, quotes/invoices/receipts — no cost breakdowns or admin settings.",
   employee: "Tasks and Clock In only. No billing or client access.",
@@ -106,7 +107,7 @@ export function TeamClient({
                   <SelectContent>
                     {ROLES.map((r) => (
                       <SelectItem key={r} value={r} className="capitalize">
-                        {r}
+                        {r.replace("_", " ")}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -128,6 +129,7 @@ export function TeamClient({
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
+            <TableHead>Reports To</TableHead>
             <TableHead>Active</TableHead>
             <TableHead />
           </TableRow>
@@ -163,12 +165,40 @@ export function TeamClient({
                       <SelectContent>
                         {ROLES.map((r) => (
                           <SelectItem key={r} value={r} className="capitalize" title={ROLE_PERMISSIONS[r]}>
-                            {r}
+                            {r.replace("_", " ")}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
+                </TableCell>
+                <TableCell>
+                  <Select
+                    value={emp.manager_id ?? "none"}
+                    onValueChange={async (v) => {
+                      try {
+                        await updateEmployeeManager(emp.id, v === "none" ? null : v);
+                        toast.success("Reports-to updated");
+                        router.refresh();
+                      } catch (e) {
+                        toast.error(e instanceof Error ? e.message : "Failed to update");
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">— none (reports to admin) —</SelectItem>
+                      {employees
+                        .filter((m) => m.id !== emp.id && m.role !== "employee")
+                        .map((m) => (
+                          <SelectItem key={m.id} value={m.id}>
+                            {m.display_name || m.email}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
                 </TableCell>
                 <TableCell>
                   <div title={isSelf ? "You can't deactivate your own account." : emp.active ? "Deactivate to revoke access if this person leaves — their history (tasks, time logs, documents) is kept." : "Inactive — can't sign in."}>
@@ -204,7 +234,7 @@ export function TeamClient({
         </TableBody>
       </Table>
       <p className="mt-3 text-[11px] text-muted-foreground">
-        <strong>Admin:</strong> {ROLE_PERMISSIONS.admin} <strong>Manager:</strong> {ROLE_PERMISSIONS.manager} <strong>Employee:</strong> {ROLE_PERMISSIONS.employee}
+        <strong>Super Admin:</strong> {ROLE_PERMISSIONS.super_admin} <strong>Admin:</strong> {ROLE_PERMISSIONS.admin} <strong>Manager:</strong> {ROLE_PERMISSIONS.manager} <strong>Employee:</strong> {ROLE_PERMISSIONS.employee}
       </p>
     </div>
   );

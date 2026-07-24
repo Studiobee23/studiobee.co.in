@@ -1146,12 +1146,14 @@ Add a new `<TableCell>` directly after the existing Role `<TableCell>` (the one 
 - [ ] **Step 4: Typecheck**
 
 Run: `cd mystudiobee && npx tsc --noEmit`
-Expected: exit code 0.
+Expected: exit code 0 — this is the first fully clean typecheck since Task 1 (all downstream breaks from Tasks 2-8 were this file).
+
+**Addendum (found during execution):** the existing `className="capitalize"` on the role `<SelectItem>`s only capitalizes the first letter per CSS word-boundary rules — it doesn't touch underscores, so `super_admin` would render as "Super_admin". Changed both `{r}` renders to `{r.replace("_", " ")}` so CSS capitalize produces "Super Admin". The sidebar footer (`app-sidebar.tsx:175`, from Task 4) has the identical `capitalize` class on the raw `{role}` string — same fix applied there (`{role.replace("_", " ")}`), added to this commit since it's the same class of issue discovered here.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add "mystudiobee/src/app/(app)/admin/team/team-client.tsx"
+git add "mystudiobee/src/app/(app)/admin/team/team-client.tsx" mystudiobee/src/components/layout/app-sidebar.tsx
 git commit -m "feat(mystudiobee): add super_admin role option and Reports To field on Team page"
 ```
 
