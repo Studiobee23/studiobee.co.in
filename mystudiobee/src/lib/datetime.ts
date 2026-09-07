@@ -26,6 +26,20 @@ export function formatDateLongIST(iso: string): string {
   });
 }
 
+/** Worked duration for a time entry, excluding paused time (including an in-progress pause). */
+export function workedMs(entry: {
+  clocked_in_at: string;
+  clocked_out_at?: string | null;
+  paused_seconds?: number | null;
+  paused_at?: string | null;
+}): number {
+  const start = new Date(entry.clocked_in_at).getTime();
+  const end = entry.clocked_out_at ? new Date(entry.clocked_out_at).getTime() : Date.now();
+  let pausedMs = (entry.paused_seconds ?? 0) * 1000;
+  if (entry.paused_at) pausedMs += Date.now() - new Date(entry.paused_at).getTime();
+  return Math.max(0, end - start - pausedMs);
+}
+
 export function formatDuration(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
   const h = Math.floor(totalSeconds / 3600);

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Trash2, RotateCcw, User } from "lucide-react";
 import { toast } from "sonner";
 import { deleteTimeEntry, restoreTimeEntry } from "@/lib/actions/time";
-import { formatDateLongIST, formatTimeIST, formatDuration } from "@/lib/datetime";
+import { formatDateLongIST, formatTimeIST, formatDuration, workedMs } from "@/lib/datetime";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 type Entry = {
@@ -21,6 +21,7 @@ type Entry = {
   clock_in_photo_url?: string | null;
   profiles: unknown;
   projects: unknown;
+  paused_seconds?: number;
 };
 
 function empName(profiles: unknown): string {
@@ -110,9 +111,7 @@ export function TimeLogClient({
               </tr>
             )}
             {entries.map((e) => {
-              const durationMs = e.clocked_out_at
-                ? new Date(e.clocked_out_at).getTime() - new Date(e.clocked_in_at).getTime()
-                : null;
+              const durationMs = e.clocked_out_at ? workedMs(e) : null;
               return (
                 <tr key={e.id} className="bg-card hover:bg-muted/30">
                   <td className="px-4 py-3">

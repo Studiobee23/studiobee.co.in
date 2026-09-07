@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile, isBillingRole, isAdminTier } from "@/lib/profile";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatDuration } from "@/lib/datetime";
+import { formatDuration, workedMs } from "@/lib/datetime";
 import { TimeLogClient } from "./time/time-log-client";
 
 const DEFAULT_LIMIT = 200;
@@ -43,7 +43,7 @@ export default async function ReportsPage({
   let query = supabase
     .from("time_entries")
     .select(
-      "id, clocked_in_at, clocked_out_at, notes, employee_id, project_id, clock_in_location_label, clock_out_location_label, clock_in_photo_path, profiles!employee_id(display_name, email), projects(name)"
+      "id, clocked_in_at, clocked_out_at, notes, employee_id, project_id, clock_in_location_label, clock_out_location_label, clock_in_photo_path, profiles!employee_id(display_name, email), projects(name), paused_seconds"
     )
     .is("deleted_at", null)
     .order("clocked_in_at", { ascending: false });
@@ -75,12 +75,7 @@ export default async function ReportsPage({
 
   const totalMs = entries
     .filter((e) => e.clocked_out_at)
-    .reduce(
-      (sum, e) =>
-        sum +
-        (new Date(e.clocked_out_at!).getTime() - new Date(e.clocked_in_at).getTime()),
-      0
-    );
+    .reduce((sum, e) => sum + workedMs(e), 0);
 
   // Admin only: entries soft-deleted within the last 30 days, restorable
   // before purge_expired_bin() permanently removes them.
@@ -89,7 +84,7 @@ export default async function ReportsPage({
     const { data } = await supabase
       .from("time_entries")
       .select(
-        "id, clocked_in_at, clocked_out_at, notes, employee_id, project_id, clock_in_location_label, clock_out_location_label, clock_in_photo_path, profiles!employee_id(display_name, email), projects(name)"
+        "id, clocked_in_at, clocked_out_at, notes, employee_id, project_id, clock_in_location_label, clock_out_location_label, clock_in_photo_path, profiles!employee_id(display_name, email), projects(name), paused_seconds"
       )
       .not("deleted_at", "is", null)
       .gte("deleted_at", deletedWindowCutoffISO())

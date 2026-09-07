@@ -65,6 +65,20 @@ export async function clockOut(entryId: string, location: { latitude: number; lo
 
   const supabase = await createClient();
 
+  // Fold any in-progress pause into paused_seconds so worked-time math (workedMs)
+  // stays correct once clocked_out_at is set and paused_at goes back to null.
+  const { data: entry, error: fetchError } = await supabase
+    .from("time_entries")
+    .select("paused_at, paused_seconds")
+    .eq("id", entryId)
+    .eq("employee_id", profile.id)
+    .single();
+  if (fetchError) throw new Error("Time entry not found.");
+
+  const pausedSeconds = entry.paused_at
+    ? (entry.paused_seconds ?? 0) + Math.round((Date.now() - new Date(entry.paused_at).getTime()) / 1000)
+    : (entry.paused_seconds ?? 0);
+
   const clockOutLocationLabel =
     (await reverseGeocode(location.latitude, location.longitude)) ??
     `${location.latitude.toFixed(5)}, ${location.longitude.toFixed(5)}`;
@@ -76,9 +90,58 @@ export async function clockOut(entryId: string, location: { latitude: number; lo
       clock_out_latitude: location.latitude,
       clock_out_longitude: location.longitude,
       clock_out_location_label: clockOutLocationLabel,
+      paused_at: null,
+      paused_seconds: pausedSeconds,
     })
     .eq("id", entryId)
     .eq("employee_id", profile.id); // RLS + owner check
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/time-performance");
+  revalidatePath("/reports");
+}
+
+export async function pauseTimeEntry(entryId: string) {
+  const profile = await getCurrentProfile();
+  if (!profile) throw new Error("Not authenticated");
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("time_entries")
+    .update({ paused_at: new Date().toISOString() })
+    .eq("id", entryId)
+    .eq("employee_id", profile.id)
+    .is("clocked_out_at", null)
+    .is("paused_at", null)
+    .select("id");
+  if (error) throw new Error(error.message);
+  if (!data || data.length === 0) throw new Error("Entry is already paused, clocked out, or not yours.");
+
+  revalidatePath("/time-performance");
+  revalidatePath("/reports");
+}
+
+export async function resumeTimeEntry(entryId: string) {
+  const profile = await getCurrentProfile();
+  if (!profile) throw new Error("Not authenticated");
+  const supabase = await createClient();
+
+  const { data: entry, error: fetchError } = await supabase
+    .from("time_entries")
+    .select("paused_at, paused_seconds")
+    .eq("id", entryId)
+    .eq("employee_id", profile.id)
+    .single();
+  if (fetchError) throw new Error("Time entry not found.");
+  if (!entry.paused_at) throw new Error("Entry is not paused.");
+
+  const pausedSeconds = (entry.paused_seconds ?? 0) + Math.round((Date.now() - new Date(entry.paused_at).getTime()) / 1000);
+
+  const { error } = await supabase
+    .from("time_entries")
+    .update({ paused_at: null, paused_seconds: pausedSeconds })
+    .eq("id", entryId)
+    .eq("employee_id", profile.id);
   if (error) throw new Error(error.message);
 
   revalidatePath("/time-performance");

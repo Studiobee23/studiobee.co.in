@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Timer, Square, ChevronDown } from "lucide-react";
+import { Timer, Square, ChevronDown, Pause, Play } from "lucide-react";
 import { toast } from "sonner";
-import { clockOut } from "@/lib/actions/time";
+import { clockOut, pauseTimeEntry, resumeTimeEntry } from "@/lib/actions/time";
 import { getCurrentLocation } from "@/lib/clock/geolocation";
-import { formatTimeIST, formatDateIST, formatDuration } from "@/lib/datetime";
+import { formatTimeIST, formatDateIST, formatDuration, workedMs } from "@/lib/datetime";
 import { ClockCameraCapture } from "./clock-camera-capture";
 
 type Project = { id: string; name: string };
@@ -17,6 +17,8 @@ type ActiveEntry = {
   notes: string | null;
   projects: unknown;
   clock_in_location_label: string | null;
+  paused_at: string | null;
+  paused_seconds: number;
 };
 type RecentEntry = {
   id: string;
@@ -27,6 +29,7 @@ type RecentEntry = {
   projects: unknown;
   clock_in_location_label: string | null;
   clock_out_location_label: string | null;
+  paused_seconds: number;
 };
 
 function projectName(projects: unknown): string {
@@ -53,15 +56,15 @@ export function ClockClient({
   const [showCamera, setShowCamera] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Live timer when clocked in
+  // Live timer when clocked in — workedMs naturally freezes while paused since
+  // the elapsed pause grows in step with the elapsed total.
   useEffect(() => {
     if (!activeEntry) {
       setElapsed(0);
       if (intervalRef.current) clearInterval(intervalRef.current);
       return;
     }
-    const start = new Date(activeEntry.clocked_in_at).getTime();
-    const tick = () => setElapsed(Date.now() - start);
+    const tick = () => setElapsed(workedMs(activeEntry));
     tick();
     intervalRef.current = setInterval(tick, 1000);
     return () => {
@@ -89,6 +92,10 @@ export function ClockClient({
       await clockOut(activeEntry!.id, location);
     });
 
+  const handlePause = () => run(() => pauseTimeEntry(activeEntry!.id));
+  const handleResume = () => run(() => resumeTimeEntry(activeEntry!.id));
+  const isPaused = Boolean(activeEntry?.paused_at);
+
   function handleCameraSuccess() {
     setShowCamera(false);
     router.refresh();
@@ -100,10 +107,10 @@ export function ClockClient({
 
         {/* Main clock card */}
         <div className="rounded-2xl border border-border bg-card p-8 text-center shadow-elevated">
-          <div className="mb-2 flex items-center justify-center gap-2 text-muted-foreground">
+          <div className={`mb-2 flex items-center justify-center gap-2 ${isPaused ? "text-amber-500" : "text-muted-foreground"}`}>
             <Timer className="h-4 w-4" />
             <span className="text-xs font-semibold uppercase tracking-widest">
-              {activeEntry ? "Clocked In" : "Ready"}
+              {isPaused ? "Paused" : activeEntry ? "Clocked In" : "Ready"}
             </span>
           </div>
 
@@ -144,22 +151,41 @@ export function ClockClient({
             </div>
           )}
 
-          {/* Action button */}
-          <button
-            onClick={activeEntry ? handleClockOut : () => setShowCamera(true)}
-            disabled={isPending}
-            className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl px-6 py-4 text-base font-semibold transition-opacity duration-150 disabled:opacity-60 ${
-              activeEntry
-                ? "bg-red-500 text-white hover:bg-red-600 active:bg-red-700"
-                : "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80"
-            }`}
-          >
-            {activeEntry ? (
-              isPending ? "Clocking out…" : <><Square className="h-5 w-5 fill-current" /> Clock Out</>
-            ) : (
-              <>📷 Take Photo &amp; Clock In</>
-            )}
-          </button>
+          {/* Action buttons */}
+          {activeEntry ? (
+            <div className="mt-6 flex gap-2">
+              <button
+                onClick={isPaused ? handleResume : handlePause}
+                disabled={isPending}
+                className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-6 py-4 text-base font-semibold transition-opacity duration-150 disabled:opacity-60 ${
+                  isPaused
+                    ? "bg-emerald-500 text-white hover:bg-emerald-600 active:bg-emerald-700"
+                    : "bg-amber-400 text-amber-950 hover:bg-amber-500 active:bg-amber-600"
+                }`}
+              >
+                {isPaused ? (
+                  <><Play className="h-5 w-5 fill-current" /> Resume</>
+                ) : (
+                  <><Pause className="h-5 w-5 fill-current" /> Pause</>
+                )}
+              </button>
+              <button
+                onClick={handleClockOut}
+                disabled={isPending}
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 px-6 py-4 text-base font-semibold text-white transition-opacity duration-150 hover:bg-red-600 active:bg-red-700 disabled:opacity-60"
+              >
+                {isPending ? "Clocking out…" : <><Square className="h-5 w-5 fill-current" /> Clock Out</>}
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowCamera(true)}
+              disabled={isPending}
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-base font-semibold text-primary-foreground transition-opacity duration-150 hover:bg-primary/90 active:bg-primary/80 disabled:opacity-60"
+            >
+              📷 Take Photo &amp; Clock In
+            </button>
+          )}
         </div>
 
         {/* Recent entries */}
@@ -170,9 +196,7 @@ export function ClockClient({
             </p>
             <div className="space-y-2">
               {recentEntries.map((e) => {
-                const durationMs =
-                  new Date(e.clocked_out_at).getTime() -
-                  new Date(e.clocked_in_at).getTime();
+                const durationMs = workedMs(e);
                 return (
                   <div
                     key={e.id}

@@ -32,7 +32,7 @@ export default async function TimePerformancePage({
   ] = await Promise.all([
     supabase
       .from("time_entries")
-      .select("id, clocked_in_at, project_id, notes, clock_in_location_label, projects(name)")
+      .select("id, clocked_in_at, project_id, notes, clock_in_location_label, projects(name), paused_at, paused_seconds")
       .eq("employee_id", profile.id)
       .is("clocked_out_at", null)
       .is("deleted_at", null)
@@ -41,7 +41,7 @@ export default async function TimePerformancePage({
     supabase
       .from("time_entries")
       .select(
-        "id, clocked_in_at, clocked_out_at, notes, project_id, clock_in_location_label, clock_out_location_label, projects(name)"
+        "id, clocked_in_at, clocked_out_at, notes, project_id, clock_in_location_label, clock_out_location_label, projects(name), paused_seconds"
       )
       .eq("employee_id", profile.id)
       .not("clocked_out_at", "is", null)

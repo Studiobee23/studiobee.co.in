@@ -37,7 +37,7 @@ export default async function DashboardPage() {
   ] = await Promise.all([
     supabase
       .from("time_entries")
-      .select("id, clocked_in_at, project_id, projects(name)")
+      .select("id, clocked_in_at, project_id, projects(name), paused_at, paused_seconds")
       .eq("employee_id", profile.id)
       .is("clocked_out_at", null)
       .is("deleted_at", null)
