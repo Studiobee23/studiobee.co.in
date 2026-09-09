@@ -42,13 +42,31 @@ export function computeCostBreakdown(
       };
     });
 
-  const overheads = input.overheadIds
-    .filter((id) => overheadById.has(id))
-    .map((id) => {
-      const item = overheadById.get(id)!;
+  const overheads = input.overheadHours
+    .filter((oh) => overheadById.has(oh.overhead_id))
+    .map((oh) => {
+      const item = overheadById.get(oh.overhead_id)!;
+      // Only purchase/recurring items with a capacity set are hour-scaled — a
+      // per_project item (or one missing capacity data) applies its full cost, same
+      // as before this existed.
+      const isHourly =
+        (item.costing_type === "purchase" || item.costing_type === "recurring") &&
+        !!item.capacity_hours_per_month;
+      if (isHourly) {
+        const hourlyRate = round2(item.cost / item.capacity_hours_per_month!);
+        return {
+          overhead_id: item.id,
+          name_snapshot: item.name,
+          hourly_rate_snapshot: hourlyRate,
+          hours_snapshot: oh.hours,
+          cost_snapshot: round2(hourlyRate * oh.hours),
+        };
+      }
       return {
         overhead_id: item.id,
         name_snapshot: item.name,
+        hourly_rate_snapshot: null,
+        hours_snapshot: null,
         cost_snapshot: item.cost,
       };
     });

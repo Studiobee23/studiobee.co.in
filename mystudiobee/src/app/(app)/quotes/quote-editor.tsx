@@ -60,7 +60,19 @@ type Preset = {
   default_markup_pct: number;
 };
 type CostRole = { id: string; name: string; hourly_rate: number };
-type OverheadItem = { id: string; name: string; cost: number };
+type OverheadItem = {
+  id: string;
+  name: string;
+  cost: number;
+  costing_type?: "purchase" | "recurring" | "per_project";
+  capacity_hours_per_month?: number;
+};
+
+// purchase/recurring items bill only the hours they were actually in use; per_project
+// items are always a flat one-off add regardless of hours.
+function isHourScaledOverhead(o: OverheadItem) {
+  return o.costing_type === "purchase" || o.costing_type === "recurring";
+}
 type TeamMember = { id: string; display_name: string; email: string; role: string };
 
 export type QuoteDoc = {
@@ -694,7 +706,10 @@ export function QuoteEditor({
                     ))}
                     {li.cost_breakdown.overheads.map((o) => (
                       <p key={o.overhead_id}>
-                        {o.name_snapshot}: ₹{o.cost_snapshot}
+                        {o.name_snapshot}:{" "}
+                        {o.hours_snapshot != null
+                          ? `${o.hours_snapshot}h × ₹${o.hourly_rate_snapshot}/hr = ₹${o.cost_snapshot}`
+                          : `₹${o.cost_snapshot}`}
                       </p>
                     ))}
                     <p>
@@ -1254,6 +1269,8 @@ function LineItemFormDialog({
   const [qty, setQty] = useState(1);
   const [hours, setHours] = useState<Record<string, string>>({});
   const [overheadIds, setOverheadIds] = useState<string[]>([]);
+  // Hours-in-use per hour-scaled (purchase/recurring) overhead item, keyed by overhead id.
+  const [overheadHours, setOverheadHours] = useState<Record<string, string>>({});
   const [markup, setMarkup] = useState(0);
   const [manualCost, setManualCost] = useState("");
   const [manualMarkup, setManualMarkup] = useState(0);
@@ -1313,7 +1330,8 @@ function LineItemFormDialog({
       setPresetId(meta.presetId);
       setDescription(item.description);
       setHours(meta.hours);
-      setOverheadIds(meta.overheadIds);
+      setOverheadIds(meta.overheadHours.map((oh) => oh.overhead_id));
+      setOverheadHours(Object.fromEntries(meta.overheadHours.map((oh) => [oh.overhead_id, String(oh.hours)])));
       setMarkup(meta.markupPct);
       setQty(item.qty);
     } else if (meta.mode === "equipment") {
@@ -1356,6 +1374,11 @@ function LineItemFormDialog({
       setDescription(item.description);
       setHours(Object.fromEntries(cb.role_hours.map((rh) => [rh.role_id, String(rh.hours)])));
       setOverheadIds(cb.overheads.map((o) => o.overhead_id));
+      setOverheadHours(
+        Object.fromEntries(
+          cb.overheads.filter((o) => o.hours_snapshot != null).map((o) => [o.overhead_id, String(o.hours_snapshot)]),
+        ),
+      );
       setMarkup(cb.markup_pct);
       setQty(item.qty);
       return;
@@ -1388,6 +1411,16 @@ function LineItemFormDialog({
       setDescription(preset.name);
       setHours(Object.fromEntries(Object.entries(preset.preset_hours).map(([k, v]) => [k, String(v)])));
       setOverheadIds(preset.default_overhead_ids);
+      // Default hour-scaled overheads to the preset's total role hours (assume full-duration
+      // use); the user can dial it down (e.g. a laptop used for only part of the shift).
+      const totalHours = Object.values(preset.preset_hours).reduce((sum, v) => sum + v, 0);
+      setOverheadHours(
+        Object.fromEntries(
+          preset.default_overhead_ids
+            .filter((oid) => isHourScaledOverhead(overheads.find((o) => o.id === oid) ?? { id: oid, name: "", cost: 0 }))
+            .map((oid) => [oid, String(totalHours || 1)]),
+        ),
+      );
       setMarkup(preset.default_markup_pct);
     }
   }
@@ -1484,12 +1517,16 @@ function LineItemFormDialog({
       const roleHours = Object.entries(hours)
         .filter(([, v]) => Number(v) > 0)
         .map(([role_id, v]) => ({ role_id, hours: Number(v) }));
+      const overheadHoursPayload = overheadIds.map((overhead_id) => ({
+        overhead_id,
+        hours: Number(overheadHours[overhead_id] ?? 0),
+      }));
       const item = await priceLineItem({
         description,
         qty,
-        cost: { roleHours, overheadIds, markupPct: markup },
+        cost: { roleHours, overheadHours: overheadHoursPayload, markupPct: markup },
       });
-      submitItem(item, { mode: "preset", presetId, hours, overheadIds, markupPct: markup });
+      submitItem(item, { mode: "preset", presetId, hours, overheadHours: overheadHoursPayload, markupPct: markup });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to price line item");
     } finally {
@@ -1511,7 +1548,7 @@ function LineItemFormDialog({
 
   function resetFields() {
     setMode(presets.length > 0 ? "preset" : "manual");
-    setPresetId(""); setDescription(""); setQty(1); setHours({}); setOverheadIds([]); setMarkup(0);
+    setPresetId(""); setDescription(""); setQty(1); setHours({}); setOverheadIds([]); setOverheadHours({}); setMarkup(0);
     setManualCost(""); setManualMarkup(0);
     setEquipmentId(""); setEquipmentDays(1); setEquipmentUnits(1); setEquipmentMarkup(20);
     setExtEqName(""); setExtEqRate(""); setExtEqDays(1); setExtEqUnits(1); setExtEqMarkup(20);
@@ -1589,12 +1626,40 @@ function LineItemFormDialog({
                 <div className="space-y-1.5">
                   <Label>Overheads</Label>
                   <div className="space-y-2 rounded-lg border border-border p-3">
-                    {overheads.map((o) => (
-                      <label key={o.id} className="flex items-center gap-2 text-xs">
-                        <input type="checkbox" checked={overheadIds.includes(o.id)} onChange={(e) => setOverheadIds((ids) => e.target.checked ? [...ids, o.id] : ids.filter((id) => id !== o.id))} />
-                        {o.name}
-                      </label>
-                    ))}
+                    {overheads.map((o) => {
+                      const checked = overheadIds.includes(o.id);
+                      const hourScaled = isHourScaledOverhead(o);
+                      return (
+                        <div key={o.id} className="flex items-center justify-between gap-3 text-xs">
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                setOverheadIds((ids) => (isChecked ? [...ids, o.id] : ids.filter((id) => id !== o.id)));
+                                if (isChecked && hourScaled) {
+                                  const totalHours = Object.values(hours).reduce((sum, v) => sum + (Number(v) || 0), 0);
+                                  setOverheadHours((m) => ({ ...m, [o.id]: m[o.id] ?? String(totalHours || 1) }));
+                                }
+                              }}
+                            />
+                            {o.name}
+                          </label>
+                          {checked && hourScaled && (
+                            <div className="flex items-center gap-1.5">
+                              <Input
+                                type="number"
+                                className="w-20"
+                                value={overheadHours[o.id] ?? ""}
+                                onChange={(e) => setOverheadHours((m) => ({ ...m, [o.id]: e.target.value }))}
+                              />
+                              <span className="text-muted-foreground">hrs used</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}

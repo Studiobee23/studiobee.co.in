@@ -26,7 +26,13 @@ export default async function ProformaDetailPage({ params }: { params: Promise<{
   ]);
 
   let roles: { id: string; name: string; hourly_rate: number }[] = [];
-  let overheads: { id: string; name: string; cost: number }[] = [];
+  let overheads: {
+    id: string;
+    name: string;
+    cost: number;
+    costing_type?: "purchase" | "recurring" | "per_project";
+    capacity_hours_per_month?: number;
+  }[] = [];
   let teamMembers: { id: string; display_name: string; email: string; role: string }[] = [];
   let splitSettings: unknown[] = [];
 
@@ -34,7 +40,7 @@ export default async function ProformaDetailPage({ params }: { params: Promise<{
     const admin = createAdminClient();
     const [{ data: r }, { data: o }, { data: tm }, { data: ss }] = await Promise.all([
       supabase.from("cost_roles").select("id, name, hourly_rate").eq("active", true),
-      supabase.from("overhead_items").select("id, name, cost").eq("active", true),
+      supabase.from("overhead_items").select("id, name, cost, costing_type, capacity_hours_per_month").eq("active", true),
       admin.from("profiles").select("id, display_name, email, role").eq("active", true).order("display_name"),
       admin.from("profit_split_settings").select("*").order("category"),
     ]);

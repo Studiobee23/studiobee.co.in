@@ -32,6 +32,7 @@ type InternalCostingItem = {
   useful_life_months: number | null;
   billing_period: BillingPeriod | null;
   recurring_amount: number | null;
+  capacity_hours_per_month: number;
   active: boolean;
 };
 
@@ -69,6 +70,13 @@ function deriveMonthlyFromRecurring(amount: string, period: BillingPeriod) {
   return Math.round((val / PERIOD_MONTHS[period]) * 100) / 100;
 }
 
+function hourlyRate(monthlyCost: string | number, capacityHours: string | number) {
+  const cost = typeof monthlyCost === "string" ? parseFloat(monthlyCost) : monthlyCost;
+  const hrs = typeof capacityHours === "string" ? parseFloat(capacityHours) : capacityHours;
+  if (!cost || !hrs) return null;
+  return Math.round((cost / hrs) * 100) / 100;
+}
+
 const EMPTY_FORM = {
   id: "",
   name: "",
@@ -78,6 +86,10 @@ const EMPTY_FORM = {
   useful_life_months: "",
   billing_period: "monthly" as BillingPeriod,
   recurring_amount: "",
+  // Hours/month this item is expected to be in use — converts the monthly cost above
+  // into an hourly rate so line items can be billed only for hours actually used
+  // (e.g. a shared laptop used 8 of a 16-hour shoot day). ~160 = one person full-time.
+  capacity_hours_per_month: "160",
 };
 
 export function InternalCostingClient({ items }: { items: InternalCostingItem[] }) {
@@ -100,6 +112,7 @@ export function InternalCostingClient({ items }: { items: InternalCostingItem[] 
       useful_life_months: item.useful_life_months?.toString() ?? "",
       billing_period: item.billing_period ?? "monthly",
       recurring_amount: item.recurring_amount?.toString() ?? "",
+      capacity_hours_per_month: String(item.capacity_hours_per_month ?? 160),
     });
     setOpen(true);
   }
@@ -132,6 +145,7 @@ export function InternalCostingClient({ items }: { items: InternalCostingItem[] 
         billing_period: form.costing_type === "recurring" ? form.billing_period : null,
         recurring_amount:
           form.costing_type === "recurring" && form.recurring_amount ? Number(form.recurring_amount) : null,
+        capacity_hours_per_month: form.capacity_hours_per_month ? Number(form.capacity_hours_per_month) : 160,
       });
       toast.success(form.id ? "Internal costing item updated" : "Internal costing item added");
       setOpen(false);
@@ -242,6 +256,22 @@ export function InternalCostingClient({ items }: { items: InternalCostingItem[] 
                   <p className="text-[11px] text-muted-foreground">Auto-calculated, editable</p>
                 )}
               </div>
+
+              {form.costing_type !== "per_project" && (
+                <div className="space-y-1.5">
+                  <Label>Capacity (hours/month)</Label>
+                  <Input
+                    type="number"
+                    value={form.capacity_hours_per_month}
+                    onChange={(e) => set("capacity_hours_per_month", e.target.value)}
+                    placeholder="160"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    How many hours/month this is normally in use — line items bill only the hours actually used,
+                    at ₹{hourlyRate(form.cost, form.capacity_hours_per_month) ?? "—"}/hr.
+                  </p>
+                </div>
+              )}
             </div>
             <DialogFooter>
               <Button onClick={handleSave} disabled={!form.name || !form.cost}>
@@ -278,6 +308,11 @@ export function InternalCostingClient({ items }: { items: InternalCostingItem[] 
                 {o.costing_type === "recurring" && o.billing_period && o.billing_period !== "monthly" && (
                   <span className="ml-1 text-[11px] text-muted-foreground">
                     (from ₹{o.recurring_amount}/{o.billing_period === "annual" ? "yr" : "qtr"})
+                  </span>
+                )}
+                {o.costing_type !== "per_project" && (
+                  <span className="ml-1 text-[11px] text-muted-foreground">
+                    (₹{hourlyRate(o.cost, o.capacity_hours_per_month) ?? "—"}/hr over {o.capacity_hours_per_month}h)
                   </span>
                 )}
               </TableCell>

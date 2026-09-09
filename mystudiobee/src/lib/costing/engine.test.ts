@@ -16,12 +16,15 @@ const roles: CostRole[] = [
 const overheads: OverheadItem[] = [
   { id: "o1", name: "Equipment Depreciation", cost: 50, costing_type: "per_project" },
   { id: "o2", name: "Travel", cost: 30, costing_type: "per_project" },
+  // Amortized MacBook: cost is its monthly-equivalent (₹16,000/mo), capacity 160 hrs/mo
+  // -> hourly rate ₹100/hr.
+  { id: "o3", name: "Editor MacBook", cost: 16000, costing_type: "purchase", capacity_hours_per_month: 160 },
 ];
 
 describe("computeCostBreakdown", () => {
-  it("sums labor (rate x hours) and overheads, snapshotting names/rates", () => {
+  it("sums labor (rate x hours) and flat (per_project) overheads, snapshotting names/rates", () => {
     const breakdown = computeCostBreakdown(
-      { roleHours: [{ role_id: "r1", hours: 8 }, { role_id: "r2", hours: 4 }], overheadIds: ["o1"], markupPct: 40 },
+      { roleHours: [{ role_id: "r1", hours: 8 }, { role_id: "r2", hours: 4 }], overheadHours: [{ overhead_id: "o1", hours: 0 }], markupPct: 40 },
       roles,
       overheads,
     );
@@ -31,16 +34,43 @@ describe("computeCostBreakdown", () => {
       { role_id: "r2", role_name_snapshot: "Video Editor", hourly_rate_snapshot: 20, hours: 4 },
     ]);
     expect(breakdown.overheads).toEqual([
-      { overhead_id: "o1", name_snapshot: "Equipment Depreciation", cost_snapshot: 50 },
+      {
+        overhead_id: "o1",
+        name_snapshot: "Equipment Depreciation",
+        cost_snapshot: 50,
+        hours_snapshot: null,
+        hourly_rate_snapshot: null,
+      },
     ]);
-    // (25*8) + (20*4) + 50 = 200 + 80 + 50 = 330
+    // (25*8) + (20*4) + 50 = 200 + 80 + 50 = 330 — a per_project item's cost is flat,
+    // hours (0 here) don't affect it.
     expect(breakdown.cost_subtotal).toBe(330);
     expect(breakdown.markup_pct).toBe(40);
   });
 
+  it("bills a purchase/recurring overhead only for the hours it was actually in use", () => {
+    // Cinematographer works 16hrs total but only uses the MacBook for the 8 editing hrs.
+    const breakdown = computeCostBreakdown(
+      { roleHours: [{ role_id: "r1", hours: 16 }], overheadHours: [{ overhead_id: "o3", hours: 8 }], markupPct: 0 },
+      roles,
+      overheads,
+    );
+    expect(breakdown.overheads).toEqual([
+      {
+        overhead_id: "o3",
+        name_snapshot: "Editor MacBook",
+        cost_snapshot: 800, // 100/hr * 8h, not the full 16000
+        hours_snapshot: 8,
+        hourly_rate_snapshot: 100,
+      },
+    ]);
+    // (25*16) + 800 = 400 + 800 = 1200
+    expect(breakdown.cost_subtotal).toBe(1200);
+  });
+
   it("ignores role/overhead ids that no longer exist", () => {
     const breakdown = computeCostBreakdown(
-      { roleHours: [{ role_id: "ghost", hours: 10 }], overheadIds: ["ghost"], markupPct: 0 },
+      { roleHours: [{ role_id: "ghost", hours: 10 }], overheadHours: [{ overhead_id: "ghost", hours: 5 }], markupPct: 0 },
       roles,
       overheads,
     );
@@ -50,7 +80,7 @@ describe("computeCostBreakdown", () => {
   });
 
   it("is deterministic — same input always produces the same output", () => {
-    const input = { roleHours: [{ role_id: "r1", hours: 3 }], overheadIds: ["o2"], markupPct: 25 };
+    const input = { roleHours: [{ role_id: "r1", hours: 3 }], overheadHours: [{ overhead_id: "o2", hours: 0 }], markupPct: 25 };
     const a = computeCostBreakdown(input, roles, overheads);
     const b = computeCostBreakdown(input, roles, overheads);
     expect(a).toEqual(b);
@@ -60,7 +90,7 @@ describe("computeCostBreakdown", () => {
 describe("priceFromBreakdown", () => {
   it("applies markup percentage on top of cost subtotal", () => {
     const breakdown = computeCostBreakdown(
-      { roleHours: [{ role_id: "r1", hours: 10 }], overheadIds: [], markupPct: 40 },
+      { roleHours: [{ role_id: "r1", hours: 10 }], overheadHours: [], markupPct: 40 },
       roles,
       overheads,
     );
@@ -71,7 +101,7 @@ describe("priceFromBreakdown", () => {
 
   it("returns the cost subtotal unchanged at 0% markup", () => {
     const breakdown = computeCostBreakdown(
-      { roleHours: [{ role_id: "r2", hours: 5 }], overheadIds: [], markupPct: 0 },
+      { roleHours: [{ role_id: "r2", hours: 5 }], overheadHours: [], markupPct: 0 },
       roles,
       overheads,
     );
