@@ -24,6 +24,7 @@ export default async function ProjectDetailPage({
     { data: projectHires },
     { data: vendors },
     { data: hires },
+    { data: timeEntries },
   ] = await Promise.all([
     supabase.from("projects").select("*, clients(id, name)").eq("id", id).single(),
     supabase.from("project_stages").select("*").eq("project_id", id).order("created_at"),
@@ -38,6 +39,12 @@ export default async function ProjectDetailPage({
     supabase.from("project_hires").select("id, role_on_shoot, notes, external_hires(id, name, overall_rating)").eq("project_id", id).order("created_at"),
     supabase.from("equipment_vendors").select("id, name").eq("active", true).order("overall_rating", { ascending: false, nullsFirst: false }),
     supabase.from("external_hires").select("id, name").eq("active", true).order("overall_rating", { ascending: false, nullsFirst: false }),
+    supabase
+      .from("time_entries")
+      .select("employee_id, clocked_in_at, clocked_out_at, paused_seconds, profiles!employee_id(display_name, email)")
+      .eq("project_id", id)
+      .not("clocked_out_at", "is", null)
+      .is("deleted_at", null),
   ]);
 
   if (!project) notFound();
@@ -57,6 +64,7 @@ export default async function ProjectDetailPage({
       projectHires={(projectHires as never[]) ?? []}
       vendors={vendors ?? []}
       hires={hires ?? []}
+      timeEntries={(timeEntries as never[]) ?? []}
     />
   );
 }

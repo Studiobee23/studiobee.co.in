@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile, isAdminTier } from "@/lib/profile";
 import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { workedMs, formatHours } from "@/lib/datetime";
 
 export default async function HoursReportPage() {
   const profile = await getCurrentProfile();
@@ -39,6 +40,20 @@ export default async function HoursReportPage() {
     }
   }
 
+  const { data: timeEntries } = await supabase
+    .from("time_entries")
+    .select("project_id, clocked_in_at, clocked_out_at, paused_seconds")
+    .not("project_id", "is", null)
+    .not("clocked_out_at", "is", null)
+    .is("deleted_at", null);
+
+  const actualMsByProject: Record<string, number> = {};
+  for (const entry of timeEntries ?? []) {
+    if (!entry.project_id) continue;
+    actualMsByProject[entry.project_id] =
+      (actualMsByProject[entry.project_id] ?? 0) + workedMs(entry);
+  }
+
   return (
     <>
       <DashboardHeader title="Hours Report" backHref="/reports" />
@@ -47,7 +62,7 @@ export default async function HoursReportPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>
-                {["Project", "Client", "Est. Hours", "Consumed Hours", "Remaining", "Status"].map((h) => (
+                {["Project", "Client", "Est. Hours", "Consumed Hours", "Actual Hours", "Remaining", "Status"].map((h) => (
                   <th
                     key={h}
                     className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground"
@@ -60,7 +75,7 @@ export default async function HoursReportPage() {
             <tbody className="divide-y divide-border">
               {!projects?.length && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                  <td colSpan={7} className="px-4 py-8 text-center text-sm text-muted-foreground">
                     No projects yet.
                   </td>
                 </tr>
@@ -68,6 +83,7 @@ export default async function HoursReportPage() {
               {(projects ?? []).map((p) => {
                 const est = p.est_hours ?? 0;
                 const consumed = consumedByProject[p.id] ?? 0;
+                const actualMs = actualMsByProject[p.id] ?? 0;
                 const remaining = est - consumed;
                 const overBudget = est > 0 && remaining < 0;
                 return (
@@ -78,6 +94,7 @@ export default async function HoursReportPage() {
                     </td>
                     <td className="px-4 py-3">{est > 0 ? `${est}h` : "—"}</td>
                     <td className="px-4 py-3">{consumed > 0 ? `${consumed}h` : "—"}</td>
+                    <td className="px-4 py-3">{actualMs > 0 ? formatHours(actualMs) : "—"}</td>
                     <td
                       className={`px-4 py-3 font-medium ${overBudget ? "text-red-600" : ""}`}
                     >

@@ -40,6 +40,11 @@ export function workedMs(entry: {
   return Math.max(0, end - start - pausedMs);
 }
 
+/** Total hours as a one-decimal figure, e.g. "12.5h". */
+export function formatHours(ms: number): string {
+  return `${Math.round((ms / 3600000) * 10) / 10}h`;
+}
+
 export function formatDuration(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
   const h = Math.floor(totalSeconds / 3600);

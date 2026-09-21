@@ -32,6 +32,7 @@ import { createTask, updateTaskStatus } from "@/lib/actions/tasks";
 import { linkVendorToProject, unlinkVendorFromProject } from "@/lib/actions/vendors";
 import { linkHireToProject, unlinkHireFromProject } from "@/lib/actions/hires";
 import { StarRatingDisplay } from "@/components/ui/star-rating";
+import { workedMs, formatHours } from "@/lib/datetime";
 import { toast } from "sonner";
 
 const LIFECYCLE_STAGES = [
@@ -125,6 +126,13 @@ type ProjectHireLink = {
   notes: string | null;
   external_hires: { id: string; name: string; overall_rating: number | null } | null;
 };
+type TimeEntry = {
+  employee_id: string;
+  clocked_in_at: string;
+  clocked_out_at: string | null;
+  paused_seconds: number | null;
+  profiles: { display_name: string | null; email: string } | null;
+};
 
 export function ProjectDetailClient({
   project,
@@ -140,6 +148,7 @@ export function ProjectDetailClient({
   projectHires,
   vendors,
   hires,
+  timeEntries,
 }: {
   project: Project;
   stages: Stage[];
@@ -154,6 +163,7 @@ export function ProjectDetailClient({
   projectHires: ProjectHireLink[];
   vendors: Array<{ id: string; name: string }>;
   hires: Array<{ id: string; name: string }>;
+  timeEntries: TimeEntry[];
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -280,6 +290,19 @@ export function ProjectDetailClient({
   }
 
   const totalExpenses = expenses.reduce((s, e) => s + e.amount + e.gst_amount, 0);
+
+  const hoursByEmployee = new Map<string, { id: string; name: string; ms: number }>();
+  for (const entry of timeEntries) {
+    const existing = hoursByEmployee.get(entry.employee_id);
+    const name = entry.profiles?.display_name || entry.profiles?.email || "Unknown";
+    hoursByEmployee.set(entry.employee_id, {
+      id: entry.employee_id,
+      name,
+      ms: (existing?.ms ?? 0) + workedMs(entry),
+    });
+  }
+  const teamHours = Array.from(hoursByEmployee.values()).sort((a, b) => b.ms - a.ms);
+  const totalTeamMs = teamHours.reduce((s, t) => s + t.ms, 0);
 
   return (
     <>
@@ -458,6 +481,23 @@ export function ProjectDetailClient({
             />
             <Button size="sm" onClick={addTask} disabled={pending}>Add</Button>
           </div>
+        </div>
+
+        {/* Team Hours */}
+        <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Team Hours</p>
+            {teamHours.length > 0 && (
+              <p className="text-xs text-muted-foreground">Total: <span className="font-medium text-foreground">{formatHours(totalTeamMs)}</span></p>
+            )}
+          </div>
+          {teamHours.length === 0 && <p className="text-xs text-muted-foreground">No clocked time on this project yet.</p>}
+          {teamHours.map((t) => (
+            <div key={t.id} className="flex items-center gap-3 rounded-lg border border-border px-3 py-2">
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">{t.name}</span>
+              <span className="text-xs font-semibold">{formatHours(t.ms)}</span>
+            </div>
+          ))}
         </div>
 
         {/* Expenses */}
