@@ -270,10 +270,15 @@ export type PdfClient = {
 } | null;
 
 export type PdfSettings = {
+  beneficiaryName?: string;
   bankName?: string;
   accountNumber?: string;
   ifsc?: string;
+  bankBranch?: string;
+  swiftCode?: string;
   studioGstin?: string;
+  studioCin?: string;
+  studioUdyam?: string;
   studioAddress?: string;
   studioPhone?: string;
   studioEmail?: string;
@@ -294,6 +299,8 @@ export function renderDocument(
   const {
     studioGstin = '',
     studioAddress = 'Sultanpur, Delhi', studioPhone = '', studioEmail = '',
+    beneficiaryName = '', bankName = '', accountNumber = '', ifsc = '',
+    bankBranch = '', swiftCode = '', studioCin = '', studioUdyam = '',
   } = settings;
   const includeCover = options.includeCover !== false;
 
@@ -571,15 +578,15 @@ ${includeCover ? coverPageDiv(doc, client, label, true) : ''}
     <div class="bank-box">
       <div class="words-label">Bank Details</div>
       <table class="bank-table">
-        <tr><td>Beneficiary Name</td><td>Mcbee Pvt. Ltd.</td></tr>
-        <tr><td>Bank</td><td>HDFC Bank Ltd.</td></tr>
-        <tr><td>A/c No</td><td>50200036093106</td></tr>
-        <tr><td>IFSC</td><td>HDFC0000557</td></tr>
-        <tr><td>Branch</td><td>Shop No. M-29, GK-II, New Delhi-110048</td></tr>
-        <tr><td>Swift Code</td><td>HDFCINBBDEL</td></tr>
-        <tr><td>GSTIN</td><td>07AALCM9895R1Z1</td></tr>
-        <tr><td>CIN</td><td>U51909DL2018PTC337055</td></tr>
-        <tr><td>UDYAM</td><td>UDYAM-DL-08-0010644</td></tr>
+        <tr><td>Beneficiary Name</td><td>${esc(beneficiaryName)}</td></tr>
+        <tr><td>Bank</td><td>${esc(bankName)}</td></tr>
+        <tr><td>A/c No</td><td>${esc(accountNumber)}</td></tr>
+        <tr><td>IFSC</td><td>${esc(ifsc)}</td></tr>
+        <tr><td>Branch</td><td>${esc(bankBranch)}</td></tr>
+        <tr><td>Swift Code</td><td>${esc(swiftCode)}</td></tr>
+        <tr><td>GSTIN</td><td>${esc(studioGstin)}</td></tr>
+        <tr><td>CIN</td><td>${esc(studioCin)}</td></tr>
+        ${studioUdyam ? `<tr><td>UDYAM</td><td>${esc(studioUdyam)}</td></tr>` : ''}
       </table>
     </div>
   </div>

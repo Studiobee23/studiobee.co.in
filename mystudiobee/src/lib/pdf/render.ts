@@ -58,10 +58,15 @@ export async function renderDocumentToPdf(docId: string) {
   // The PDF template never reads cost_breakdown — only description/qty/rate/amount —
   // so it's safe to render regardless of who (admin/manager) requested it.
   const settings = {
+    beneficiaryName: process.env.BANK_BENEFICIARY,
     bankName: process.env.BANK_NAME,
     accountNumber: process.env.BANK_ACCOUNT,
     ifsc: process.env.BANK_IFSC,
+    bankBranch: process.env.BANK_BRANCH,
+    swiftCode: process.env.BANK_SWIFT,
     studioGstin: process.env.STUDIO_GSTIN,
+    studioCin: process.env.STUDIO_CIN,
+    studioUdyam: process.env.STUDIO_UDYAM,
     studioAddress: process.env.STUDIO_ADDRESS,
     studioPhone: process.env.STUDIO_PHONE,
     studioEmail: process.env.STUDIO_EMAIL,
