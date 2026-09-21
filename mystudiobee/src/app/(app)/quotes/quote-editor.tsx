@@ -279,7 +279,13 @@ export function QuoteEditor({
   const profitSplit = useMemo(() => {
     if (!canSeeCost || totals.subtotal <= 0) return null;
 
-    function buildGroup(groupName: string, items: LineItem[]) {
+    // Equipment rental (own or external) is pass-through-cost + markup, not team effort —
+    // it never earns a profit-split entry, whether it's a dedicated group or mixed in
+    // alongside labour line items.
+    function buildGroup(groupName: string, groupItems: LineItem[]) {
+      const items = groupItems.filter(
+        (it) => it.meta?.mode !== "equipment" && it.meta?.mode !== "external_equipment"
+      );
       const price = round2(items.reduce((sum, it) => sum + it.amount, 0));
       if (price <= 0) return null;
       const override = groupAssignments[groupName];
