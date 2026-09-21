@@ -699,12 +699,12 @@ export function QuoteEditor({
                 </div>
                 {canSeeCost && showCost[idx] && li.cost_breakdown && (
                   <div className="mt-2 border-t border-border pt-2 text-[10px] text-muted-foreground">
-                    {li.cost_breakdown.role_hours.map((rh) => (
+                    {(li.cost_breakdown.role_hours ?? []).map((rh) => (
                       <p key={rh.role_id}>
                         {rh.role_name_snapshot}: {rh.hours}h × ₹{rh.hourly_rate_snapshot}/hr
                       </p>
                     ))}
-                    {li.cost_breakdown.overheads.map((o) => (
+                    {(li.cost_breakdown.overheads ?? []).map((o) => (
                       <p key={o.overhead_id}>
                         {o.name_snapshot}:{" "}
                         {o.hours_snapshot != null
@@ -1330,8 +1330,8 @@ function LineItemFormDialog({
       setPresetId(meta.presetId);
       setDescription(item.description);
       setHours(meta.hours);
-      setOverheadIds(meta.overheadHours.map((oh) => oh.overhead_id));
-      setOverheadHours(Object.fromEntries(meta.overheadHours.map((oh) => [oh.overhead_id, String(oh.hours)])));
+      setOverheadIds((meta.overheadHours ?? []).map((oh) => oh.overhead_id));
+      setOverheadHours(Object.fromEntries((meta.overheadHours ?? []).map((oh) => [oh.overhead_id, String(oh.hours)])));
       setMarkup(meta.markupPct);
       setQty(item.qty);
     } else if (meta.mode === "equipment") {
@@ -1367,16 +1367,18 @@ function LineItemFormDialog({
   // cost_breakdown — so recover as much as the breakdown actually holds instead.
   function loadFromCostBreakdown(item: LineItem) {
     const cb = item.cost_breakdown;
-    if (cb && (cb.role_hours.length > 0 || cb.overheads.length > 0)) {
+    const cbRoleHours = cb?.role_hours ?? [];
+    const cbOverheads = cb?.overheads ?? [];
+    if (cb && (cbRoleHours.length > 0 || cbOverheads.length > 0)) {
       // Role hours / overheads present — same shape Preset mode edits.
       setMode("preset");
       setPresetId("");
       setDescription(item.description);
-      setHours(Object.fromEntries(cb.role_hours.map((rh) => [rh.role_id, String(rh.hours)])));
-      setOverheadIds(cb.overheads.map((o) => o.overhead_id));
+      setHours(Object.fromEntries(cbRoleHours.map((rh) => [rh.role_id, String(rh.hours)])));
+      setOverheadIds(cbOverheads.map((o) => o.overhead_id));
       setOverheadHours(
         Object.fromEntries(
-          cb.overheads.filter((o) => o.hours_snapshot != null).map((o) => [o.overhead_id, String(o.hours_snapshot)]),
+          cbOverheads.filter((o) => o.hours_snapshot != null).map((o) => [o.overhead_id, String(o.hours_snapshot)]),
         ),
       );
       setMarkup(cb.markup_pct);
