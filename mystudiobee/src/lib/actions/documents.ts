@@ -84,6 +84,7 @@ export async function createQuote(input: {
   manager_id?: string | null;
   client_handler_id?: string | null;
   profit_split?: unknown;
+  group_assignments?: unknown;
 }) {
   const profile = await requireBillingRole();
   const supabase = await createClient();
@@ -132,6 +133,7 @@ export async function updateDocument(
     manager_id: string | null;
     client_handler_id: string | null;
     profit_split: unknown;
+    group_assignments: unknown;
   }>,
 ) {
   await requireBillingRole();
@@ -248,7 +250,14 @@ export async function getDocumentForViewer(id: string) {
   if (!data) return null;
 
   if (!canSeeCost(profile.role)) {
-    const { executor_id: _e, manager_id: _m, client_handler_id: _ch, profit_split: _ps, ...rest } = data as Record<string, unknown>;
+    const {
+      executor_id: _e,
+      manager_id: _m,
+      client_handler_id: _ch,
+      profit_split: _ps,
+      group_assignments: _ga,
+      ...rest
+    } = data as Record<string, unknown>;
     return { ...rest, line_items: redactCostBreakdown(data.line_items ?? []) };
   }
   return data;

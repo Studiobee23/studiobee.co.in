@@ -36,6 +36,38 @@ export type ProfitSplitInput = {
   category: string;
 };
 
+/** One category-specific bucket within a document that mixes services (e.g. a
+ * design line-item group and a video line-item group in the same bill) — each
+ * gets its own tier lookup and its own executor. */
+export type ProfitSplitGroupInput = ProfitSplitInput & {
+  /** The line items' `group` label this bucket was built from; "" for the
+   * document's ungrouped items. */
+  groupName: string;
+  executorId: string | null;
+};
+
+export type ProfitSplitGroupResult = ProfitSplitResult & {
+  groupName: string;
+  executorId: string | null;
+};
+
+/** Runs `computeProfitSplit` once per group, skipping any group whose category
+ * has no settings row. Company/manager/executor totals are per-group — sum
+ * across the results to get a document-wide total. */
+export function computeMultiGroupProfitSplit(
+  groups: ProfitSplitGroupInput[],
+  settingsByCategory: Record<string, ProfitSplitSettings>
+): ProfitSplitGroupResult[] {
+  const results: ProfitSplitGroupResult[] = [];
+  for (const group of groups) {
+    const settings = settingsByCategory[group.category];
+    if (!settings) continue;
+    const result = computeProfitSplit(group, settings);
+    results.push({ ...result, groupName: group.groupName, executorId: group.executorId });
+  }
+  return results;
+}
+
 export function computeProfitSplit(
   input: ProfitSplitInput,
   settings: ProfitSplitSettings

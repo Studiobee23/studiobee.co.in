@@ -102,6 +102,10 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
               executor_id: (doc as Record<string, unknown>).executor_id as string | null,
               manager_id: (doc as Record<string, unknown>).manager_id as string | null,
               client_handler_id: (doc as Record<string, unknown>).client_handler_id as string | null,
+              group_assignments: (doc as Record<string, unknown>).group_assignments as
+                | Record<string, { category: string; executor_id: string | null }>
+                | null
+                | undefined,
               hide_pricing: (doc as Record<string, unknown>).hide_pricing as boolean | undefined,
               round_total: (doc as Record<string, unknown>).round_total as boolean | undefined,
               line_item_view: (doc as Record<string, unknown>).line_item_view as "itemised" | "summary" | "grouped" | undefined,

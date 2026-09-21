@@ -18,13 +18,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { computeDocumentTotals } from "@/lib/costing/engine";
+import { computeDocumentTotals, round2 } from "@/lib/costing/engine";
 import {
-  computeProfitSplit,
+  computeMultiGroupProfitSplit,
   sumLaborCost,
   sumDirectCost,
 } from "@/lib/profit-split/engine";
-import type { ProfitSplitSettings } from "@/lib/profit-split/engine";
+import type { ProfitSplitSettings, ProfitSplitGroupResult } from "@/lib/profit-split/engine";
 import type { LineItem, LineItemMeta } from "@/lib/costing/types";
 import { createQuote, updateDocument, convertDocument, duplicateDocument, priceLineItem, deleteDocument, updateDocumentStatus } from "@/lib/actions/documents";
 import { CATEGORIES, CATEGORY_LABELS } from "@/lib/categories";
@@ -97,6 +97,9 @@ export type QuoteDoc = {
   executor_id?: string | null;
   manager_id?: string | null;
   client_handler_id?: string | null;
+  /** Per line-item-group category/executor overrides, keyed by `LineItem.group`.
+   * A group without an entry here inherits the document's own category/executor_id. */
+  group_assignments?: Record<string, { category: string; executor_id: string | null }> | null;
   hide_pricing?: boolean;
   round_total?: boolean;
   line_item_view?: "itemised" | "summary" | "grouped";
@@ -164,6 +167,9 @@ export function QuoteEditor({
   const [executorId, setExecutorId] = useState(doc?.executor_id ?? "");
   const [managerId, setManagerId] = useState(doc?.manager_id ?? "");
   const [clientHandlerId, setClientHandlerId] = useState(doc?.client_handler_id ?? "");
+  const [groupAssignments, setGroupAssignments] = useState<
+    Record<string, { category: string; executor_id: string | null }>
+  >(doc?.group_assignments ?? {});
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
@@ -218,6 +224,22 @@ export function QuoteEditor({
 
   function renameGroup(oldName: string, newName: string) {
     setLineItems((items) => items.map((it) => (it.group === oldName ? { ...it, group: newName } : it)));
+    setGroupAssignments((prev) => {
+      if (!(oldName in prev)) return prev;
+      const { [oldName]: moved, ...rest } = prev;
+      return { ...rest, [newName]: moved };
+    });
+  }
+
+  function setGroupAssignment(groupName: string, patch: Partial<{ category: string; executor_id: string | null }>) {
+    setGroupAssignments((prev) => ({
+      ...prev,
+      [groupName]: {
+        category: prev[groupName]?.category ?? category,
+        executor_id: prev[groupName]?.executor_id ?? null,
+        ...patch,
+      },
+    }));
   }
 
   // Group order is derived from first-appearance in `lineItems`, not a separate
@@ -250,22 +272,45 @@ export function QuoteEditor({
     });
   }
 
+  // One profit-split entry per line-item group (plus one for ungrouped items) so a
+  // document mixing categories (e.g. design + video in the same bill) attributes
+  // each group's pool to its own category's tiers and its own executor, instead of
+  // forcing the whole document through a single category/executor.
   const profitSplit = useMemo(() => {
     if (!canSeeCost || totals.subtotal <= 0) return null;
-    const setting = splitSettings.find(
-      (s) => s.category.toLowerCase() === category.toLowerCase()
-    );
-    if (!setting) return null;
-    return computeProfitSplit(
-      {
-        price: totals.subtotal,
-        laborCost: sumLaborCost(lineItems as Array<{ cost_breakdown: unknown }>),
-        directCost: sumDirectCost(lineItems as Array<{ cost_breakdown: unknown }>),
-        category: setting.category,
-      },
-      setting
-    );
-  }, [canSeeCost, totals.subtotal, lineItems, category, splitSettings]);
+
+    function buildGroup(groupName: string, items: LineItem[]) {
+      const price = round2(items.reduce((sum, it) => sum + it.amount, 0));
+      if (price <= 0) return null;
+      const override = groupAssignments[groupName];
+      const cat = (override?.category || category || "").toLowerCase();
+      if (!cat) return null;
+      return {
+        groupName,
+        category: cat,
+        executorId: override?.executor_id ?? (executorId || null),
+        price,
+        laborCost: sumLaborCost(items as Array<{ cost_breakdown: unknown }>),
+        directCost: sumDirectCost(items as Array<{ cost_breakdown: unknown }>),
+      };
+    }
+
+    const inputs = [];
+    if (groupedBuckets.unassigned.length > 0) {
+      const g = buildGroup("", groupedBuckets.unassigned.map(({ item }) => item));
+      if (g) inputs.push(g);
+    }
+    for (const name of groupedBuckets.order) {
+      const bucket = groupedBuckets.groups.get(name)!;
+      const g = buildGroup(name, bucket.items.map(({ item }) => item));
+      if (g) inputs.push(g);
+    }
+    if (inputs.length === 0) return null;
+
+    const settingsByCategory = Object.fromEntries(splitSettings.map((s) => [s.category.toLowerCase(), s]));
+    const results = computeMultiGroupProfitSplit(inputs, settingsByCategory);
+    return results.length > 0 ? results : null;
+  }, [canSeeCost, totals.subtotal, category, executorId, groupAssignments, splitSettings, groupedBuckets]);
 
   function updateLineItem(idx: number, updated: LineItem) {
     setLineItems((items) => items.map((it, i) => (i === idx ? updated : it)));
@@ -329,6 +374,7 @@ export function QuoteEditor({
       manager_id: managerId || null,
       client_handler_id: clientHandlerId || null,
       profit_split: profitSplit ?? null,
+      group_assignments: Object.keys(groupAssignments).length > 0 ? groupAssignments : null,
     };
   }
 
@@ -870,48 +916,133 @@ export function QuoteEditor({
             )}
           </div>
 
-          {profitSplit && (
+          {groupedBuckets.order.length > 0 && (
             <div className="space-y-2 border-t border-border pt-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                Profit Split · {profitSplit.tier.mode === "cost-plus" ? "Cost-Plus" : "Simple"} · Pool ₹{profitSplit.pool.toLocaleString("en-IN")}
+                Per-group split (for bills mixing categories)
               </p>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                <div className="rounded-lg bg-muted px-3 py-2">
-                  <p className="text-[10px] text-muted-foreground">Company</p>
-                  <p className="text-xs font-medium">
-                    ₹{profitSplit.company.toLocaleString("en-IN")} ({profitSplit.tier.company_pct}%)
-                  </p>
-                </div>
-                <div className="rounded-lg bg-muted px-3 py-2">
-                  <p className="text-[10px] text-muted-foreground">Executor</p>
-                  <p className="text-xs font-medium">
-                    ₹{profitSplit.executor.toLocaleString("en-IN")} ({profitSplit.tier.executor_pct}%)
-                  </p>
-                </div>
-                {profitSplit.is_web ? (
-                  <>
-                    <div className="rounded-lg bg-muted px-3 py-2">
-                      <p className="text-[10px] text-muted-foreground">Origination</p>
-                      <p className="text-xs font-medium">
-                        ₹{(profitSplit.origination ?? 0).toLocaleString("en-IN")} ({profitSplit.tier.origination_pct ?? 0}%)
-                      </p>
+              <div className="space-y-2">
+                {groupedBuckets.order.map((name) => {
+                  const assignment = groupAssignments[name];
+                  const groupCategory = assignment?.category ?? category;
+                  const groupExecutorId = assignment?.executor_id ?? executorId ?? "";
+                  return (
+                    <div key={name} className="grid gap-2 rounded-lg border border-dashed border-border p-2.5 sm:grid-cols-[1fr,1fr,1fr]">
+                      <div className="flex items-center text-xs font-medium">{name}</div>
+                      <Select
+                        value={groupCategory}
+                        onValueChange={(v) => setGroupAssignment(name, { category: v })}
+                      >
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue placeholder="Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CATEGORIES.map((c) => (
+                            <SelectItem key={c} value={c}>
+                              {CATEGORY_LABELS[c]}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select
+                        value={groupExecutorId}
+                        onValueChange={(v) => setGroupAssignment(name, { executor_id: v || null })}
+                      >
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue placeholder="Executor" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">None</SelectItem>
+                          {teamMembers.map((m) => (
+                            <SelectItem key={m.id} value={m.id}>
+                              {m.display_name || m.email}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <div className="rounded-lg bg-muted px-3 py-2">
-                      <p className="text-[10px] text-muted-foreground">Client Handling</p>
-                      <p className="text-xs font-medium">
-                        ₹{(profitSplit.client_handling ?? 0).toLocaleString("en-IN")} ({profitSplit.tier.client_handling_pct ?? 0}%)
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="rounded-lg bg-muted px-3 py-2">
-                    <p className="text-[10px] text-muted-foreground">Manager</p>
-                    <p className="text-xs font-medium">
-                      ₹{(profitSplit.manager ?? 0).toLocaleString("en-IN")} ({profitSplit.tier.manager_pct ?? 0}%)
-                    </p>
-                  </div>
-                )}
+                  );
+                })}
               </div>
+              <p className="text-[10px] text-muted-foreground">
+                Ungrouped line items use the Executor/Category set above. Assign a category + executor to each
+                named group here when a bill mixes services (e.g. design + video).
+              </p>
+            </div>
+          )}
+
+          {profitSplit && (
+            <div className="space-y-3 border-t border-border pt-3">
+              {profitSplit.map((split) => {
+                const executorName = teamMembers.find((m) => m.id === split.executorId)?.display_name;
+                const label = split.groupName || (profitSplit.length > 1 ? "Ungrouped" : null);
+                return (
+                  <div key={split.groupName} className="space-y-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                      {label ? `${label} · ` : ""}
+                      Profit Split · {split.tier.mode === "cost-plus" ? "Cost-Plus" : "Simple"} · Pool ₹
+                      {split.pool.toLocaleString("en-IN")}
+                      {executorName ? ` · ${executorName}` : ""}
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                      <div className="rounded-lg bg-muted px-3 py-2">
+                        <p className="text-[10px] text-muted-foreground">Company</p>
+                        <p className="text-xs font-medium">
+                          ₹{split.company.toLocaleString("en-IN")} ({split.tier.company_pct}%)
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-muted px-3 py-2">
+                        <p className="text-[10px] text-muted-foreground">Executor</p>
+                        <p className="text-xs font-medium">
+                          ₹{split.executor.toLocaleString("en-IN")} ({split.tier.executor_pct}%)
+                        </p>
+                      </div>
+                      {split.is_web ? (
+                        <>
+                          <div className="rounded-lg bg-muted px-3 py-2">
+                            <p className="text-[10px] text-muted-foreground">Origination</p>
+                            <p className="text-xs font-medium">
+                              ₹{(split.origination ?? 0).toLocaleString("en-IN")} ({split.tier.origination_pct ?? 0}%)
+                            </p>
+                          </div>
+                          <div className="rounded-lg bg-muted px-3 py-2">
+                            <p className="text-[10px] text-muted-foreground">Client Handling</p>
+                            <p className="text-xs font-medium">
+                              ₹{(split.client_handling ?? 0).toLocaleString("en-IN")} ({split.tier.client_handling_pct ?? 0}%)
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="rounded-lg bg-muted px-3 py-2">
+                          <p className="text-[10px] text-muted-foreground">Manager</p>
+                          <p className="text-xs font-medium">
+                            ₹{(split.manager ?? 0).toLocaleString("en-IN")} ({split.tier.manager_pct ?? 0}%)
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+              {profitSplit.length > 1 && (
+                <div className="flex flex-wrap gap-2 border-t border-dashed border-border pt-2 text-xs font-medium">
+                  <span className="text-muted-foreground">Totals:</span>
+                  <span>
+                    Company ₹
+                    {profitSplit.reduce((sum, s) => sum + s.company, 0).toLocaleString("en-IN")}
+                  </span>
+                  <span>
+                    Manager ₹
+                    {profitSplit.reduce((sum, s) => sum + (s.manager ?? 0), 0).toLocaleString("en-IN")}
+                  </span>
+                  <span>
+                    Executor payouts ₹
+                    {profitSplit
+                      .reduce((sum, s) => sum + s.executor + (s.origination ?? 0) + (s.client_handling ?? 0), 0)
+                      .toLocaleString("en-IN")}
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
