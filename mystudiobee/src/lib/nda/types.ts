@@ -1,0 +1,22 @@
+export type NdaAgreementRow = {
+  id: string;
+  client_id: string;
+  token: string;
+  status: "pending" | "signed" | "voided";
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  expires_at: string;
+  sent_at: string | null;
+  signed_at: string | null;
+  signatory_name: string | null;
+  signatory_title: string | null;
+  signatory_email: string | null;
+  client_company_snapshot: string | null;
+  client_address_snapshot: string | null;
+  purpose_snapshot: string | null;
+  signature_type: "typed" | "drawn" | null;
+  signature_text: string | null;
+  signature_storage_path: string | null;
+  pdf_storage_path: string | null;
+};
