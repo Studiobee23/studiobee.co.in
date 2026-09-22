@@ -9,6 +9,8 @@ import { ClientFormSheet, type ClientRecord } from "../client-form-sheet";
 import { deleteClient } from "@/lib/actions/clients";
 import { ClientAvatar } from "@/components/clients/client-avatar";
 import { uploadAndSetClientAvatar } from "@/lib/clients/avatar-upload";
+import { NdaAgreementsCard } from "./nda-agreements-card";
+import type { NdaAgreementRow } from "@/lib/nda/types";
 
 type Document = {
   id: string;
@@ -23,12 +25,14 @@ type Document = {
 export function ClientDetailClient({
   client,
   documents,
+  ndaAgreements,
   canDelete = false,
   isBinned = false,
   deletedAt,
 }: {
   client: ClientRecord & { id: string };
   documents: Document[];
+  ndaAgreements: NdaAgreementRow[];
   canDelete?: boolean;
   isBinned?: boolean;
   deletedAt?: string | null;
@@ -159,6 +163,8 @@ export function ClientDetailClient({
           </div>
         )}
       </div>
+
+      <NdaAgreementsCard clientId={client.id} agreements={ndaAgreements} />
 
       <ClientFormSheet
         open={editOpen}

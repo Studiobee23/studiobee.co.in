@@ -11,11 +11,16 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   const { id } = await params;
   const supabase = await createClient();
 
-  const [{ data: client }, { data: documents }] = await Promise.all([
+  const [{ data: client }, { data: documents }, { data: ndaAgreements }] = await Promise.all([
     supabase.from("clients").select("*").eq("id", id).maybeSingle(),
     supabase
       .from("documents")
       .select("id, type, number, project_name, status, total, created_at")
+      .eq("client_id", id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("nda_agreements")
+      .select("*")
       .eq("client_id", id)
       .order("created_at", { ascending: false }),
   ]);
@@ -32,6 +37,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           <ClientDetailClient
             client={client}
             documents={documents ?? []}
+            ndaAgreements={ndaAgreements ?? []}
             canDelete={canDelete}
             isBinned={!!client.deleted_at}
             deletedAt={client.deleted_at}
