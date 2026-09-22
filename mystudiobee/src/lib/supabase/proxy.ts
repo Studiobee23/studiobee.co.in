@@ -4,8 +4,18 @@ import { isAdminTier, type Role } from "@/lib/role";
 
 const PUBLIC_PATHS = ["/login", "/accept-invite", "/auth/callback"];
 const ADMIN_ONLY_PREFIXES = ["/admin"];
+// An anonymous *client* opens these with no Supabase session at all, ever — the
+// per-agreement `token` in the URL is the entire authorization boundary (see
+// migration 0045_nda_agreements.sql's RLS comment). PUBLIC_PATHS below only
+// skips the *redirect*, still running the full session/profile lookup; these
+// need the session check skipped entirely, since there's no cookie to look up.
+const NO_SESSION_PATHS = ["/nda", "/api/nda"];
 
 export async function updateSession(request: NextRequest) {
+  if (NO_SESSION_PATHS.some((p) => request.nextUrl.pathname.startsWith(p))) {
+    return NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
