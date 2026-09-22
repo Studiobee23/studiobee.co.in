@@ -1,6 +1,8 @@
 import { PDFDocument } from "pdf-lib";
 import { renderDocument, renderCoverDocument, renderFooterTemplate, FOOTER_HEIGHT_PX } from "@/lib/pdf/template";
+import { renderNdaAgreement } from "@/lib/pdf/nda-template";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 // Local dev: reuse the same Chrome install the marketing site's screenshot.mjs already
 // uses (avoids needing the full `puppeteer` package with its own Chromium download).
@@ -102,6 +104,72 @@ export async function renderDocumentToPdf(docId: string) {
     await browser.close();
     const pdfBuffer = await mergePdfs([coverBuffer, contentBuffer]);
     return { doc, client, pdfBuffer };
+  } catch (e) {
+    if (browser) await browser.close().catch(() => {});
+    throw e;
+  }
+}
+
+/** Renders a signed nda_agreements row to PDF and uploads it to the (pre-existing,
+ * un-migrated — see migration 0045's comment) "documents" Storage bucket, same
+ * bucket/path convention as quote/invoice PDFs (`pdfs/<file>.pdf`). Always reads/
+ * writes via the admin client: this is called from the anonymous /api/nda/[token]
+ * signing route, which has no Supabase auth session to enforce RLS against. */
+export async function renderNdaAgreementToPdf(
+  agreementId: string
+): Promise<{ pdfBuffer: Buffer; storagePath: string }> {
+  const admin = createAdminClient();
+
+  const { data: agreement, error: agreementError } = await admin
+    .from("nda_agreements")
+    .select("*")
+    .eq("id", agreementId)
+    .single();
+  if (agreementError || !agreement) throw new Error("NDA agreement not found");
+
+  const { data: client } = await admin
+    .from("clients")
+    .select("name")
+    .eq("id", agreement.client_id)
+    .single();
+
+  // A drawn signature is stored in Storage as a PNG (signature_storage_path),
+  // never inline on the row — fetch it and inline it as a data: URI so Puppeteer
+  // can render it with no network fetch of its own inside the sandboxed page.
+  let signatureDataUri: string | undefined;
+  if (agreement.signature_type === "drawn" && agreement.signature_storage_path) {
+    const { data: sigBlob } = await admin.storage.from("documents").download(agreement.signature_storage_path);
+    if (sigBlob) {
+      const buf = Buffer.from(await sigBlob.arrayBuffer());
+      signatureDataUri = `data:image/png;base64,${buf.toString("base64")}`;
+    }
+  }
+
+  const html = renderNdaAgreement(agreement, { name: client?.name ?? "Client" }, signatureDataUri);
+
+  let browser;
+  try {
+    browser = await launchBrowser();
+    const page = await browser.newPage();
+
+    await page.setContent(html, { waitUntil: "load" });
+    const pdfBuffer = (await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: { top: "0px", right: "0px", bottom: "0px", left: "0px" },
+    })) as Buffer;
+
+    await browser.close();
+
+    const storagePath = `pdfs/nda-${agreement.token}.pdf`;
+    const { error: uploadError } = await admin.storage
+      .from("documents")
+      .upload(storagePath, pdfBuffer, { contentType: "application/pdf", upsert: true });
+    if (uploadError) throw new Error(uploadError.message);
+
+    await admin.from("nda_agreements").update({ pdf_storage_path: storagePath }).eq("id", agreementId);
+
+    return { pdfBuffer, storagePath };
   } catch (e) {
     if (browser) await browser.close().catch(() => {});
     throw e;
