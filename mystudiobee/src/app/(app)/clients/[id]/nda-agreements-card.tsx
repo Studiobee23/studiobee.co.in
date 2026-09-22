@@ -34,59 +34,59 @@ export function NdaAgreementsCard({ clientId, agreements }: { clientId: string; 
 
   function handleCreate() {
     startTransition(async () => {
-      try {
-        const { url } = await createNdaAgreement(clientId, purpose);
-        setNewLink(url);
-        toast.success("NDA created");
-      } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Failed to create NDA");
+      const result = await createNdaAgreement(clientId, purpose);
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
       }
+      setNewLink(result.url);
+      toast.success("NDA created");
     });
   }
 
   function handleSend(id: string) {
     startTransition(async () => {
-      try {
-        await sendNdaAgreementEmail(id);
-        toast.success("Emailed to client");
-      } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Failed to send email");
+      const result = await sendNdaAgreementEmail(id);
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
       }
+      toast.success("Emailed to client");
     });
   }
 
   function handleVoid(id: string) {
     if (!window.confirm("Void this NDA link? It can no longer be signed.")) return;
     startTransition(async () => {
-      try {
-        await voidNdaAgreement(id);
-        setRows((r) => r.map((row) => (row.id === id ? { ...row, status: "voided" } : row)));
-        toast.success("Voided");
-      } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Failed to void");
+      const result = await voidNdaAgreement(id);
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
       }
+      setRows((r) => r.map((row) => (row.id === id ? { ...row, status: "voided" } : row)));
+      toast.success("Voided");
     });
   }
 
   function handleViewPdf(id: string) {
     startTransition(async () => {
-      try {
-        const url = await getNdaPdfDownloadUrl(id);
-        window.open(url, "_blank");
-      } catch (e) {
-        toast.error(e instanceof Error ? e.message : "PDF not available");
+      const result = await getNdaPdfDownloadUrl(id);
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
       }
+      window.open(result.url, "_blank");
     });
   }
 
   function handleRegeneratePdf(id: string) {
     startTransition(async () => {
-      try {
-        await regenerateNdaPdf(id);
-        toast.success("PDF regenerated");
-      } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Failed to regenerate PDF");
+      const result = await regenerateNdaPdf(id);
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
       }
+      toast.success("PDF regenerated");
     });
   }
 
