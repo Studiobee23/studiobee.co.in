@@ -39,6 +39,12 @@ export function NdaSignClient({
   const hasDrawnRef = useRef(false);
 
   useEffect(() => {
+    // The canvas only exists in the DOM while mode === "draw" (it's swapped
+    // out for the typed-signature input otherwise), so this must re-run when
+    // mode changes — an empty dep array would attach to a still-null ref on
+    // first mount (mode starts as "type") and never re-attach after the
+    // canvas actually mounts.
+    if (mode !== "draw") return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -76,7 +82,7 @@ export function NdaSignClient({
       canvas.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
     };
-  }, []);
+  }, [mode]);
 
   function clearCanvas() {
     const canvas = canvasRef.current;
@@ -114,7 +120,7 @@ export function NdaSignClient({
           clientCompany: company.trim(),
           clientAddress: address.trim() || undefined,
           purpose: purpose.trim() || undefined,
-          signatureType: mode,
+          signatureType: mode === "type" ? "typed" : "drawn",
           signatureText: mode === "type" ? signatureText.trim() : undefined,
           signatureDataUrl: mode === "draw" ? signatureDataUrl : undefined,
         }),
