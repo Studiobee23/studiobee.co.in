@@ -146,10 +146,19 @@ export function NdaSignClient({
   return (
     <div className="nda-root">
       <style>{`
+        /* 794px = 210mm at 96dpi — same A4 width the generated PDF renders at (see nda-template.ts) */
         .nda-root { max-width: 794px; margin: 0 auto; padding: 24px 16px 60px; font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif; color: #333; background: #EFEFF4; }
-        .nda-sheet { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(20,20,40,0.07), 0 10px 30px -14px rgba(20,20,40,0.22); }
+        .nda-sheet { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(20,20,40,0.07), 0 10px 30px -14px rgba(20,20,40,0.22); margin-bottom: 10px; }
+        .nda-page-label { text-align: center; font-size: 10.5px; color: #999; margin: -2px 0 22px; }
         .nda-header { background: #2F48DF; padding: 22px 32px; color: #fff; font-size: 17px; }
         .nda-body { padding: 28px 32px; }
+        .nda-clause { margin-bottom: 16px; break-inside: avoid; page-break-inside: avoid; }
+        @media print {
+          .nda-root { background: #fff; padding: 0; max-width: none; }
+          .nda-sheet { box-shadow: none; border-radius: 0; margin-bottom: 0; }
+          .nda-sheet + .nda-page-label + .nda-sheet { break-before: page; page-break-before: always; }
+          .nda-page-label { display: none; }
+        }
         .nda-field { margin-bottom: 14px; }
         .nda-field label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 5px; }
         .nda-field input[type="text"], .nda-field input[type="email"] { width: 100%; font: inherit; font-size: 13px; padding: 8px 10px; border: 1px solid #d5d5dd; border-radius: 6px; }
@@ -164,118 +173,135 @@ export function NdaSignClient({
         .nda-btn:disabled { opacity: 0.6; cursor: not-allowed; }
       `}</style>
 
-      <div className="nda-sheet">
-        <div className="nda-header">Studiobee &middot; Non-Disclosure Agreement</div>
-        <div className="nda-body">
-          {signed ? (
-            <div>
-              <p style={{ marginBottom: 12 }}>
-                <strong>Signed</strong> by {signed.name} on behalf of {signed.company} on {signed.dateStr}.
-              </p>
-              {signed.pdfUrl && (
-                <a className="nda-btn" href={signed.pdfUrl} target="_blank" rel="noreferrer" style={{ textDecoration: "none", display: "inline-block" }}>
-                  Download your copy
-                </a>
-              )}
-              {!signed.pdfUrl && <p style={{ fontSize: 12, color: "#666" }}>Your PDF copy is being prepared — check back shortly or contact Studiobee.</p>}
-            </div>
-          ) : (
-            <>
+      {signed ? (
+        <div className="nda-sheet">
+          <div className="nda-header">Studiobee &middot; Non-Disclosure Agreement</div>
+          <div className="nda-body">
+            <p style={{ marginBottom: 12 }}>
+              <strong>Signed</strong> by {signed.name} on behalf of {signed.company} on {signed.dateStr}.
+            </p>
+            {signed.pdfUrl && (
+              <a className="nda-btn" href={signed.pdfUrl} target="_blank" rel="noreferrer" style={{ textDecoration: "none", display: "inline-block" }}>
+                Download your copy
+              </a>
+            )}
+            {!signed.pdfUrl && <p style={{ fontSize: 12, color: "#666" }}>Your PDF copy is being prepared — check back shortly or contact Studiobee.</p>}
+          </div>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          {/* Page 1 of 2 — mirrors where the generated PDF's own page break naturally
+              falls (see nda-template.ts): intro + the first 7 clauses. */}
+          <div className="nda-sheet">
+            <div className="nda-header">Studiobee &middot; Non-Disclosure Agreement</div>
+            <div className="nda-body">
               <p style={{ fontSize: 13, lineHeight: 1.7, marginBottom: 14 }}>
                 This Non-Disclosure Agreement is made between <strong>Studiobee Private Limited</strong> and{" "}
                 <strong>{company || "[Client Company Name]"}</strong>. By signing below, both parties agree to the
                 following terms:
               </p>
-              {CLAUSES.map((c) => (
-                <div key={c.title} style={{ marginBottom: 16 }}>
+              {CLAUSES.slice(0, 7).map((c) => (
+                <div key={c.title} className="nda-clause">
+                  <strong style={{ display: "block", marginBottom: 4, color: "#2F48DF", fontSize: 13 }}>{c.title}</strong>
+                  <p style={{ fontSize: 12, color: "#555", lineHeight: 1.6 }}>{c.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="nda-page-label">Page 1 of 2</div>
+
+          {/* Page 2 of 2 — remaining clauses, then the signature form. */}
+          <div className="nda-sheet">
+            <div className="nda-body">
+              {CLAUSES.slice(7).map((c) => (
+                <div key={c.title} className="nda-clause">
                   <strong style={{ display: "block", marginBottom: 4, color: "#2F48DF", fontSize: 13 }}>{c.title}</strong>
                   <p style={{ fontSize: 12, color: "#555", lineHeight: 1.6 }}>{c.body}</p>
                 </div>
               ))}
 
-              <form onSubmit={handleSubmit}>
-                {errors.length > 0 && (
-                  <div className="nda-errors">
-                    <ul style={{ margin: 0, paddingLeft: 16 }}>
-                      {errors.map((err) => (
-                        <li key={err}>{err}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+              {errors.length > 0 && (
+                <div className="nda-errors">
+                  <ul style={{ margin: 0, paddingLeft: 16 }}>
+                    {errors.map((err) => (
+                      <li key={err}>{err}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-                <div className="nda-field">
-                  <label htmlFor="company">Company name</label>
-                  <input id="company" type="text" value={company} onChange={(e) => setCompany(e.target.value)} />
-                </div>
-                <div className="nda-field">
-                  <label htmlFor="signatoryName">Your full name</label>
-                  <input id="signatoryName" type="text" value={signatoryName} onChange={(e) => setSignatoryName(e.target.value)} />
-                </div>
-                <div className="nda-field">
-                  <label htmlFor="signatoryTitle">Your title</label>
-                  <input id="signatoryTitle" type="text" value={signatoryTitle} onChange={(e) => setSignatoryTitle(e.target.value)} />
-                </div>
-                <div className="nda-field">
-                  <label htmlFor="address">Company address</label>
-                  <input id="address" type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
-                </div>
-                <div className="nda-field">
-                  <label htmlFor="email">Email (to send you a copy)</label>
-                  <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                </div>
-                <div className="nda-field">
-                  <label htmlFor="purpose">What&rsquo;s the engagement? (optional)</label>
-                  <input id="purpose" type="text" value={purpose} onChange={(e) => setPurpose(e.target.value)} />
-                </div>
+              <div className="nda-field">
+                <label htmlFor="company">Company name</label>
+                <input id="company" type="text" value={company} onChange={(e) => setCompany(e.target.value)} />
+              </div>
+              <div className="nda-field">
+                <label htmlFor="signatoryName">Your full name</label>
+                <input id="signatoryName" type="text" value={signatoryName} onChange={(e) => setSignatoryName(e.target.value)} />
+              </div>
+              <div className="nda-field">
+                <label htmlFor="signatoryTitle">Your title</label>
+                <input id="signatoryTitle" type="text" value={signatoryTitle} onChange={(e) => setSignatoryTitle(e.target.value)} />
+              </div>
+              <div className="nda-field">
+                <label htmlFor="address">Company address</label>
+                <input id="address" type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
+              </div>
+              <div className="nda-field">
+                <label htmlFor="email">Email (to send you a copy)</label>
+                <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              </div>
+              <div className="nda-field">
+                <label htmlFor="purpose">What&rsquo;s the engagement? (optional)</label>
+                <input id="purpose" type="text" value={purpose} onChange={(e) => setPurpose(e.target.value)} />
+              </div>
 
-                <label style={{ display: "block", fontSize: 11, fontWeight: 600, marginBottom: 5 }}>Signature</label>
-                <div className="nda-tabs" role="tablist">
-                  <button type="button" className="nda-tab" data-active={mode === "type"} onClick={() => setMode("type")}>
-                    Type
-                  </button>
-                  <button type="button" className="nda-tab" data-active={mode === "draw"} onClick={() => setMode("draw")}>
-                    Draw
-                  </button>
-                </div>
-
-                {mode === "type" ? (
-                  <div className="nda-sig-box">
-                    <input
-                      type="text"
-                      placeholder="Type your full name"
-                      value={signatureText}
-                      onChange={(e) => setSignatureText(e.target.value)}
-                      style={{ border: "none", width: "100%", fontFamily: "'Caveat', cursive", fontSize: "1.6rem" }}
-                    />
-                  </div>
-                ) : (
-                  <div className="nda-sig-box">
-                    <canvas ref={canvasRef} className="nda-canvas" width={500} height={140} />
-                    <div style={{ textAlign: "right", marginTop: 6 }}>
-                      <button type="button" onClick={clearCanvas} style={{ fontSize: 12, background: "none", border: "none", color: "#2F48DF", cursor: "pointer" }}>
-                        Clear
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                <div className="nda-agree">
-                  <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} style={{ marginTop: 3 }} />
-                  <label style={{ margin: 0 }}>
-                    I confirm I am authorised to sign on behalf of {company || "[Client Company Name]"} and I have read and agree to the terms of this
-                    Non-Disclosure Agreement.
-                  </label>
-                </div>
-
-                <button type="submit" className="nda-btn" disabled={submitting}>
-                  {submitting ? "Signing…" : "Sign agreement"}
+              <label style={{ display: "block", fontSize: 11, fontWeight: 600, marginBottom: 5 }}>Signature</label>
+              <div className="nda-tabs" role="tablist">
+                <button type="button" className="nda-tab" data-active={mode === "type"} onClick={() => setMode("type")}>
+                  Type
                 </button>
-              </form>
-            </>
-          )}
-        </div>
-      </div>
+                <button type="button" className="nda-tab" data-active={mode === "draw"} onClick={() => setMode("draw")}>
+                  Draw
+                </button>
+              </div>
+
+              {mode === "type" ? (
+                <div className="nda-sig-box">
+                  <input
+                    type="text"
+                    placeholder="Type your full name"
+                    value={signatureText}
+                    onChange={(e) => setSignatureText(e.target.value)}
+                    style={{ border: "none", width: "100%", fontFamily: "'Caveat', cursive", fontSize: "1.6rem" }}
+                  />
+                </div>
+              ) : (
+                <div className="nda-sig-box">
+                  <canvas ref={canvasRef} className="nda-canvas" width={500} height={140} />
+                  <div style={{ textAlign: "right", marginTop: 6 }}>
+                    <button type="button" onClick={clearCanvas} style={{ fontSize: 12, background: "none", border: "none", color: "#2F48DF", cursor: "pointer" }}>
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="nda-agree">
+                <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} style={{ marginTop: 3 }} />
+                <label style={{ margin: 0 }}>
+                  I confirm I am authorised to sign on behalf of {company || "[Client Company Name]"} and I have read and agree to the terms of this
+                  Non-Disclosure Agreement.
+                </label>
+              </div>
+
+              <button type="submit" className="nda-btn" disabled={submitting}>
+                {submitting ? "Signing…" : "Sign agreement"}
+              </button>
+            </div>
+          </div>
+          <div className="nda-page-label">Page 2 of 2</div>
+        </form>
+      )}
     </div>
   );
 }

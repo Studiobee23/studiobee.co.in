@@ -114,13 +114,13 @@ export function renderNdaAgreement(
 
   .doc-body p.intro { font-size: 12.5px; line-height: 1.7; margin: 0 0 14px; }
 
-  .clause { margin-bottom: 18px; }
+  .clause { margin-bottom: 18px; break-inside: avoid; page-break-inside: avoid; }
   .clause strong { display: block; margin-bottom: 6px; color: #2F48DF; font-size: 12.5px; font-weight: 700; }
   .clause p { font-size: 11.5px; color: #555; line-height: 1.65; }
 
-  .callout { background: #f6f8ff; border-left: 3px solid #2F48DF; padding: 11px 15px; font-size: 12px; color: #555; margin: 16px 0 24px; border-radius: 0 4px 4px 0; line-height: 1.6; }
+  .callout { background: #f6f8ff; border-left: 3px solid #2F48DF; padding: 11px 15px; font-size: 12px; color: #555; margin: 16px 0 24px; border-radius: 0 4px 4px 0; line-height: 1.6; break-inside: avoid; page-break-inside: avoid; }
 
-  .sign-grid { display: flex; gap: 32px; margin-top: 26px; padding-top: 20px; border-top: 1px solid #ebebeb; }
+  .sign-grid { display: flex; gap: 32px; margin-top: 26px; padding-top: 20px; border-top: 1px solid #ebebeb; break-inside: avoid; page-break-inside: avoid; }
   .sign-col { flex: 1; }
   .sig-mark { font-family: 'Caveat', cursive; font-size: 26px; color: #0A0A0A; margin: 6px 0; }
   .sig-image { max-height: 50px; margin: 6px 0; }
