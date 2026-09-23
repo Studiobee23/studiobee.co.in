@@ -7,6 +7,8 @@
 # Secrets
 smtp-config.json
 smtp-config.json.example
+.env
+.env.*
 
 # Runtime data / PII
 contacts.json
