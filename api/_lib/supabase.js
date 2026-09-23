@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const crypto = require('crypto');
 
 const supabase = createClient(
   process.env.SUPABASE_URL    || 'https://placeholder.supabase.co',
@@ -8,7 +9,20 @@ const supabase = createClient(
 const ADMIN_KEY = process.env.ADMIN_KEY || '';
 
 function checkAdmin(req) {
-  return req.headers['x-admin-key'] === ADMIN_KEY && ADMIN_KEY !== '';
+  if (!ADMIN_KEY) return false;
+  const supplied = String(req.headers['x-admin-key'] || '');
+  const expected = Buffer.from(ADMIN_KEY);
+  const given = Buffer.from(supplied);
+  // Constant-time compare — Buffer lengths must match first, or timingSafeEqual throws
+  return given.length === expected.length && crypto.timingSafeEqual(given, expected);
+}
+
+const SITE_ORIGINS = new Set(['https://studiobee.co.in', 'https://www.studiobee.co.in']);
+function checkOrigin(req) {
+  const origin = req.headers.origin;
+  // No Origin header at all (some legitimate same-origin/non-browser requests omit it) — allow.
+  // Present but mismatched — a cross-site form/fetch, reject.
+  return !origin || SITE_ORIGINS.has(origin);
 }
 
 function getIp(req) {
@@ -27,4 +41,4 @@ function checkRateLimit(key, maxPerMin) {
   return rec.count <= maxPerMin;
 }
 
-module.exports = { supabase, ADMIN_KEY, checkAdmin, getIp, checkRateLimit };
+module.exports = { supabase, ADMIN_KEY, checkAdmin, checkOrigin, getIp, checkRateLimit };

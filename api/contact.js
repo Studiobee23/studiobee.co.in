@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const { supabase, checkRateLimit, getIp } = require('./_lib/supabase');
+const { supabase, checkRateLimit, checkOrigin, getIp } = require('./_lib/supabase');
 
 function escHtml(s) {
   return String(s)
@@ -23,6 +23,7 @@ if (process.env.SMTP_HOST) {
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
+  if (!checkOrigin(req)) return res.status(403).json({ error: 'Forbidden' });
   if (!checkRateLimit(getIp(req) + ':contact', 5)) {
     return res.status(429).json({ error: 'Too many requests. Please wait a moment.' });
   }

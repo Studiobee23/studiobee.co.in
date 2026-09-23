@@ -1,6 +1,6 @@
 const { supabase, checkAdmin } = require('./_lib/supabase');
 
-function esc(s) { return String(s ?? '').trim(); }
+function clean(s) { return String(s ?? '').trim(); }
 
 async function nextDocNumber(type) {
   const { data, error } = await supabase.rpc('increment_doc_series', { series_type: type });
@@ -36,14 +36,14 @@ module.exports = async function handler(req, res) {
     if (req.method === 'POST' && !id) {
       const b = req.body || {};
       const client = {
-        name:           esc(b.name).slice(0, 200),
-        contact_person: esc(b.contact_person).slice(0, 200),
-        email:          esc(b.email).slice(0, 200),
-        phone:          esc(b.phone).slice(0, 50),
-        gstin:          esc(b.gstin).slice(0, 50),
-        address:        esc(b.address).slice(0, 500),
-        city:           esc(b.city).slice(0, 100),
-        state:          esc(b.state).slice(0, 100),
+        name:           clean(b.name).slice(0, 200),
+        contact_person: clean(b.contact_person).slice(0, 200),
+        email:          clean(b.email).slice(0, 200),
+        phone:          clean(b.phone).slice(0, 50),
+        gstin:          clean(b.gstin).slice(0, 50),
+        address:        clean(b.address).slice(0, 500),
+        city:           clean(b.city).slice(0, 100),
+        state:          clean(b.state).slice(0, 100),
       };
       if (!client.name) return res.status(400).json({ error: 'Name is required' });
       const { data, error } = await supabase.from('clients').insert(client).select().single();
@@ -54,14 +54,14 @@ module.exports = async function handler(req, res) {
     if (req.method === 'PUT' && id) {
       const b = req.body || {};
       const updates = {};
-      if (b.name           !== undefined) updates.name           = esc(b.name).slice(0, 200);
-      if (b.contact_person !== undefined) updates.contact_person = esc(b.contact_person).slice(0, 200);
-      if (b.email          !== undefined) updates.email          = esc(b.email).slice(0, 200);
-      if (b.phone          !== undefined) updates.phone          = esc(b.phone).slice(0, 50);
-      if (b.gstin          !== undefined) updates.gstin          = esc(b.gstin).slice(0, 50);
-      if (b.address        !== undefined) updates.address        = esc(b.address).slice(0, 500);
-      if (b.city           !== undefined) updates.city           = esc(b.city).slice(0, 100);
-      if (b.state          !== undefined) updates.state          = esc(b.state).slice(0, 100);
+      if (b.name           !== undefined) updates.name           = clean(b.name).slice(0, 200);
+      if (b.contact_person !== undefined) updates.contact_person = clean(b.contact_person).slice(0, 200);
+      if (b.email          !== undefined) updates.email          = clean(b.email).slice(0, 200);
+      if (b.phone          !== undefined) updates.phone          = clean(b.phone).slice(0, 50);
+      if (b.gstin          !== undefined) updates.gstin          = clean(b.gstin).slice(0, 50);
+      if (b.address        !== undefined) updates.address        = clean(b.address).slice(0, 500);
+      if (b.city           !== undefined) updates.city           = clean(b.city).slice(0, 100);
+      if (b.state          !== undefined) updates.state          = clean(b.state).slice(0, 100);
       if (updates.name === '') return res.status(400).json({ error: 'Name is required' });
       const { data, error } = await supabase.from('clients').update(updates).eq('id', id).select().single();
       if (error) return res.status(500).json({ error: error.message });
@@ -92,8 +92,8 @@ module.exports = async function handler(req, res) {
         type, number,
         client_id:    b.client_id || null,
         status:       'draft',
-        project_name: esc(b.project_name).slice(0, 300),
-        category:     esc(b.category).slice(0, 100),
+        project_name: clean(b.project_name).slice(0, 300),
+        category:     clean(b.category).slice(0, 100),
         line_items:   Array.isArray(b.line_items) ? b.line_items : [],
         subtotal:     Number(b.subtotal) || 0,
         gst_enabled:  b.gst_enabled !== false,
@@ -102,7 +102,7 @@ module.exports = async function handler(req, res) {
         gst_amount:   Number(b.gst_amount) || 0,
         discount:     Number(b.discount) || 0,
         total:        Number(b.total) || 0,
-        notes:        esc(b.notes).slice(0, 2000),
+        notes:        clean(b.notes).slice(0, 2000),
         validity_days: Number(b.validity_days) || 15,
       };
       const { data, error } = await supabase.from('documents').insert(doc).select().single();
@@ -118,9 +118,9 @@ module.exports = async function handler(req, res) {
       const updates = {};
       for (const k of allowed) {
         if (b[k] === undefined) continue;
-        if (k === 'project_name') updates[k] = esc(b[k]).slice(0, 300);
-        else if (k === 'category') updates[k] = esc(b[k]).slice(0, 100);
-        else if (k === 'notes') updates[k] = esc(b[k]).slice(0, 2000);
+        if (k === 'project_name') updates[k] = clean(b[k]).slice(0, 300);
+        else if (k === 'category') updates[k] = clean(b[k]).slice(0, 100);
+        else if (k === 'notes') updates[k] = clean(b[k]).slice(0, 2000);
         else if (k === 'gst_type') updates[k] = b[k] === 'igst' ? 'igst' : 'cgst_sgst';
         else if (k === 'status') updates[k] = ['draft','sent','accepted','paid','cancelled'].includes(b[k]) ? b[k] : 'draft';
         else if (k === 'line_items') updates[k] = Array.isArray(b[k]) ? b[k] : [];

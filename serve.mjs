@@ -573,6 +573,12 @@ const server = http.createServer(async (req, res) => {
 
   // ── POST /contact ─────────────────────────────────────────────────────────
   if (req.method === 'POST' && urlPath === '/contact') {
+    const contactOrigin = req.headers.origin;
+    if (contactOrigin && !ALLOWED_ORIGINS.has(contactOrigin)) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Forbidden' }));
+      return;
+    }
     if (!checkRateLimit(ip + ':contact', 5)) {
       res.writeHead(429, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Too many requests. Please wait a moment.' }));
