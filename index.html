@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>studiobee — Creative Studio, Gurgaon</title>
+  <title>studiobee - Creative Studio, Gurgaon</title>
   <meta name="description" content="studiobee is a full-service creative studio in Gurgaon — branding, social media, video production, studio rental, and AI automations for modern brands." />
   <meta name="keywords" content="creative studio Gurgaon, branding agency Delhi NCR, social media management, video production India, AI automations, studio rental Gurgaon" />
   <link rel="canonical" href="https://studiobee.co.in/" />
@@ -2054,6 +2054,13 @@
           .replace(/"/g, '&quot;')
           .replace(/'/g, '&#39;');
       }
+      // Scheme allowlist for user-editable URLs rendered into href — esc() alone doesn't stop javascript: URIs
+      function safeHref(u) {
+        try {
+          var p = new URL(String(u || ''));
+          return (p.protocol === 'https:' || p.protocol === 'http:') ? p.href : '';
+        } catch (e) { return ''; }
+      }
       function icon(name) {
         // SB_ICONS values are hardcoded SVG path data — safe to inject as-is
         var p = (window.SB_ICONS || {})[name] || '';
@@ -2149,8 +2156,9 @@
           var tags = (m.skills || []).map(function(s) {
             return '<span class="team-hover-tag">' + esc(s) + '</span>';
           }).join('');
-          var link = m.linkedin
-            ? '<a href="' + esc(m.linkedin) + '" class="team-hover-link" target="_blank" rel="noopener">' + liSvg + ' LinkedIn</a>'
+          var safeLinkedin = safeHref(m.linkedin);
+          var link = safeLinkedin
+            ? '<a href="' + esc(safeLinkedin) + '" class="team-hover-link" target="_blank" rel="noopener">' + liSvg + ' LinkedIn</a>'
             : '';
           var imgSrc = esc(m.photo || 'https://placehold.co/400x500/111827/374151');
           return '<div class="team-card" data-idx="' + i + '">' +

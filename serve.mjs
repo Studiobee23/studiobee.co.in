@@ -1145,8 +1145,12 @@ const server = http.createServer(async (req, res) => {
         '<script src="content.js">',
         cfgInjection + '<script src="content.js">'
       );
-      // Inject admin key into admin pages
-      if (basename === 'config.html' || basename === 'billing.html') {
+      // Inject admin key into admin pages — loopback only, so it never reaches
+      // other devices on the same WiFi during phone-preview (LAN binding is 0.0.0.0).
+      // Remote/LAN requests fall back to the manual paste-in already supported client-side.
+      const remoteAddr = String(req.socket.remoteAddress || '');
+      const isLoopback = remoteAddr === '127.0.0.1' || remoteAddr === '::1' || remoteAddr === '::ffff:127.0.0.1';
+      if (isLoopback && (basename === 'config.html' || basename === 'billing.html')) {
         html = html.replace(
           '</head>',
           `<script>window.__ADMIN_KEY__ = ${JSON.stringify(adminKey)};</script>\n</head>`
