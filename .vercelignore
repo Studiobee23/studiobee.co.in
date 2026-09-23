@@ -1,0 +1,88 @@
+# CRITICAL: this project deploys via `vercel` CLI, which uploads the raw
+# working directory and does NOT respect .gitignore the way git-based
+# deploys do. Anything not listed here is served as a public static file.
+# When adding a new top-level file/folder that isn't meant to be public,
+# add it here too — .gitignore alone provides zero protection in prod.
+
+# Secrets
+smtp-config.json
+smtp-config.json.example
+
+# Runtime data / PII
+contacts.json
+analytics.json
+presence.json
+
+# Local dev / build tooling — not needed at runtime on Vercel
+serve.mjs
+screenshot.mjs
+migrate-storage.mjs
+generate-casestudy.mjs
+railway.json
+
+# Separate app — has its own independent Vercel project/deployment
+mystudiobee/
+
+# Internal docs / schema (reveal DB structure and business info)
+docs/
+design-guide.md
+SNAP-DESIGN-SYSTEM-GUIDE.md
+StudioBee_ProfitShare.docx
+docx_out.txt
+page-offsets.json
+mcbee-analytics-30d.csv
+
+# Unlinked / draft pages — not referenced from any live page
+studiobee.html
+pdf-preview.html
+rough-test-slides.html
+portfolio/
+reference/
+studiobee-casestudy.pdf
+studiobee-portfolio-casestudy.pdf
+
+# Dev/QA screenshots taken during design review — not site content
+screenshots/
+Phone screenshots/
+.playwright-mcp/
+24e3dacc007921564e7db9f933ad5f3f.jpg
+Screenshot 2026-07-13 at 5.59.56 PM.png
+audit-config-projects.png
+audit-config-team-bottom.png
+audit-config-team.png
+audit-config.png
+audit-footer.png
+audit-hero.png
+audit-team-loaded.png
+audit-team.png
+audit-work.png
+bg-direct-check.png
+billing-proformas-deeplink.png
+client-detail.png
+clients-list-uploaded.png
+clients-list.png
+dashboard-admin-check.png
+dashboard-full.png
+dashboard-newbg.png
+dashboard-recent-clients.png
+dashboard-redesign-v1.png
+dashboard-redesign-v2.png
+dashboard-redesign-v3.png
+dashboard-redesign-v4.png
+dashboard-redesign-v5.png
+dashboard-tall.png
+history-dialog-fixed.png
+history-dialog-recheck.png
+local-check.png
+sidebar-accordion-check.png
+sidebar-billing-expanded.png
+sidebar-collapsed-check.png
+sidebar-reopened-check.png
+sidebar-toggle-check.png
+
+# Editor / tooling
+.claude/
+.superpowers/
+.vscode/
+node_modules/
+.git/

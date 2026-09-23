@@ -2,7 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /config.html
 Disallow: /media/
-Disallow: /analytics.json
-Disallow: /contacts.json
-Disallow: /smtp-config.json
 Sitemap: https://studiobee.co.in/sitemap.xml

@@ -3,7 +3,7 @@
 let _cached;
 async function getRenderDocument() {
   if (!_cached) {
-    const mod = await import('../../pdf-template.mjs');
+    const mod = await import('./pdf-template.mjs');
     _cached = mod.renderDocument;
   }
   return _cached;

@@ -7,7 +7,7 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
 import { createClient } from '@supabase/supabase-js';
-import { renderDocument } from './pdf-template.mjs';
+import { renderDocument } from './api/_lib/pdf-template.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT      = parseInt(process.env.PORT) || 3000;
