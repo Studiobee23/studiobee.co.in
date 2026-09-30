@@ -22,8 +22,9 @@ migrate-storage.mjs
 generate-casestudy.mjs
 railway.json
 
-# Separate app — has its own independent Vercel project/deployment
-mystudiobee/
+# NOTE: mystudiobee/ must NOT be listed here — the mystudiobee Vercel project builds from
+# this same repo and reads this file. It is kept off the marketing site by the
+# /mystudiobee redirects in vercel.json instead.
 
 # Internal docs / schema (reveal DB structure and business info)
 docs/

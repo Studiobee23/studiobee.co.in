@@ -1,5 +1,9 @@
 {
-  "rewrites": [
+  "redirects": [
+  { "source": "/mystudiobee", "destination": "/", "permanent": false },
+  { "source": "/mystudiobee/:path*", "destination": "/", "permanent": false }
+],
+"rewrites": [
     { "source": "/ping",                              "destination": "/api/ping" },
     { "source": "/contact",                           "destination": "/api/contact" },
     { "source": "/analytics",                         "destination": "/api/analytics" },
