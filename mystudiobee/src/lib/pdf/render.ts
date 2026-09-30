@@ -1,3 +1,5 @@
+import { readFile } from "fs/promises";
+import path from "path";
 import { PDFDocument } from "pdf-lib";
 import { renderDocument, renderCoverDocument, renderFooterTemplate, FOOTER_HEIGHT_PX } from "@/lib/pdf/template";
 import { renderNdaAgreement } from "@/lib/pdf/nda-template";
@@ -8,6 +10,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 // uses (avoids needing the full `puppeteer` package with its own Chromium download).
 const LOCAL_CHROME_PATH =
   "C:/Users/arora/.cache/puppeteer/chrome/win64-145.0.7632.77/chrome-win64/chrome.exe";
+
+// Pre-compressed (~1.8 MB) copy of the studio brochure; traced into the Vercel functions
+// via outputFileTracingIncludes in next.config.ts.
+const BROCHURE_PATH = path.join(process.cwd(), "assets", "studiobee-brochure.pdf");
 
 async function launchBrowser() {
   const puppeteer = await import("puppeteer-core");
@@ -102,7 +108,10 @@ export async function renderDocumentToPdf(docId: string) {
     })) as Buffer;
 
     await browser.close();
-    const pdfBuffer = await mergePdfs([coverBuffer, contentBuffer]);
+    const parts = [coverBuffer, contentBuffer];
+    // Quotes get the studio brochure appended as fixed closing pages.
+    if (doc.type === "quote") parts.push(await readFile(BROCHURE_PATH));
+    const pdfBuffer = await mergePdfs(parts);
     return { doc, client, pdfBuffer };
   } catch (e) {
     if (browser) await browser.close().catch(() => {});
