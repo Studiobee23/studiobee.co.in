@@ -11,8 +11,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 const LOCAL_CHROME_PATH =
   "C:/Users/arora/.cache/puppeteer/chrome/win64-145.0.7632.77/chrome-win64/chrome.exe";
 
-// Pre-compressed (~1.8 MB) copy of the studio brochure; traced into the Vercel functions
-// via outputFileTracingIncludes in next.config.ts.
+// Studio brochure (~4 MB); traced into the Vercel functions via
+// outputFileTracingIncludes in next.config.ts.
 const BROCHURE_PATH = path.join(process.cwd(), "assets", "studiobee-brochure.pdf");
 
 async function launchBrowser() {
