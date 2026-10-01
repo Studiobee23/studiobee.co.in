@@ -10,7 +10,8 @@ const nextConfig: NextConfig = {
   // static file-tracing misses them and the deployed function is missing
   // node_modules/@sparticuz/chromium/bin entirely at runtime. Force-include it.
   outputFileTracingIncludes: {
-    "/api/generate-pdf": ["./node_modules/@sparticuz/chromium/**/*"],
+    "/api/generate-pdf": ["./node_modules/@sparticuz/chromium/**/*", "./assets/studiobee-brochure.pdf"],
+    "/api/email-document": ["./node_modules/@sparticuz/chromium/**/*", "./assets/studiobee-brochure.pdf"],
   },
 };
 
